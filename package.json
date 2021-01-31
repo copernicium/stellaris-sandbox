@@ -1,0 +1,22 @@
+{
+  "name": "stellaris-sandbox",
+  "version": "1.0.0",
+  "description": "OSU CS 340 Final Project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/copernicium/stellaris-sandbox.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/copernicium/stellaris-sandbox/issues"
+  },
+  "homepage": "https://github.com/copernicium/stellaris-sandbox#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
