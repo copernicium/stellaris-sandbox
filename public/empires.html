@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+        <head>
+                <meta charset="utf-8">
+                <title>Stellaris Sandbox</title>
+                <meta name="description" content="OSU CS 340 Final Project">
+                <link rel="stylesheet" href="style.css">
+        </head>
+        <body>
+                <header>
+                        <h1>Stellaris Sandbox</h1>
+                </header>
+                <main>
+                        <div>
+                                <h2>Create New AI-Controlled Empire</h2>
+                                <table>
+                                <tr>
+                                        <td>
+                                                <label>Name:</label>
+                                        </td>
+                                        <td>
+                                                <input type="text" id="empire-name" name="empire-name">
+                                        </td>
+                                </tr>
+                                <tr>
+                                        <td>
+                                                <label>Aggressiveness:</label>
+                                        </td>
+                                        <td>
+                                                <select id="empire-aggressiveness" name="empire-aggressiveness">
+                                                        <option value="passive">Passive</option>
+                                                        <option value="moderate">Moderate</option>
+                                                        <option value="aggressive">Aggressive</option>
+                                                </select>
+                                        </td>
+                                </tr>
+                                <tr>
+                                        <td>
+                                                <label>Primary Color:</label>
+                                        </td>
+                                        <td>
+                                                <input type="color" id="empire-primary-color" name="empire-primary-color">
+                                        </td>
+                                </tr>
+                                <tr>
+                                        <td>
+                                                <label>Secondary Color:</label>
+                                        </td>
+                                        <td>
+                                                <input type="color" id="empire-secondary-color" name="empire-secondary-color">
+                                        </td>
+                                </tr>
+                                <tr>
+                                        <td>
+
+                                                <label>Fallen Empire:</label>
+                                        </td>
+                                        <td>
+                                                <input type="checkbox" id="empire-is-fallen" name="empire-is-fallen">
+                                        </td>
+                                </tr>
+                                <tr>
+                                        <td>
+                                                <label>Starting System:</label>
+                                        </td>
+                                        <td>
+                                                <input type="search" id="starting-system" name="starting-system">
+                                        </td>
+                                </tr>
+                                </table>
+                                <br>
+                                <button type="button" id="add-empire" onclick="alert('TODO')">Add Empire</button>
+                        </div>
+                </main>
+                <footer>
+                        <br>
+                        <br>
+                        <a href="./index.html">Back to Main Page</a>
+                </footer>
+        </body>
+</html>
