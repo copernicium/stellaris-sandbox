@@ -1,5 +1,6 @@
 var express = require("express");
 var exphbs = require("express-handlebars");
+var mysql = require('./dbcon.js');
 
 var app = express();
 var port = 3845;
@@ -89,7 +90,7 @@ app.get("/bodies", (req, res, next) => {
 });
 
 app.get('*', (req, res) => {
-	res.status(404).send("The page you requested doesn't exist");1
+	res.status(404).send("The page you requested doesn't exist");
 });
 
 app.listen(port, () => {
