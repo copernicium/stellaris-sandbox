@@ -109,3 +109,5 @@ dist
 # Ignore handlebars-generated templates
 public/templates/*
 
+# Swap files
+*.swp
