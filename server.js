@@ -27,6 +27,16 @@ for(var i = 0; i < 10; i++){
     });
 }
 
+var systems = [];
+for(var i = 0; i < 10; i++){
+	systems.push({
+        name: "Alpha Centauri",
+        star_count: 1,
+        orbital_radius: .5,
+        theta: 90
+    });
+}
+
 app.get("/", (req, res, next) => {
 	res.status(200).render("homePage");
 });
@@ -39,7 +49,10 @@ app.get("/empires", (req, res, next) => {
 });
 
 app.get("/systems", (req, res, next) => {
-	res.status(200).render("systemsPage");
+	var pageName = "systemsPage";
+	var context = createDefaultContext(pageName);
+	context.systems = systems;
+	res.status(200).render(pageName, context);
 });
 
 app.get('*', (req, res) => {
