@@ -1,9 +1,49 @@
 <main>
+	<script src="/templates/body_item_template.js" defer></script>
+	<script>
+		function modalHide() {
+			document.getElementById(MODAL_BACKDROP_ID).classList.add("hidden");
+			document.getElementById(MODAL_ID).classList.add("hidden");
+		}
+
+		function modalShow() {
+			document.getElementById(MODAL_BACKDROP_ID).classList.remove("hidden");
+			document.getElementById(MODAL_ID).classList.remove("hidden");
+		}
+
+		function modalOpen() {
+			modalShow();
+		}
+
+		function modalCancel() {
+			modalHide();
+		}
+
+		function modalAccept() {
+			var creationForm = document.forms["modal-form"];
+			var bodyContext = {
+				name: creationForm["body-name"].value,
+				type: creationForm["body-type"].value,
+				orbital_radius: creationForm["body-orbital-radius"].value,
+				theta: creationForm["body-theta"].value
+			};
+			var bodyHTML = Handlebars.templates.bodyItem(bodyContext);
+			document.getElementById("bodies-list").insertAdjacentHTML("beforeend", bodyHTML);
+
+			modalHide();
+		}
+
+		window.addEventListener("DOMContentLoaded", function() {
+			document.getElementById(MODAL_OPEN_BUTTON_ID).addEventListener("click", modalOpen);
+			document.getElementById(MODAL_CANCEL_BUTTON_ID).addEventListener("click", modalCancel);
+			document.getElementById(MODAL_ACCEPT_BUTTON_ID).addEventListener("click", modalAccept);
+		});
+	</script>
 	<div>
         <button type="button" id="modal-open-button">Create New Body</button>
     </div>
     <br>
-    <table>
+    <table id="bodies-list">
         <tr>
             <th>Name</th>
             <th>Type</th>
@@ -18,14 +58,14 @@
 	<div id="modal" class="hidden">
 		<div id="modal-dialog">
 			<h2>Create New Body</h2>
-			<form>
+			<form id="modal-form">
 				<table>
 					<tr>
 						<td>
 							<label>Name:</label>
 						</td>
 						<td>
-							<input type="text" id="empire-name" name="empire-name">
+							<input type="text" id="body-name" name="body-name">
 						</td>
 					</tr>
 					<tr>
@@ -34,8 +74,8 @@
 						</td>
 						<td>
 							<select id="body-type" name="body-type">
-								<option value="planet">Planet</option>
-								<option value="asteroid">Asteroid</option>
+								<option value="Planet">Planet</option>
+								<option value="Asteroid">Asteroid</option>
 							</select>
 						</td>
 					</tr>
