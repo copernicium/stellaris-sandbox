@@ -1,25 +1,70 @@
 <main>
+	<script src="/templates/empire_item_template.js" defer></script>
+	<script>
+		function modalHide() {
+			document.getElementById(MODAL_BACKDROP_ID).classList.add("hidden");
+			document.getElementById(MODAL_ID).classList.add("hidden");
+		}
+
+		function modalShow() {
+			document.getElementById(MODAL_BACKDROP_ID).classList.remove("hidden");
+			document.getElementById(MODAL_ID).classList.remove("hidden");
+		}
+
+		function modalOpen() {
+			modalShow();
+		}
+
+		function modalCancel() {
+			modalHide();
+		}
+
+		function modalAccept() {
+			var creationForm = document.forms["modal-form"];
+			var empireContext = {
+				name: creationForm["empire-name"].value,
+				aggressiveness: creationForm["empire-aggressiveness"].value,
+				primary_color: creationForm["empire-primary-color"].value,
+				secondary_color: creationForm["empire-secondary-color"].value,
+				fallen_empire: creationForm["empire-is-fallen"].checked
+			};
+			var empireHTML = Handlebars.templates.empireItem(empireContext);
+			document.getElementById("empires-list").insertAdjacentHTML("beforeend", empireHTML);
+
+			modalHide();
+		}
+
+		window.addEventListener("DOMContentLoaded", function() {
+			document.getElementById(MODAL_OPEN_BUTTON_ID).addEventListener("click", modalOpen);
+			document.getElementById(MODAL_CANCEL_BUTTON_ID).addEventListener("click", modalCancel);
+			document.getElementById(MODAL_ACCEPT_BUTTON_ID).addEventListener("click", modalAccept);
+		});
+	</script>
 	<div>
         <button type="button" id="modal-open-button">Create New Empire</button>
     </div>
     <br>
     <table>
-        <tr>
-            <th>Name</th>
-            <th>Aggressiveness</th>
-            <th>Primary Color</th>
-            <th>Secondary Color</th>
-            <th>Fallen Empire</th>
-        </tr>
-        {{#each empires}}
-			{{> empireItem}}
-		{{/each}}
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Aggressiveness</th>
+				<th>Primary Color</th>
+				<th>Secondary Color</th>
+				<th>Fallen Empire</th>
+			</tr>
+		</thead>
+		<tbody id="empires-list">
+			{{#each empires}}
+				{{> empireItem}}
+			{{/each}}
+		</tbody>
     </table>
 	<div id="modal-backdrop" class="hidden"></div>
 	<div id="modal" class="hidden">
 		<div id="modal-dialog">
 			<h2>Create New AI-Controlled Empire</h2>
-			<form>
+			<form name="modal-form">
 				<table>
 					<tr>
 						<td>

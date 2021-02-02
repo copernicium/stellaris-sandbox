@@ -105,3 +105,7 @@ dist
 
 # TernJS port file
 .tern-port
+
+# Ignore handlebars-generated templates
+public/templates/*
+
