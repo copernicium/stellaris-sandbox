@@ -9,7 +9,7 @@
 	left: 0;
 	right: 0;
 	z-index: 1000;
-	background-color: rgba(0, 0, 0, 0.85);
+	/* background-color: rgba(0, 0, 0, 0.85); */
 }
 
 #modal {
@@ -70,6 +70,10 @@ a:hover {
 
 main {
 	margin: 20px;
+}
+
+input, textarea, select, option {
+	background-color : #36393F;
 }
 
 table {

@@ -15,16 +15,22 @@ function setupStarfield() {
 	if(canvas == null) {
 		return;
 	}
-	var context = canvas.getContext("2d");
-	stars = 0.002 * canvas.offsetWidth * canvas.offsetHeight;
+	canvas.width = canvas.offsetWidth;
+	canvas.height = canvas.offsetHeight;
 
-	colorrange = [0,60,240];
-	for (var i = 0; i < stars; i++) {
+	var num_stars = 0.002 * canvas.offsetWidth * canvas.offsetHeight;
+	var context = canvas.getContext("2d");
+
+	context.fillStyle = "rgba(0, 0, 0, 0.85)";
+	context.fillRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
+
+	var colorrange = [0, 60, 240];
+	for (var i = 0; i < num_stars; i++) {
 		var x = Math.random() * canvas.offsetWidth;
-		y = Math.random() * canvas.offsetHeight,
-		radius = Math.random() * 1,
-		hue = colorrange[getRandom(0,colorrange.length - 1)],
-		sat = getRandom(50,100);
+		var y = Math.random() * canvas.offsetHeight,
+		var radius = Math.random() * 1.2,
+		var hue = colorrange[getRandom(0, colorrange.length - 1)],
+		var sat = getRandom(50, 100);
 		context.beginPath();
 		context.arc(x, y, radius, 0, 360);
 		context.fillStyle = "hsl(" + hue + ", " + sat + "%, 88%)";
