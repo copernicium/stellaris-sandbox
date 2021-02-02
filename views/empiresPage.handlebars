@@ -1,62 +1,19 @@
 <main>
     <div>
-        <h2>Create New AI-Controlled Empire</h2>
-        <table>
-        <tr>
-            <td>
-                <label>Name:</label>
-            </td>
-            <td>
-                <input type="text" id="empire-name" name="empire-name">
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <label>Aggressiveness:</label>
-            </td>
-            <td>
-                <select id="empire-aggressiveness" name="empire-aggressiveness">
-                    <option value="passive">Passive</option>
-                    <option value="moderate">Moderate</option>
-                    <option value="aggressive">Aggressive</option>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <label>Primary Color:</label>
-            </td>
-            <td>
-                <input type="color" id="empire-primary-color" name="empire-primary-color">
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <label>Secondary Color:</label>
-            </td>
-            <td>
-                <input type="color" id="empire-secondary-color" name="empire-secondary-color">
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <label>Fallen Empire:</label>
-            </td>
-            <td>
-                <input type="checkbox" id="empire-is-fallen" name="empire-is-fallen">
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <label>Starting System:</label>
-            </td>
-            <td>
-                <input type="search" id="starting-system" name="starting-system">
-            </td>
-        </tr>
-        </table>
-        <br>
-        <button type="button" id="add-empire" onclick="alert('TODO')">Add Empire</button>
+        <button type="button" id="create-new-empire-button">Create New Empire</button>
     </div>
+    <br>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Aggressiveness</th>
+            <th>Primary Color</th>
+            <th>Secondary Color</th>
+            <th>Fallen Empire</th>
+        </tr>
+        {{#each empires}}
+			{{> empireItem}}
+		{{/each}}
+    </table>
     {{> footer}}
 </main>
