@@ -1,0 +1,53 @@
+<main>
+	<div>
+        <button type="button" id="modal-open-button">Create New Empire</button>
+    </div>
+    <br>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Base Market Value</th>
+            <th>Color</th>
+        </tr>
+        {{#each resources}}
+			{{> resourceItem}}
+		{{/each}}
+    </table>
+	<div id="modal-backdrop" class="hidden"></div>
+	<div id="modal" class="hidden">
+		<div id="modal-dialog">
+			<h2>Create New Resource</h2>
+			<form>
+				<table>
+					<tr>
+						<td>
+							<label>Name:</label>
+						</td>
+						<td>
+							<input type="text" id="resource-name" name="resource-name">
+						</td>
+					</tr>
+                    <tr>
+                        <td>
+                            <label>Base Market Value:</label>
+                        </td>
+                        <td>
+                            <input type="number" id="resource-base-market-value" name="resource-base-market-value" min="0" value="1" step="0.01">
+                        </td>
+                    </tr>
+					<tr>
+						<td>
+							<label>Color:</label>
+						</td>
+						<td>
+							<input type="color" id="resource-color" name="resource-color">
+						</td>
+					</tr>
+				</table>
+			</form>
+			<button id="modal-accept-button">Create</button>
+			<button id="modal-cancel-button">Cancel</button>
+		</div>
+	</div>
+</main>
+

@@ -37,6 +37,25 @@ for(var i = 0; i < 10; i++){
     });
 }
 
+var resources = [];
+for(var i = 0; i < 10; i++){
+	resources.push({
+        name: "Minerals",
+        base_market_value: 15,
+        color: "0000FF"
+    });
+}
+
+var bodies = [];
+for(var i = 0; i < 10; i++){
+	bodies.push({
+        name: "Earth",
+        type: "Planet",
+        orbital_radius: .5,
+        theta: 90
+    });
+}
+
 app.get("/", (req, res, next) => {
 	res.status(200).render("homePage");
 });
@@ -52,6 +71,20 @@ app.get("/systems", (req, res, next) => {
 	var pageName = "systemsPage";
 	var context = createDefaultContext(pageName);
 	context.systems = systems;
+	res.status(200).render(pageName, context);
+});
+
+app.get("/resources", (req, res, next) => {
+	var pageName = "resourcesPage";
+	var context = createDefaultContext(pageName);
+	context.resources = resources;
+	res.status(200).render(pageName, context);
+});
+
+app.get("/bodies", (req, res, next) => {
+	var pageName = "bodiesPage";
+	var context = createDefaultContext(pageName);
+	context.bodies = bodies;
 	res.status(200).render(pageName, context);
 });
 

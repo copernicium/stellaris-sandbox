@@ -1,0 +1,65 @@
+<main>
+	<div>
+        <button type="button" id="modal-open-button">Create New Empire</button>
+    </div>
+    <br>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Orbital Radius</th>
+            <th>Theta</th>
+        </tr>
+        {{#each bodies}}
+			{{> bodyItem}}
+		{{/each}}
+    </table>
+	<div id="modal-backdrop" class="hidden"></div>
+	<div id="modal" class="hidden">
+		<div id="modal-dialog">
+			<h2>Create New Body</h2>
+			<form>
+				<table>
+					<tr>
+						<td>
+							<label>Name:</label>
+						</td>
+						<td>
+							<input type="text" id="empire-name" name="empire-name">
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label>Type:</label>
+						</td>
+						<td>
+							<select id="body-type" name="body-type">
+								<option value="planet">Planet</option>
+								<option value="asteroid">Asteroid</option>
+							</select>
+						</td>
+					</tr>
+                    <tr>
+                        <td>
+                            <label>Orbital Radius:</label>
+                        </td>
+                        <td>
+                            <input type="number" id="body-orbital-radius" name="body-orbital-radius" min="0.1" max="1.0" value=".5" step="0.01">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>Theta:</label>
+                        </td>
+                        <td>
+                            <input type="number" id="body-theta" name="body-theta" min="0" max="360" value="0">
+                        </td>
+                    </tr>
+				</table>
+			</form>
+			<button id="modal-accept-button">Create</button>
+			<button id="modal-cancel-button">Cancel</button>
+		</div>
+	</div>
+</main>
+
