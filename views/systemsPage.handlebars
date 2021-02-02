@@ -1,9 +1,49 @@
 <main>
+	<script src="/templates/system_item_template.js" defer></script>
+	<script>
+		function modalHide() {
+			document.getElementById(MODAL_BACKDROP_ID).classList.add("hidden");
+			document.getElementById(MODAL_ID).classList.add("hidden");
+		}
+
+		function modalShow() {
+			document.getElementById(MODAL_BACKDROP_ID).classList.remove("hidden");
+			document.getElementById(MODAL_ID).classList.remove("hidden");
+		}
+
+		function modalOpen() {
+			modalShow();
+		}
+
+		function modalCancel() {
+			modalHide();
+		}
+
+		function modalAccept() {
+			var creationForm = document.forms["modal-form"];
+			var systemContext = {
+				name: creationForm["system-name"].value,
+				star_count: creationForm["star-count"].value,
+				orbital_radius: creationForm["system-orbital-radius"].value,
+				theta: creationForm["system-theta"].value
+			};
+			var systemHTML = Handlebars.templates.systemItem(systemContext);
+			document.getElementById("systems-list").insertAdjacentHTML("beforeend", systemHTML);
+
+			modalHide();
+		}
+
+		window.addEventListener("DOMContentLoaded", function() {
+			document.getElementById(MODAL_OPEN_BUTTON_ID).addEventListener("click", modalOpen);
+			document.getElementById(MODAL_CANCEL_BUTTON_ID).addEventListener("click", modalCancel);
+			document.getElementById(MODAL_ACCEPT_BUTTON_ID).addEventListener("click", modalAccept);
+		});
+	</script>
 	<div>
         <button type="button" id="modal-open-button">Create New System</button>
     </div>
     <br>
-    <table>
+    <table id="systems-list">
         <tr>
             <th>Name</th>
             <th>Star Count</th>
@@ -18,7 +58,7 @@
 	<div id="modal" class="hidden">
 		<div id="modal-dialog">
             <h2>Create New System</h2>
-			<form>
+			<form name="modal-form">
                 <table>
                     <tr>
                         <td>

@@ -27,9 +27,9 @@ function setupStarfield() {
 	var colorrange = [0, 60, 240];
 	for (var i = 0; i < num_stars; i++) {
 		var x = Math.random() * canvas.offsetWidth;
-		var y = Math.random() * canvas.offsetHeight,
-		var radius = Math.random() * 1.2,
-		var hue = colorrange[getRandom(0, colorrange.length - 1)],
+		var y = Math.random() * canvas.offsetHeight;
+		var radius = Math.random() * 1.2;
+		var hue = colorrange[getRandom(0, colorrange.length - 1)];
 		var sat = getRandom(50, 100);
 		context.beginPath();
 		context.arc(x, y, radius, 0, 360);
