@@ -1,9 +1,48 @@
 <main>
+	<script src="/templates/resource_item_template.js" defer></script>
+	<script>
+		function modalHide() {
+			document.getElementById(MODAL_BACKDROP_ID).classList.add("hidden");
+			document.getElementById(MODAL_ID).classList.add("hidden");
+		}
+
+		function modalShow() {
+			document.getElementById(MODAL_BACKDROP_ID).classList.remove("hidden");
+			document.getElementById(MODAL_ID).classList.remove("hidden");
+		}
+
+		function modalOpen() {
+			modalShow();
+		}
+
+		function modalCancel() {
+			modalHide();
+		}
+
+		function modalAccept() {
+			var creationForm = document.forms["modal-form"];
+			var resourceContext = {
+				name: creationForm["resource-name"].value,
+				base_market_value: creationForm["resource-base-market-value"].value,
+				color: creationForm["resource-color"].value
+			};
+			var resourceHTML = Handlebars.templates.resourceItem(resourceContext);
+			document.getElementById("resources-list").insertAdjacentHTML("beforeend", resourceHTML);
+
+			modalHide();
+		}
+
+		window.addEventListener("DOMContentLoaded", function() {
+			document.getElementById(MODAL_OPEN_BUTTON_ID).addEventListener("click", modalOpen);
+			document.getElementById(MODAL_CANCEL_BUTTON_ID).addEventListener("click", modalCancel);
+			document.getElementById(MODAL_ACCEPT_BUTTON_ID).addEventListener("click", modalAccept);
+		});
+	</script>
 	<div>
         <button type="button" id="modal-open-button">Create New Resource</button>
     </div>
     <br>
-    <table>
+    <table id="resources-list">
         <tr>
             <th>Name</th>
             <th>Base Market Value</th>
@@ -17,7 +56,7 @@
 	<div id="modal" class="hidden">
 		<div id="modal-dialog">
 			<h2>Create New Resource</h2>
-			<form>
+			<form name="modal-form">
 				<table>
 					<tr>
 						<td>
