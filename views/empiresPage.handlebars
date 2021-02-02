@@ -9,6 +9,7 @@
 		function modalShow() {
 			document.getElementById(MODAL_BACKDROP_ID).classList.remove("hidden");
 			document.getElementById(MODAL_ID).classList.remove("hidden");
+			setupStarfield();
 		}
 
 		function modalOpen() {
@@ -60,7 +61,9 @@
 			{{/each}}
 		</tbody>
     </table>
-	<div id="modal-backdrop" class="hidden"></div>
+	<div id="modal-backdrop" class="hidden">
+		<canvas id="starfield" class="starfield"></canvas>
+	</div>
 	<div id="modal" class="hidden">
 		<div id="modal-dialog">
 			<h2>Create New AI-Controlled Empire</h2>

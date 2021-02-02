@@ -19,7 +19,6 @@
 	left: 0;
 	right: 0;
 	z-index: 1010;
-	overflow: scroll;
 }
 
 #modal-dialog {
@@ -29,9 +28,16 @@
 	min-height: 300px;
 	margin: 40px auto;
 	padding: 20px;
-	border: 2px solid black;
+	border: 2px solid white;
 	border-radius: 15px;
-	background-color: white;
+	background-color: black;
+	overflow: auto;
+}
+
+button {
+	border: 1px solid #AAAA;
+	border-radius: 2px;
+	background-color: #1111;
 }
 
 * {
@@ -98,8 +104,8 @@ th, td {
 }
 
 .starfield {
-	height: 500px;
-	width: 500px;
+	height: 100%;
+	width: 100%;
 	padding: 0px;
 	margin: 0px;
 }
