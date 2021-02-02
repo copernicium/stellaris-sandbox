@@ -16,15 +16,16 @@ function createDefaultContext(name) {
 	};
 }
 
-var empires = [
-    {
+var empires = [];
+for(var i = 0; i < 10; i++){
+	empires.push({
         name: "The Allied Suns",
         aggressiveness: "passive",
         primary_color: "FF0000",
         secondary_color: "00FF00",
         fallen_empire: false
-    }
-];
+    });
+}
 
 app.get("/", (req, res, next) => {
 	res.status(200).render("homePage");
