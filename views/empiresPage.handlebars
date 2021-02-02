@@ -1,6 +1,6 @@
 <main>
-    <div>
-        <button type="button" id="create-new-empire-button">Create New Empire</button>
+	<div>
+        <button type="button" id="modal-open-button">Create New Empire</button>
     </div>
     <br>
     <table>
@@ -15,5 +15,61 @@
 			{{> empireItem}}
 		{{/each}}
     </table>
-    {{> footer}}
+	<div id="modal-backdrop" class="hidden"></div>
+	<div id="modal" class="hidden">
+		<div id="modal-dialog">
+			<h2>Create New AI-Controlled Empire</h2>
+			<form>
+				<table>
+					<tr>
+						<td>
+							<label>Name:</label>
+						</td>
+						<td>
+							<input type="text" id="empire-name" name="empire-name">
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label>Aggressiveness:</label>
+						</td>
+						<td>
+							<select id="empire-aggressiveness" name="empire-aggressiveness">
+								<option value="passive">Passive</option>
+								<option value="moderate">Moderate</option>
+								<option value="aggressive">Aggressive</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label>Primary Color:</label>
+						</td>
+						<td>
+							<input type="color" id="empire-primary-color" name="empire-primary-color">
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label>Secondary Color:</label>
+						</td>
+						<td>
+							<input type="color" id="empire-secondary-color" name="empire-secondary-color">
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label>Fallen Empire:</label>
+						</td>
+						<td>
+							<input type="checkbox" id="empire-is-fallen" name="empire-is-fallen">
+						</td>
+					</tr>
+				</table>
+			</form>
+			<button id="modal-accept-button">Create</button>
+			<button id="modal-cancel-button">Cancel</button>
+		</div>
+	</div>
 </main>
+
