@@ -1,8 +1,18 @@
 <tr>
     <td>{{name}}</td>
     <td>{{aggressiveness}}</td>
-    <td>{{primary_color}}</td>
-    <td>{{secondary_color}}</td>
+    <td>
+        <div class="flex-row">
+            <div class="color-swab" style="background-color: {{primary_color}};"></div>
+            <div>{{primary_color}}</div>
+        </div>
+    </td>
+    <td>
+        <div class="flex-row">
+            <div class="color-swab" style="background-color: {{secondary_color}};"></div>
+            <div>{{secondary_color}}</div>
+        </div>
+    </td>
     <td>{{fallen_empire}}</td>
     <td>
         <button type="button" id="empire-edit-button" onclick="alert('TODO');">Edit</button>

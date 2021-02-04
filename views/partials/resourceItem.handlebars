@@ -1,7 +1,12 @@
 <tr>
     <td>{{name}}</td>
     <td>{{base_market_value}}</td>
-    <td>{{color}}</td>
+    <td>
+        <div class="flex-row">
+            <div class="color-swab" style="background-color: {{color}};"></div>
+            <div>{{color}}</div>
+        </div>
+    </td>
     <td>
         <button type="button" id="resource-edit-button" onclick="alert('TODO');">Edit</button>
         <button type="button" id="resource-delete-button" onclick="alert('TODO');">Delete</button>

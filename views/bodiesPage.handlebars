@@ -41,26 +41,32 @@
 			document.getElementById(MODAL_ACCEPT_BUTTON_ID).addEventListener("click", modalAccept);
 		});
 	</script>
+	
 	<div class="page-container">
-		<div>
-			<div>
-				<button type="button" id="modal-open-button">Create New Body</button>
-			</div>
-			<br>
-			<table id="bodies-list">
-				<tr>
-					<th>Name</th>
-					<th>Type</th>
-					<th>Orbital Radius</th>
-					<th>Theta</th>
-					<th></th>
-				</tr>
-				{{#each bodies}}
-					{{> bodyItem}}
-				{{/each}}
-			</table>
-		</div>
-	</div>
+        <div class="left">
+            <div>
+                <div>
+					<button type="button" id="modal-open-button">Create New Body</button>
+				</div>
+				<br>
+				<table id="bodies-list">
+					<tr>
+						<th>Name</th>
+						<th>Type</th>
+						<th>Orbital Radius</th>
+						<th>Theta</th>
+						<th></th>
+					</tr>
+					{{#each bodies}}
+						{{> bodyItem}}
+					{{/each}}
+				</table>
+            </div>
+        </div>
+        <div class="right">
+            <canvas id="system-view"></canvas>
+        </div>
+    </div>
 	<div id="modal-backdrop" class="hidden">
 		<canvas id="starfield" class="starfield"></canvas>
 	</div>
