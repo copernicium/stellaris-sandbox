@@ -1,5 +1,6 @@
 var express = require("express");
 var exphbs = require("express-handlebars");
+var bodyParser = require("body-parser");
 var mysql = require('./dbcon.js');
 
 var app = express();
@@ -7,6 +8,7 @@ var port = 3845;
 
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
+app.use(bodyParser.json());
 app.use(express.static("public"));
 
 function createDefaultContext(name) {
@@ -22,8 +24,8 @@ for(var i = 0; i < 10; i++){
 	empires.push({
         name: "The Allied Suns",
         aggressiveness: "passive",
-        primary_color: "FF0000",
-        secondary_color: "00FF00",
+        primary_color: "#FF0000",
+        secondary_color: "#00FF00",
         fallen_empire: false
     });
 }
@@ -43,7 +45,7 @@ for(var i = 0; i < 10; i++){
 	resources.push({
         name: "Minerals",
         base_market_value: 15,
-        color: "0000FF"
+        color: "#0000FF"
     });
 }
 
@@ -68,11 +70,44 @@ app.get("/empires", (req, res, next) => {
 	res.status(200).render(pageName, context);
 });
 
+app.post('/empires/add', (req, res, next) => {
+	if (req.hasOwnProperty("body") &&
+		req.body.hasOwnProperty("name") &&
+		req.body.hasOwnProperty("aggressiveness") &&
+		req.body.hasOwnProperty("primary_color") &&
+		req.body.hasOwnProperty("secondary_color") &&
+		req.body.hasOwnProperty("fallen_empire")
+	) {
+		empires.push(req.body);
+		res.status(200).send("Empire successfully added");
+	} else {
+		res.status(400).send({
+			error: "Request body needs a name, aggresiveness, primary_color, secondary_color, and fallen_empire."
+		});
+	}
+});
+
 app.get("/systems", (req, res, next) => {
 	var pageName = "systemsPage";
 	var context = createDefaultContext(pageName);
 	context.systems = systems;
 	res.status(200).render(pageName, context);
+});
+
+app.post('/systems/add', (req, res, next) => {
+	if (req.hasOwnProperty("body") &&
+		req.body.hasOwnProperty("name") &&
+		req.body.hasOwnProperty("star_count") &&
+		req.body.hasOwnProperty("orbital_radius") &&
+		req.body.hasOwnProperty("theta")
+	) {
+		systems.push(req.body);
+		res.status(200).send("System successfully added");
+	} else {
+		res.status(400).send({
+			error: "Request body needs a name, star_count, orbital_radius, and theta."
+		});
+	}
 });
 
 app.get("/resources", (req, res, next) => {
@@ -82,11 +117,42 @@ app.get("/resources", (req, res, next) => {
 	res.status(200).render(pageName, context);
 });
 
+app.post('/resources/add', (req, res, next) => {
+	if (req.hasOwnProperty("body") &&
+		req.body.hasOwnProperty("name") &&
+		req.body.hasOwnProperty("base_market_value") &&
+		req.body.hasOwnProperty("color")
+	) {
+		systems.push(req.body);
+		res.status(200).send("Resource successfully added");
+	} else {
+		res.status(400).send({
+			error: "Request body needs a name, base_market_value, and color."
+		});
+	}
+});
+
 app.get("/bodies", (req, res, next) => {
 	var pageName = "bodiesPage";
 	var context = createDefaultContext(pageName);
 	context.bodies = bodies;
 	res.status(200).render(pageName, context);
+});
+
+app.post('/bodies/add', (req, res, next) => {
+	if (req.hasOwnProperty("body") &&
+		req.body.hasOwnProperty("name") &&
+		req.body.hasOwnProperty("type") &&
+		req.body.hasOwnProperty("orbital_radius") &&
+		req.body.hasOwnProperty("theta")
+	) {
+		systems.push(req.body);
+		res.status(200).send("Body successfully added");
+	} else {
+		res.status(400).send({
+			error: "Request body needs a name, type, orbital_radius, orbital_radius, and theta."
+		});
+	}
 });
 
 app.get('*', (req, res) => {

@@ -27,6 +27,7 @@
 				base_market_value: creationForm["resource-base-market-value"].value,
 				color: creationForm["resource-color"].value
 			};
+			postToServer("/resources/add", resourceContext);
 			var resourceHTML = Handlebars.templates.resourceItem(resourceContext);
 			document.getElementById("resources-list").insertAdjacentHTML("beforeend", resourceHTML);
 

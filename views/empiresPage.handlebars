@@ -29,6 +29,7 @@
 				secondary_color: creationForm["empire-secondary-color"].value,
 				fallen_empire: creationForm["empire-is-fallen"].checked
 			};
+			postToServer("/empires/add", empireContext);
 			var empireHTML = Handlebars.templates.empireItem(empireContext);
 			document.getElementById("empires-list").insertAdjacentHTML("beforeend", empireHTML);
 

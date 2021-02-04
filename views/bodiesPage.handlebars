@@ -28,6 +28,7 @@
 				orbital_radius: creationForm["body-orbital-radius"].value,
 				theta: creationForm["body-theta"].value
 			};
+			postToServer("/bodies/add", bodyContext);
 			var bodyHTML = Handlebars.templates.bodyItem(bodyContext);
 			document.getElementById("bodies-list").insertAdjacentHTML("beforeend", bodyHTML);
 

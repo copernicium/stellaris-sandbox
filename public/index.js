@@ -41,3 +41,21 @@ function setupStarfield() {
 window.addEventListener("DOMContentLoaded", function() {
 	setupStarfield();
 });
+
+function postToServer(url, context) {
+	var request = new XMLHttpRequest();
+	request.open("POST", url);
+
+	var requestBody = JSON.stringify(context);
+
+	request.addEventListener("load", function (event) {
+		if (event.target.status === 200) {
+			// TODO
+		} else {
+			alert("Error adding empire on server: " + event.target.response);
+		}
+	});
+
+	request.setRequestHeader("Content-Type", "application/json");
+	request.send(requestBody);
+}

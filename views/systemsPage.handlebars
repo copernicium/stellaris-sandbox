@@ -28,6 +28,7 @@
 				orbital_radius: creationForm["system-orbital-radius"].value,
 				theta: creationForm["system-theta"].value
 			};
+			postToServer("/systems/add", systemContext);
 			var systemHTML = Handlebars.templates.systemItem(systemContext);
 			document.getElementById("systems-list").insertAdjacentHTML("beforeend", systemHTML);
 
