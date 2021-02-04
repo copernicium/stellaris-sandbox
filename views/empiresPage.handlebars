@@ -42,27 +42,31 @@
 			document.getElementById(MODAL_ACCEPT_BUTTON_ID).addEventListener("click", modalAccept);
 		});
 	</script>
-	<div>
-        <button type="button" id="modal-open-button">Create New Empire</button>
-    </div>
-    <br>
-    <table>
-		<thead>
-			<tr>
-				<th>Name</th>
-				<th>Aggressiveness</th>
-				<th>Primary Color</th>
-				<th>Secondary Color</th>
-				<th>Fallen Empire</th>
-				<th></th>
-			</tr>
-		</thead>
-		<tbody id="empires-list">
-			{{#each empires}}
-				{{> empireItem}}
-			{{/each}}
-		</tbody>
-    </table>
+	<div class="page-container">
+		<div>
+			<div>
+				<button type="button" id="modal-open-button">Create New Empire</button>
+			</div>
+			<br>
+			<table>
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Aggressiveness</th>
+						<th>Primary Color</th>
+						<th>Secondary Color</th>
+						<th>Fallen Empire</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody id="empires-list">
+					{{#each empires}}
+						{{> empireItem}}
+					{{/each}}
+				</tbody>
+			</table>
+		</div>
+	</div>
 	<div id="modal-backdrop" class="hidden">
 		<canvas id="starfield" class="starfield"></canvas>
 	</div>

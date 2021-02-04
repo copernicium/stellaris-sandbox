@@ -35,9 +35,9 @@
 }
 
 button {
-	border: 1px solid #AAAA;
+	border: 1px solid #AAA;
 	border-radius: 2px;
-	background-color: #1111;
+	background-color: #111;
 }
 
 * {
@@ -124,4 +124,45 @@ th, td {
 	width: 100%;
 	padding: 0px;
 	margin: 0px;
+}
+
+.page-container {
+	display: flex;
+	justify-content: center;
+}
+
+.flex-row {
+	display: flex;
+}
+
+#system-view {
+	min-width: 200px;
+	width: 600px;
+	max-width: 800px;
+	min-height: 200px;
+	height: 600px;
+	max-height: 800px;
+}
+
+.left, .right {
+	width: 50%;
+}
+
+.left {
+	display: flex;
+	flex-direction: row-reverse;
+}
+
+.right {
+	display: flex;
+	flex-direction: row;
+	flex: 1;
+}
+
+.color-swab {
+	width: 16px;
+	height: 16px;
+	margin-right: 8px;
+	border: 1px solid #DDD;
+	border-radius: 6px;
 }

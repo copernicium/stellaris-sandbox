@@ -41,22 +41,35 @@
 			document.getElementById(MODAL_ACCEPT_BUTTON_ID).addEventListener("click", modalAccept);
 		});
 	</script>
-	<div>
-        <button type="button" id="modal-open-button">Create New System</button>
+	<div class="page-container">
+        <div class="left">
+            <div>
+                <div>
+                    <button type="button" id="modal-open-button">Create New System</button>
+                </div>
+                <br>
+                <div>
+                    <input type="search" id="system-search-input" placeholder="Search.."></input>
+                </div>
+                <br>
+                <table id="systems-list">
+                    <tr>
+                        <th>Name</th>
+                        <th>Star Count</th>
+                        <th>Orbital Radius</th>
+                        <th>Theta</th>
+                        <th></th>
+                    </tr>
+                    {{#each systems}}
+                        {{> systemItem}}
+                    {{/each}}
+                </table>
+            </div>
+        </div>
+        <div class="right">
+            <canvas id="system-view"></canvas>
+        </div>
     </div>
-    <br>
-    <table id="systems-list">
-        <tr>
-            <th>Name</th>
-            <th>Star Count</th>
-            <th>Orbital Radius</th>
-            <th>Theta</th>
-            <th></th>
-        </tr>
-        {{#each systems}}
-			{{> systemItem}}
-		{{/each}}
-    </table>
 	<div id="modal-backdrop" class="hidden">
         <canvas id="starfield" class="starfield"></canvas>
     </div>

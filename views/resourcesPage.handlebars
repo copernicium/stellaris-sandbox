@@ -40,21 +40,25 @@
 			document.getElementById(MODAL_ACCEPT_BUTTON_ID).addEventListener("click", modalAccept);
 		});
 	</script>
-	<div>
-        <button type="button" id="modal-open-button">Create New Resource</button>
-    </div>
-    <br>
-    <table id="resources-list">
-        <tr>
-            <th>Name</th>
-            <th>Base Market Value</th>
-            <th>Color</th>
-            <th></th>
-        </tr>
-        {{#each resources}}
-			{{> resourceItem}}
-		{{/each}}
-    </table>
+	<div class="page-container">
+		<div>
+			<div>
+				<button type="button" id="modal-open-button">Create New Resource</button>
+			</div>
+			<br>
+			<table id="resources-list">
+				<tr>
+					<th>Name</th>
+					<th>Base Market Value</th>
+					<th>Color</th>
+					<th></th>
+				</tr>
+				{{#each resources}}
+					{{> resourceItem}}
+				{{/each}}
+			</table>
+		</div>
+	</div>
 	<div id="modal-backdrop" class="hidden">
 		<canvas id="starfield" class="starfield"></canvas>
 	</div>

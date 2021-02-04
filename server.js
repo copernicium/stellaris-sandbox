@@ -143,6 +143,19 @@ app.post('/systems/add', (req, res, next) => {
 	}
 });
 
+app.post('/systems/search', (req, res, next) => {
+	if (req.hasOwnProperty("body") &&
+		req.body.hasOwnProperty("search_query")
+	) {
+		console.log("Searched " + req.body.search_query); // TODO
+		res.status(200).send("Searched query");
+	} else {
+		res.status(400).send({
+			error: "Request body needs a search_query."
+		});
+	}
+});
+
 app.get("/resources", (req, res, next) => {
 	var pageName = "resourcesPage";
 	var context = createDefaultContext(pageName);

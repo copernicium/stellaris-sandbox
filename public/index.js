@@ -4,6 +4,24 @@ const MODAL_OPEN_BUTTON_ID = "modal-open-button";
 const MODAL_CANCEL_BUTTON_ID = "modal-cancel-button";
 const MODAL_ACCEPT_BUTTON_ID = "modal-accept-button";
 
+function postToServer(url, context) {
+	var request = new XMLHttpRequest();
+	request.open("POST", url);
+
+	var requestBody = JSON.stringify(context);
+
+	request.addEventListener("load", function (event) {
+		if (event.target.status === 200) {
+			// TODO
+		} else {
+			alert("Error adding empire on server: " + event.target.response);
+		}
+	});
+
+	request.setRequestHeader("Content-Type", "application/json");
+	request.send(requestBody);
+}
+
 function getRandom(min, max) {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -38,24 +56,79 @@ function setupStarfield() {
 	}
 }
 
+function setupSystemView(system) { // TODO
+	var canvas = document.getElementById("system-view");
+	if(canvas == null) {
+		return;
+	}
+	canvas.width = canvas.offsetWidth;
+	canvas.height = canvas.offsetHeight;
+
+	var context = canvas.getContext("2d");
+
+	context.stokeStyle = "rgb(0, 0, 0)";
+	context.lineWidth = 5;
+	context.strokeRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
+
+	var bodies = [
+		{
+			orbital_radius: 1,
+			theta: 0
+		},
+		{
+			orbital_radius: 0.3,
+			theta: 90
+		},
+		{
+			orbital_radius: 0.4,
+			theta: 180
+		},
+		{
+			orbital_radius: 0.1,
+			theta: 270
+		}
+	];
+
+	var max_radius = 0.9 * 0.5 * Math.min(canvas.offsetWidth, canvas.offsetHeight);
+
+	var center_x = canvas.offsetWidth / 2;
+	var center_y = canvas.offsetHeight / 2;
+	
+	// TODO stars
+
+	for(var i = 0; i < bodies.length; i++) {
+		var radius = max_radius * bodies[i].orbital_radius;
+		var theta = bodies[i].theta * 2 * Math.PI / 360;
+		var x = center_x +  radius * Math.cos(theta);
+		var y = center_y + radius * Math.sin(theta);
+		
+		context.beginPath();
+		context.arc(x, y, 10, 0, 360);
+		context.fillStyle = "rgb(255, 255, 255)";
+		context.fill();
+		context.beginPath();
+		context.arc(center_x, center_y, radius, 0, 360);
+		context.setLineDash([5, 15]);
+		context.lineWidth = 1;
+		context.strokeStyle = "rgb(255, 255, 255)";
+		context.stroke();
+	}
+}
+
+function doSystemSearchUpdate() {
+	var search_query = document.getElementById("system-search-input").value;
+	var context = {
+		search_query: search_query
+	};
+	postToServer("/systems/search", context);
+}
+
 window.addEventListener("DOMContentLoaded", function() {
 	setupStarfield();
+	setupSystemView(null);
+
+	var searchInput = document.getElementById("system-search-input");
+	if (searchInput) {
+		searchInput.addEventListener("input", doSystemSearchUpdate);
+	}
 });
-
-function postToServer(url, context) {
-	var request = new XMLHttpRequest();
-	request.open("POST", url);
-
-	var requestBody = JSON.stringify(context);
-
-	request.addEventListener("load", function (event) {
-		if (event.target.status === 200) {
-			// TODO
-		} else {
-			alert("Error adding empire on server: " + event.target.response);
-		}
-	});
-
-	request.setRequestHeader("Content-Type", "application/json");
-	request.send(requestBody);
-}
