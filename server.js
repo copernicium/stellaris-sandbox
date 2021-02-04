@@ -2,6 +2,7 @@ var express = require("express");
 var exphbs = require("express-handlebars");
 var bodyParser = require("body-parser");
 var mysql = require('./dbcon.js');
+var fs = require("fs"); // TODO replace with database
 
 var app = express();
 var port = 3845;
@@ -20,6 +21,38 @@ function createDefaultContext(name) {
 }
 
 var empires = [];
+var systems = [];
+var resources = [];
+var bodies = [];
+
+function loadJSON() { // TODO replace with database
+	if(!fs.existsSync("./data.json")) {
+		return;
+	}
+
+	var data = require("./data.json");
+	empires = data.empires;
+	systems = data.systems;
+	resources = data.resources;
+	bodies = data.bodies;
+}
+loadJSON();
+
+function saveJSON() { // TODO replace with database
+	var data = {
+		empires: empires,
+		systems: systems,
+		resources: resources,
+		bodies: bodies
+	}
+	fs.writeFile("./data.json", JSON.stringify(data, null, 4), (err) => {
+		if (err) {
+			console.error(err);
+		}
+	});
+}
+
+/*
 for(var i = 0; i < 10; i++){
 	empires.push({
         name: "The Allied Suns",
@@ -30,7 +63,6 @@ for(var i = 0; i < 10; i++){
     });
 }
 
-var systems = [];
 for(var i = 0; i < 10; i++){
 	systems.push({
         name: "Alpha Centauri",
@@ -40,7 +72,6 @@ for(var i = 0; i < 10; i++){
     });
 }
 
-var resources = [];
 for(var i = 0; i < 10; i++){
 	resources.push({
         name: "Minerals",
@@ -49,7 +80,6 @@ for(var i = 0; i < 10; i++){
     });
 }
 
-var bodies = [];
 for(var i = 0; i < 10; i++){
 	bodies.push({
         name: "Earth",
@@ -58,6 +88,7 @@ for(var i = 0; i < 10; i++){
         theta: 90
     });
 }
+*/
 
 app.get("/", (req, res, next) => {
 	res.status(200).render("homePage");
@@ -79,6 +110,7 @@ app.post('/empires/add', (req, res, next) => {
 		req.body.hasOwnProperty("fallen_empire")
 	) {
 		empires.push(req.body);
+		saveJSON();
 		res.status(200).send("Empire successfully added");
 	} else {
 		res.status(400).send({
@@ -102,6 +134,7 @@ app.post('/systems/add', (req, res, next) => {
 		req.body.hasOwnProperty("theta")
 	) {
 		systems.push(req.body);
+		saveJSON();
 		res.status(200).send("System successfully added");
 	} else {
 		res.status(400).send({
@@ -123,7 +156,8 @@ app.post('/resources/add', (req, res, next) => {
 		req.body.hasOwnProperty("base_market_value") &&
 		req.body.hasOwnProperty("color")
 	) {
-		systems.push(req.body);
+		resources.push(req.body);
+		saveJSON();
 		res.status(200).send("Resource successfully added");
 	} else {
 		res.status(400).send({
@@ -146,7 +180,8 @@ app.post('/bodies/add', (req, res, next) => {
 		req.body.hasOwnProperty("orbital_radius") &&
 		req.body.hasOwnProperty("theta")
 	) {
-		systems.push(req.body);
+		bodies.push(req.body);
+		saveJSON();
 		res.status(200).send("Body successfully added");
 	} else {
 		res.status(400).send({
