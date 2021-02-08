@@ -1,0 +1,95 @@
+<main>
+	<script src="/templates/hyperlane_item_template.js" defer></script>
+	<script>
+		function modalHide() {
+			document.getElementById(MODAL_BACKDROP_ID).classList.add("hidden");
+			document.getElementById(MODAL_ID).classList.add("hidden");
+		}
+
+		function modalShow() {
+			document.getElementById(MODAL_BACKDROP_ID).classList.remove("hidden");
+			document.getElementById(MODAL_ID).classList.remove("hidden");
+			setupStarfield();
+		}
+
+		function modalOpen() {
+			modalShow();
+		}
+
+		function modalCancel() {
+			modalHide();
+		}
+
+		function modalAccept() {
+			var creationForm = document.forms["modal-form"];
+			var hyperlaneContext = {
+				system1: creationForm["hyperlane-system1"].value,
+				system2: creationForm["hyperlane-system2"].value,
+			};
+			postToServer("/hyperlanes/add", hyperlaneContext);
+			var hyperlaneHTML = Handlebars.templates.hyperlaneItem(hyperlaneContext);
+			document.getElementById("hyperlanes-list").insertAdjacentHTML("beforeend", hyperlaneHTML);
+
+			modalHide();
+		}
+
+		window.addEventListener("DOMContentLoaded", function() {
+			document.getElementById(MODAL_OPEN_BUTTON_ID).addEventListener("click", modalOpen);
+			document.getElementById(MODAL_CANCEL_BUTTON_ID).addEventListener("click", modalCancel);
+			document.getElementById(MODAL_ACCEPT_BUTTON_ID).addEventListener("click", modalAccept);
+		});
+	</script>
+	<div class="page-container">
+        <div class="left">
+            <div>
+                <div>
+                    <button type="button" id="modal-open-button">Create New Hyperlane</button>
+                </div>
+                <br>
+                <table id="hyperlanes-list">
+                    <tr>
+                        <th>System 1</th>
+                        <th>System 2</th>
+                        <th></th>
+                    </tr>
+                    {{#each hyperlanes}}
+                        {{> hyperlaneItem}}
+                    {{/each}}
+                </table>
+            </div>
+        </div>
+        <div class="right">
+            <canvas id="galaxy-view"></canvas>
+        </div>
+    </div>
+	<div id="modal-backdrop" class="hidden">
+        <canvas id="starfield" class="starfield"></canvas>
+    </div>
+	<div id="modal" class="hidden">
+		<div id="modal-dialog">
+            <h2>Create New Hyperlane</h2>
+			<form name="modal-form">
+                <table>
+                    <tr>
+                        <td>
+                            <label>System 1:</label>
+                        </td>
+                        <td>
+                            <input type="search" id="hyperlane-system1" name="hyperlane-system1">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>System 2:</label>
+                        </td>
+                        <td>
+                            <input type="search" id="hyperlane-system2" name="hyperlane-system2">
+                        </td>
+                    </tr>
+                </table>
+			</form>
+			<button id="modal-accept-button">Create</button>
+			<button id="modal-cancel-button">Cancel</button>
+		</div>
+	</div>
+</main>

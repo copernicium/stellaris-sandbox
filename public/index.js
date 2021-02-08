@@ -115,6 +115,28 @@ function setupSystemView(system) { // TODO
 	}
 }
 
+function setupGalaxyView(hyperlanes) { // TODO
+	var canvas = document.getElementById("galaxy-view");
+	if(canvas == null) {
+		return;
+	}
+	canvas.width = canvas.offsetWidth;
+	canvas.height = canvas.offsetHeight;
+
+	var context = canvas.getContext("2d");
+
+	context.stokeStyle = "rgb(0, 0, 0)";
+	context.lineWidth = 5;
+	context.strokeRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
+
+	var max_radius = 0.9 * 0.5 * Math.min(canvas.offsetWidth, canvas.offsetHeight);
+
+	var center_x = canvas.offsetWidth / 2;
+	var center_y = canvas.offsetHeight / 2;
+
+	// TODO systems and hyperlanes
+}
+
 function doSystemSearchUpdate() {
 	var search_query = document.getElementById("system-search-input").value;
 	var context = {
@@ -126,6 +148,7 @@ function doSystemSearchUpdate() {
 window.addEventListener("DOMContentLoaded", function() {
 	setupStarfield();
 	setupSystemView(null);
+	setupGalaxyView(null);
 
 	var searchInput = document.getElementById("system-search-input");
 	if (searchInput) {

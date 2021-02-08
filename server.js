@@ -25,6 +25,8 @@ var systems = [];
 var resources = [];
 var bodies = [];
 
+var hyperlanes = [];
+
 function loadJSON() { // TODO replace with database
 	if(!fs.existsSync("./data.json")) {
 		return;
@@ -50,6 +52,18 @@ function saveJSON() { // TODO replace with database
 			console.error(err);
 		}
 	});
+}
+
+for(var i = 0; i < systems.length; i++){
+	var j = systems.length - 1 - i;
+	if(j > i) {
+		hyperlanes.push({
+			system1: systems[i].name,
+			system2: sytesm[j].name
+		});
+	} else {
+		break;
+	}
 }
 
 /*
@@ -155,6 +169,29 @@ app.post('/systems/search', (req, res, next) => {
 		});
 	}
 });
+
+app.get("/hyperlanes", (req, res, next) => {
+	var pageName = "hyperlanesPage";
+	var context = createDefaultContext(pageName);
+	context.hyperlanes = hyperlanes;
+	res.status(200).render(pageName, context);
+});
+
+app.post('/hyperlanes/add', (req, res, next) => {
+	if (req.hasOwnProperty("body") &&
+		req.body.hasOwnProperty("system1") &&
+		req.body.hasOwnProperty("system2")
+	) {
+		hyperlanes.push(req.body);
+		saveJSON();
+		res.status(200).send("Hyperlane successfully added");
+	} else {
+		res.status(400).send({
+			error: "Request body needs a system1 and system2."
+		});
+	}
+});
+
 
 app.get("/resources", (req, res, next) => {
 	var pageName = "resourcesPage";
