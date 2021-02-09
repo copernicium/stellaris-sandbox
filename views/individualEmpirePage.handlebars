@@ -1,0 +1,116 @@
+<main>
+	<script>
+		function returnToListPage() {
+			window.location.replace("/empires");
+		}
+
+		function editCancel() {
+			returnToListPage();
+		}
+
+		function editAccept() {
+			var creationForm = document.forms["empire-form"];
+			var empireContext = {
+{{#unlessEquals type "create"}}
+				id: {{empire.id}},
+{{/unlessEquals}}
+				name: creationForm["empire-name"].value,
+				aggressiveness: creationForm["empire-aggressiveness"].value,
+				primary_color: creationForm["empire-primary-color"].value,
+				secondary_color: creationForm["empire-secondary-color"].value,
+				fallen_empire: creationForm["empire-is-fallen"].checked
+			};
+{{#switch type}}
+	{{#case "create"}}
+			postToServer("/empires/add", empireContext);
+	{{/case}}
+	{{#case "edit"}}
+			postToServer("/empires/update/{{empire.id}}", empireContext);
+	{{/case}}
+{{/switch}}
+			returnToListPage();
+		}
+
+		window.addEventListener("DOMContentLoaded", function() {
+			document.getElementById("cancel-button").addEventListener("click", editCancel);
+
+			var accept_button = document.getElementById("accept-button");
+			if (accept_button) accept_button.addEventListener("click", editAccept);
+		});
+	</script>
+	<div class="page-container">
+		<h2>
+			{{#switch type}}
+				{{#case "view"}} View Empire {{/case}}
+				{{#case "create"}} Create New Empire {{/case}}
+				{{#case "edit"}} Edit Empire {{/case}}
+			{{/switch}}
+		</h2>
+		<form name="empire-form" {{#ifEquals type "view"}}class="immutable"{{/ifEquals}}>
+			<table>
+				<tr>
+					<td>
+						<label>Name:</label>
+					</td>
+					<td>
+						<input type="text" id="empire-name" name="empire-name" value="{{empire.name}}" {{#ifEquals type "view"}}readonly{{/ifEquals}}>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label>Aggressiveness:</label>
+					</td>
+					<td>
+						<select id="empire-aggressiveness" name="empire-aggressiveness" {{#ifEquals type "view"}}disabled{{/ifEquals}}>
+							<option value="Passive" {{#ifEquals empire.aggressiveness "Passive"}}selected{{/ifEquals}}>Passive</option>
+							<option value="Moderate" {{#ifEquals empire.aggressiveness "Moderate"}}selected{{/ifEquals}}>Moderate</option>
+							<option value="Aggressive" {{#ifEquals empire.aggressiveness "Aggressive"}}selected{{/ifEquals}}>Aggressive</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label>Primary Color:</label>
+					</td>
+					<td>
+						<input type="color" id="empire-primary-color" name="empire-primary-color" value="{{empire.primary_color}}" {{#ifEquals type "view"}}disabled{{/ifEquals}}>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label>Secondary Color:</label>
+					</td>
+					<td>
+						<input type="color" id="empire-secondary-color" name="empire-secondary-color"value="{{empire.secondary_color}}" {{#ifEquals type "view"}}disabled{{/ifEquals}}>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label>Fallen Empire:</label>
+					</td>
+					<td>
+						<input type="checkbox" id="empire-is-fallen" name="empire-is-fallen" {{#if empire.fallen_empire}}checked{{/if}} {{#ifEquals type "view"}}disabled{{/ifEquals}}>
+					</td>
+				</tr>
+			</table>
+		</form>
+		<div>
+			{{#unlessEquals type "view"}}
+			<button id="accept-button">
+				{{#switch type}}
+					{{#case "create"}} Create {{/case}}
+					{{#case "edit"}} Save {{/case}}
+				{{/switch}}
+			</button>
+			{{/unlessEquals}}
+			<button id="cancel-button">
+				{{#switch type}}
+					{{#case "view"}} Return {{/case}}
+					{{#case "create"}} Cancel {{/case}}
+					{{#case "edit"}} Cancel {{/case}}
+				{{/switch}}
+			</button>
+		</div>
+	</div>
+</main>
+

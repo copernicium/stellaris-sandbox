@@ -123,6 +123,55 @@ app.get("/empires", (req, res, next) => {
 	res.status(200).render(pageName, context);
 });
 
+app.get("/empires/create", (req, res, next) => {
+	var pageName = "individualEmpirePage";
+	var context = createDefaultContext(pageName);
+	context.type = "create";
+	context.empire = {
+		"name": "",
+		"aggressiveness": "Moderate",
+		"primary_color": "#000000",
+		"secondary_color": "#FFFFFF",
+		"fallen_empire": false
+	};
+
+	res.status(200).render(pageName, context);
+});
+
+app.get("/empires/view/:id", (req, res, next) => {
+	var empireId = parseInt(req.params.id);
+	var idIsInt = (empireId != NaN) && (String(empireId) == req.params.id);
+	if (idIsInt && empireId >= 0) {
+		var pageName = "individualEmpirePage";
+		var context = createDefaultContext(pageName);
+		context.type = "view";
+
+		var empire = empires[empireId]; // TODO: Replace with call to database
+		context.empire = empire;
+
+		res.status(200).render(pageName, context);
+	} else {
+		next();
+	}
+});
+
+app.get("/empires/edit/:id", (req, res, next) => {
+	var empireId = parseInt(req.params.id);
+	var idIsInt = (empireId != NaN) && (String(empireId) == req.params.id);
+	if (idIsInt && empireId >= 0) {
+		var pageName = "individualEmpirePage";
+		var context = createDefaultContext(pageName);
+		context.type = "edit";
+
+		var empire = empires[empireId]; // TODO: Replace with call to database
+		context.empire = empire;
+
+		res.status(200).render(pageName, context);
+	} else {
+		next();
+	}
+});
+
 app.post('/empires/add', (req, res, next) => {
 	if (req.hasOwnProperty("body") &&
 		req.body.hasOwnProperty("name") &&
@@ -131,12 +180,39 @@ app.post('/empires/add', (req, res, next) => {
 		req.body.hasOwnProperty("secondary_color") &&
 		req.body.hasOwnProperty("fallen_empire")
 	) {
+		req.body["id"] = empires.length;
 		empires.push(req.body);
 		saveJSON();
 		res.status(200).send("Empire successfully added");
 	} else {
 		res.status(400).send({
 			error: "Request body needs a name, aggresiveness, primary_color, secondary_color, and fallen_empire."
+		});
+	}
+});
+
+app.post("/empires/update/:id", (req, res, next) => {
+	var empireId = parseInt(req.params.id);
+	var idIsInt = (empireId != NaN) && (String(empireId) == req.params.id);
+	if (idIsInt && empireId >= 0) {
+		if (req.hasOwnProperty("body") &&
+			req.body.hasOwnProperty("name") &&
+			req.body.hasOwnProperty("aggressiveness") &&
+			req.body.hasOwnProperty("primary_color") &&
+			req.body.hasOwnProperty("secondary_color") &&
+			req.body.hasOwnProperty("fallen_empire")
+		) {
+			empires[empireId] = req.body;
+			saveJSON();
+			res.status(200).send("Empire successfully updated");
+		} else {
+			res.status(400).send({
+				error: "Request body needs a name, aggressiveness, primary color, secondary color, and whether it is a fallen empire.."
+			});
+		}
+	} else {
+		res.status(400).send({
+			error: "Bad empire ID."
 		});
 	}
 });
