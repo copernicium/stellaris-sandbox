@@ -301,6 +301,54 @@ app.get("/bodies", (req, res, next) => {
 	res.status(200).render(pageName, context);
 });
 
+app.get("/bodies/create", (req, res, next) => {
+	var pageName = "individualBodyPage";
+	var context = createDefaultContext(pageName);
+	context.type = "create";
+	context.body = {
+		"name": "",
+		"type": "Planet",
+		"orbital_radius": 0.5,
+		"theta": 0
+	};
+
+	res.status(200).render(pageName, context);
+});
+
+app.get("/bodies/view/:id", (req, res, next) => {
+	var bodyId = parseInt(req.params.id);
+	var idIsInt = (bodyId != NaN) && (String(bodyId) == req.params.id);
+	if (idIsInt && bodyId >= 0) {
+		var pageName = "individualBodyPage";
+		var context = createDefaultContext(pageName);
+		context.type = "view";
+
+		var body = bodies[bodyId]; // TODO: Replace with call to database
+		context.body = body;
+
+		res.status(200).render(pageName, context);
+	} else {
+		next();
+	}
+});
+
+app.get("/bodies/edit/:id", (req, res, next) => {
+	var bodyId = parseInt(req.params.id);
+	var idIsInt = (bodyId != NaN) && (String(bodyId) == req.params.id);
+	if (idIsInt && bodyId >= 0) {
+		var pageName = "individualBodyPage";
+		var context = createDefaultContext(pageName);
+		context.type = "edit";
+
+		var body = bodies[bodyId]; // TODO: Replace with call to database
+		context.body = body;
+
+		res.status(200).render(pageName, context);
+	} else {
+		next();
+	}
+});
+
 app.post('/bodies/add', (req, res, next) => {
 	if (req.hasOwnProperty("body") &&
 		req.body.hasOwnProperty("name") &&
@@ -308,15 +356,42 @@ app.post('/bodies/add', (req, res, next) => {
 		req.body.hasOwnProperty("orbital_radius") &&
 		req.body.hasOwnProperty("theta")
 	) {
+		req.body["id"] = bodies.length;
 		bodies.push(req.body);
 		saveJSON();
 		res.status(200).send("Body successfully added");
 	} else {
 		res.status(400).send({
-			error: "Request body needs a name, type, orbital_radius, orbital_radius, and theta."
+			error: "Request body needs a name, type, orbital_radius, and theta."
 		});
 	}
 });
+
+app.post("/bodies/update/:id", (req, res, next) => {
+	var bodyId = parseInt(req.params.id);
+	var idIsInt = (bodyId != NaN) && (String(bodyId) == req.params.id);
+	if (idIsInt && bodyId >= 0) {
+		if (req.hasOwnProperty("body") &&
+			req.body.hasOwnProperty("name") &&
+			req.body.hasOwnProperty("type") &&
+			req.body.hasOwnProperty("orbital_radius") &&
+			req.body.hasOwnProperty("theta")
+		) {
+			bodies[bodyId] = req.body;
+			saveJSON();
+			res.status(200).send("Body successfully updated");
+		} else {
+			res.status(400).send({
+				error: "Request body needs a name, type, orbital_radius, and theta."
+			});
+		}
+	} else {
+		res.status(400).send({
+			error: "Bad body ID."
+		});
+	}
+});
+
 
 app.get("/resource-stocks", (req, res, next) => {
 	var pageName = "resourceStockPage";

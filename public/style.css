@@ -129,6 +129,7 @@ th, td {
 .page-container {
 	display: flex;
 	flex-direction: column;
+	align-items: start;
 }
 
 .flex-row {

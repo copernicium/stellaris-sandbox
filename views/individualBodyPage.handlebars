@@ -1,0 +1,106 @@
+<main>
+	<script>
+		function returnToListPage() {
+			window.location.replace("/bodies");
+		}
+
+		function editCancel() {
+			returnToListPage();
+		}
+
+		function editAccept() {
+			var creationForm = document.forms["body-form"];
+			var bodyContext = {
+{{#unlessEquals type "create"}}
+				id: {{body.id}},
+{{/unlessEquals}}
+				name: creationForm["body-name"].value,
+				type: creationForm["body-type"].value,
+				orbital_radius: creationForm["body-orbital-radius"].value,
+				theta: creationForm["body-theta"].value
+			};
+{{#switch type}}
+	{{#case "create"}}
+			postToServer("/bodies/add", bodyContext);
+	{{/case}}
+	{{#case "edit"}}
+			postToServer("/bodies/update/{{body.id}}", bodyContext);
+	{{/case}}
+{{/switch}}
+			returnToListPage();
+		}
+
+		window.addEventListener("DOMContentLoaded", function() {
+			document.getElementById("cancel-button").addEventListener("click", editCancel);
+
+			var accept_button = document.getElementById("accept-button");
+			if (accept_button) accept_button.addEventListener("click", editAccept);
+		});
+	</script>
+	<div class="page-container">
+		<h2>
+			{{#switch type}}
+				{{#case "view"}} View Body {{/case}}
+				{{#case "create"}} Create New Body {{/case}}
+				{{#case "edit"}} Edit Body {{/case}}
+			{{/switch}}
+		</h2>
+		<form name="body-form" {{#ifEquals type "view"}}class="immutable"{{/ifEquals}}>
+			<table>
+				<tr>
+					<td>
+						<label>Name:</label>
+					</td>
+					<td>
+						<input type="text" id="body-name" name="body-name" value="{{body.name}}" {{#ifEquals type "view"}}readonly{{/ifEquals}}>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label>Type:</label>
+					</td>
+					<td>
+						<select id="body-type" name="body-type" {{#ifEquals type "view"}}disabled{{/ifEquals}}>
+							<option value="Planet" {{#ifEquals body.type "Planet"}}selected{{/ifEquals}}>Planet</option>
+							<option value="Asteroid" {{#ifEquals body.type "Asteroid"}}selected{{/ifEquals}}>Asteroid</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label>Orbital Radius:</label>
+					</td>
+					<td>
+						<input type="number" id="body-orbital-radius" name="body-orbital-radius" min="0.1" max="1.0" value="{{body.orbital_radius}}" step="0.01" {{#ifEquals type "view"}}readonly{{/ifEquals}}>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label>Theta:</label>
+					</td>
+					<td>
+						<input type="number" id="body-theta" name="body-theta" min="0" max="360" value="{{body.theta}}" {{#ifEquals type "view"}}readonly{{/ifEquals}}>
+					</td>
+				</tr>
+			</table>
+		</form>
+		<div>
+			{{#unlessEquals type "view"}}
+			<button id="accept-button">
+				{{#switch type}}
+					{{#case "create"}} Create {{/case}}
+					{{#case "edit"}} Save {{/case}}
+				{{/switch}}
+			</button>
+			{{/unlessEquals}}
+			<button id="cancel-button">
+				{{#switch type}}
+					{{#case "view"}} Return {{/case}}
+					{{#case "create"}} Cancel {{/case}}
+					{{#case "edit"}} Cancel {{/case}}
+				{{/switch}}
+			</button>
+		</div>
+	</div>
+</main>
+
