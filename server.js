@@ -26,6 +26,7 @@ var resources = [];
 var bodies = [];
 
 var hyperlanes = [];
+var resourceStocks = [];
 
 function loadJSON() { // TODO replace with database
 	if(!fs.existsSync("./data.json")) {
@@ -236,6 +237,29 @@ app.post('/bodies/add', (req, res, next) => {
 	} else {
 		res.status(400).send({
 			error: "Request body needs a name, type, orbital_radius, orbital_radius, and theta."
+		});
+	}
+});
+
+app.get("/resource-stocks", (req, res, next) => {
+	var pageName = "resourceStockPage";
+	var context = createDefaultContext(pageName);
+	context.resourceStocks = resourceStocks;
+	res.status(200).render(pageName, context);
+});
+
+app.post('/resource-stocks/add', (req, res, next) => {
+	if (req.hasOwnProperty("body") &&
+		req.body.hasOwnProperty("empire") &&
+		req.body.hasOwnProperty("resource") &&
+		req.body.hasOwnProperty("quantity")
+	) {
+		resourceStocks.push(req.body);
+		saveJSON();
+		res.status(200).send("Resource stock successfully added");
+	} else {
+		res.status(400).send({
+			error: "Request body needs an empire, resource, and quanitity."
 		});
 	}
 });

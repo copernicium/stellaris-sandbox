@@ -1,0 +1,100 @@
+<main>
+	<script src="/templates/resource_stock_item_template.js" defer></script>
+	<script>
+		function modalHide() {
+			document.getElementById(MODAL_BACKDROP_ID).classList.add("hidden");
+			document.getElementById(MODAL_ID).classList.add("hidden");
+		}
+
+		function modalShow() {
+			document.getElementById(MODAL_BACKDROP_ID).classList.remove("hidden");
+			document.getElementById(MODAL_ID).classList.remove("hidden");
+			setupStarfield();
+		}
+
+		function modalOpen() {
+			modalShow();
+		}
+
+		function modalCancel() {
+			modalHide();
+		}
+
+		function modalAccept() {
+			var creationForm = document.forms["modal-form"];
+			var resourceStockContext = {
+				empire: creationForm["resource-stock-empire"].value,
+				resource: creationForm["resource-stock-resource"].value,
+				quantity: creationForm["resource-stock-quantity"].value
+			};
+			postToServer("/resource-stocks/add", resourceStockContext);
+			var resourceStockHTML = Handlebars.templates.resourceStockItem(resourceStockContext);
+			document.getElementById("resource-stock-list").insertAdjacentHTML("beforeend", resourceStockHTML);
+
+			modalHide();
+		}
+
+		window.addEventListener("DOMContentLoaded", function() {
+			document.getElementById(MODAL_OPEN_BUTTON_ID).addEventListener("click", modalOpen);
+			document.getElementById(MODAL_CANCEL_BUTTON_ID).addEventListener("click", modalCancel);
+			document.getElementById(MODAL_ACCEPT_BUTTON_ID).addEventListener("click", modalAccept);
+		});
+	</script>
+	<div class="page-container">
+		<div>
+			<div>
+				<button type="button" id="modal-open-button">Create New Resource Stock</button>
+			</div>
+			<br>
+			<table id="resource-stock-list">
+				<tr>
+					<th>Empire</th>
+					<th>Resource</th>
+					<th>Quantity</th>
+					<th></th>
+				</tr>
+				{{#each resourceStocks}}
+					{{> resourceStockItem}}
+				{{/each}}
+			</table>
+		</div>
+    </div>
+	<div id="modal-backdrop" class="hidden">
+        <canvas id="starfield" class="starfield"></canvas>
+    </div>
+	<div id="modal" class="hidden">
+		<div id="modal-dialog">
+            <h2>Create New Resource Stock</h2>
+			<form name="modal-form">
+                <table>
+                    <tr>
+                        <td>
+                            <label>Empire:</label>
+                        </td>
+                        <td>
+                            <input type="search" id="resource-stock-empire" name="resource-stock-empire">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>Resource:</label>
+                        </td>
+                        <td>
+                            <input type="search" id="resource-stock-resource" name="resource-stock-resource">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>Quanity:</label>
+                        </td>
+                        <td>
+                            <input type="number" id="resource-stock-quantity" name="resource-stock-quantity" min="0" value="0">
+                        </td>
+                    </tr>
+                </table>
+			</form>
+			<button id="modal-accept-button">Create</button>
+			<button id="modal-cancel-button">Cancel</button>
+		</div>
+	</div>
+</main>
