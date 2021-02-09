@@ -112,6 +112,10 @@ app.get("/", (req, res, next) => {
 	res.status(200).render("homePage");
 });
 
+//
+// EMPIRES =====================================================================
+//
+
 app.get("/empires", (req, res, next) => {
 	var pageName = "empiresPage";
 	var context = createDefaultContext(pageName);
@@ -136,6 +140,10 @@ app.post('/empires/add', (req, res, next) => {
 		});
 	}
 });
+
+//
+// SYSTEMS =====================================================================
+//
 
 app.get("/systems", (req, res, next) => {
 	var pageName = "systemsPage";
@@ -248,6 +256,10 @@ app.post('/systems/search', (req, res, next) => {
 	}
 });
 
+//
+// HYPERLANES ==================================================================
+//
+
 app.get("/hyperlanes", (req, res, next) => {
 	var pageName = "hyperlanesPage";
 	var context = createDefaultContext(pageName);
@@ -270,6 +282,9 @@ app.post('/hyperlanes/add', (req, res, next) => {
 	}
 });
 
+//
+// RESOURCES ===================================================================
+// 
 
 app.get("/resources", (req, res, next) => {
 	var pageName = "resourcesPage";
@@ -278,12 +293,60 @@ app.get("/resources", (req, res, next) => {
 	res.status(200).render(pageName, context);
 });
 
+app.get("/resources/create", (req, res, next) => {
+	var pageName = "individualResourcePage";
+	var context = createDefaultContext(pageName);
+	context.type = "create";
+	context.resource = {
+		"name": "",
+		"base_market_value": 1,
+		"color": "#000000"
+	};
+
+	res.status(200).render(pageName, context);
+});
+
+app.get("/resources/view/:id", (req, res, next) => {
+	var resourceId = parseInt(req.params.id);
+	var idIsInt = (resourceId != NaN) && (String(resourceId) == req.params.id);
+	if (idIsInt && resourceId >= 0) {
+		var pageName = "individualResourcePage";
+		var context = createDefaultContext(pageName);
+		context.type = "view";
+
+		var resource = resources[resourceId]; // TODO: Replace with call to database
+		context.resource = resource;
+
+		res.status(200).render(pageName, context);
+	} else {
+		next();
+	}
+});
+
+app.get("/resources/edit/:id", (req, res, next) => {
+	var resourceId = parseInt(req.params.id);
+	var idIsInt = (resourceId != NaN) && (String(resourceId) == req.params.id);
+	if (idIsInt && resourceId >= 0) {
+		var pageName = "individualResourcePage";
+		var context = createDefaultContext(pageName);
+		context.type = "edit";
+
+		var resource = resources[resourceId]; // TODO: Replace with call to database
+		context.resource = resource;
+
+		res.status(200).render(pageName, context);
+	} else {
+		next();
+	}
+});
+
 app.post('/resources/add', (req, res, next) => {
 	if (req.hasOwnProperty("body") &&
 		req.body.hasOwnProperty("name") &&
 		req.body.hasOwnProperty("base_market_value") &&
 		req.body.hasOwnProperty("color")
 	) {
+		req.body["id"] = resources.length;
 		resources.push(req.body);
 		saveJSON();
 		res.status(200).send("Resource successfully added");
@@ -293,6 +356,34 @@ app.post('/resources/add', (req, res, next) => {
 		});
 	}
 });
+
+app.post("/resources/update/:id", (req, res, next) => {
+	var resourceId = parseInt(req.params.id);
+	var idIsInt = (resourceId != NaN) && (String(resourceId) == req.params.id);
+	if (idIsInt && resourceId >= 0) {
+		if (req.hasOwnProperty("body") &&
+			req.body.hasOwnProperty("name") &&
+			req.body.hasOwnProperty("base_market_value") &&
+			req.body.hasOwnProperty("color")
+		) {
+			resources[resourceId] = req.body;
+			saveJSON();
+			res.status(200).send("Resource successfully updated");
+		} else {
+			res.status(400).send({
+				error: "Request body needs a name, base market value, and color."
+			});
+		}
+	} else {
+		res.status(400).send({
+			error: "Bad resource ID."
+		});
+	}
+});
+
+//
+// BODIES ======================================================================
+// 
 
 app.get("/bodies", (req, res, next) => {
 	var pageName = "bodiesPage";
@@ -392,6 +483,9 @@ app.post("/bodies/update/:id", (req, res, next) => {
 	}
 });
 
+//
+// RESOURCE STOCKS =============================================================
+//
 
 app.get("/resource-stocks", (req, res, next) => {
 	var pageName = "resourceStockPage";
@@ -414,7 +508,7 @@ app.post('/resource-stocks/add', (req, res, next) => {
 			error: "Request body needs an empire, resource, and quanitity."
 		});
 	}
-});
+})
 
 app.get('*', (req, res) => {
 	res.status(404).send("The page you requested doesn't exist");

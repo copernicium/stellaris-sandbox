@@ -1,0 +1,94 @@
+<main>
+	<script>
+		function returnToListPage() {
+			window.location.replace("/resources");
+		}
+
+		function editCancel() {
+			returnToListPage();
+		}
+
+		function editAccept() {
+			var creationForm = document.forms["resource-form"];
+			var resourceContext = {
+{{#unlessEquals type "create"}}
+				id: {{resource.id}},
+{{/unlessEquals}}
+				name: creationForm["resource-name"].value,
+				base_market_value: creationForm["resource-base-market-value"].value,
+				color: creationForm["resource-color"].value
+			};
+{{#switch type}}
+	{{#case "create"}}
+			postToServer("/resources/add", resourceContext);
+	{{/case}}
+	{{#case "edit"}}
+			postToServer("/resources/update/{{resource.id}}", resourceContext);
+	{{/case}}
+{{/switch}}
+			returnToListPage();
+		}
+
+		window.addEventListener("DOMContentLoaded", function() {
+			document.getElementById("cancel-button").addEventListener("click", editCancel);
+
+			var accept_button = document.getElementById("accept-button");
+			if (accept_button) accept_button.addEventListener("click", editAccept);
+		});
+	</script>
+	<div class="page-container">
+		<h2>
+			{{#switch type}}
+				{{#case "view"}} View Resource {{/case}}
+				{{#case "create"}} Create New Resource {{/case}}
+				{{#case "edit"}} Edit Resource {{/case}}
+			{{/switch}}
+		</h2>
+		<form name="resource-form" {{#ifEquals type "view"}}class="immutable"{{/ifEquals}}>
+			<table>
+				<tr>
+					<td>
+						<label>Name:</label>
+					</td>
+					<td>
+						<input type="text" id="resource-name" name="resource-name" value="{{resource.name}}" {{#ifEquals type "view"}}readonly{{/ifEquals}}>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label>Base Market Value:</label>
+					</td>
+					<td>
+						<input type="number" id="resource-base-market-value" name="resource-base-market-value" min="0" value="{{resource.base_market_value}}" step="0.01" {{#ifEquals type "view"}}readonly{{/ifEquals}}>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label>Color:</label>
+					</td>
+					<td>
+						<input type="color" id="resource-color" name="resource-color" value="{{resource.color}}" {{#ifEquals type "view"}}disabled{{/ifEquals}}>
+					</td>
+				</tr>
+			</table>
+		</form>
+		<div>
+			{{#unlessEquals type "view"}}
+			<button id="accept-button">
+				{{#switch type}}
+					{{#case "create"}} Create {{/case}}
+					{{#case "edit"}} Save {{/case}}
+				{{/switch}}
+			</button>
+			{{/unlessEquals}}
+			<button id="cancel-button">
+				{{#switch type}}
+					{{#case "view"}} Return {{/case}}
+					{{#case "create"}} Cancel {{/case}}
+					{{#case "edit"}} Cancel {{/case}}
+				{{/switch}}
+			</button>
+		</div>
+	</div>
+</main>
+
