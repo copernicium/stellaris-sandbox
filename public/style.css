@@ -127,7 +127,7 @@ th, td {
 
 .page-container {
 	display: flex;
-	justify-content: center;
+	flex-direction: column;
 }
 
 .flex-row {
@@ -141,6 +141,19 @@ th, td {
 	min-height: 200px;
 	height: 600px;
 	max-height: 800px;
+}
+
+.has-right-col {
+	display: flex;
+	flex-direction: row;
+}
+
+.has-right-col .left-col {
+	flex-grow: 1;
+}
+
+.right-col {
+	flex-grow: 0;
 }
 
 .left, .right {
@@ -158,6 +171,10 @@ th, td {
 	flex: 1;
 }
 
+form.immutable input {
+	cursor: default;
+}
+
 .color-swab {
 	width: 16px;
 	height: 16px;
@@ -169,3 +186,4 @@ th, td {
 .hidden {
 	display: none !important;
 }
+

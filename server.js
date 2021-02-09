@@ -7,7 +7,10 @@ var fs = require("fs"); // TODO replace with database
 var app = express();
 var port = 3845;
 
-app.engine("handlebars", exphbs({ defaultLayout: "main" }));
+app.engine("handlebars", exphbs({
+	defaultLayout: "main",
+	helpers: require("./handlebars-helpers")
+}));
 app.set("view engine", "handlebars");
 app.use(bodyParser.json());
 app.use(express.static("public"));
@@ -59,7 +62,7 @@ for(var i = 0; i < systems.length; i++){
 	if(j > i) {
 		hyperlanes.push({
 			system1: systems[i].name,
-			system2: sytesm[j].name
+			system2: systems[j].name
 		});
 	} else {
 		break;
@@ -140,6 +143,54 @@ app.get("/systems", (req, res, next) => {
 	res.status(200).render(pageName, context);
 });
 
+app.get("/systems/create", (req, res, next) => {
+	var pageName = "individualSystemPage";
+	var context = createDefaultContext(pageName);
+	context.type = "create";
+	context.system = {
+		"name": "",
+		"star_count": 1,
+		"orbital_radius": 0.5,
+		"theta": 0
+	};
+
+	res.status(200).render(pageName, context);
+});
+
+app.get("/systems/view/:id", (req, res, next) => {
+	var systemId = parseInt(req.params.id);
+	var idIsInt = (systemId != NaN) && (String(systemId) == req.params.id);
+	if (idIsInt && systemId >= 0) {
+		var pageName = "individualSystemPage";
+		var context = createDefaultContext(pageName);
+		context.type = "view";
+
+		var system = systems[systemId]; // TODO: Replace with call to database
+		context.system = system;
+
+		res.status(200).render(pageName, context);
+	} else {
+		next();
+	}
+});
+
+app.get("/systems/edit/:id", (req, res, next) => {
+	var systemId = parseInt(req.params.id);
+	var idIsInt = (systemId != NaN) && (String(systemId) == req.params.id);
+	if (idIsInt && systemId >= 0) {
+		var pageName = "individualSystemPage";
+		var context = createDefaultContext(pageName);
+		context.type = "edit";
+
+		var system = systems[systemId]; // TODO: Replace with call to database
+		context.system = system;
+
+		res.status(200).render(pageName, context);
+	} else {
+		next();
+	}
+});
+
 app.post('/systems/add', (req, res, next) => {
 	if (req.hasOwnProperty("body") &&
 		req.body.hasOwnProperty("name") &&
@@ -147,12 +198,38 @@ app.post('/systems/add', (req, res, next) => {
 		req.body.hasOwnProperty("orbital_radius") &&
 		req.body.hasOwnProperty("theta")
 	) {
+		req.body["id"] = systems.length;
 		systems.push(req.body);
 		saveJSON();
 		res.status(200).send("System successfully added");
 	} else {
 		res.status(400).send({
 			error: "Request body needs a name, star_count, orbital_radius, and theta."
+		});
+	}
+});
+
+app.post("/systems/update/:id", (req, res, next) => {
+	var systemId = parseInt(req.params.id);
+	var idIsInt = (systemId != NaN) && (String(systemId) == req.params.id);
+	if (idIsInt && systemId >= 0) {
+		if (req.hasOwnProperty("body") &&
+			req.body.hasOwnProperty("name") &&
+			req.body.hasOwnProperty("star_count") &&
+			req.body.hasOwnProperty("orbital_radius") &&
+			req.body.hasOwnProperty("theta")
+		) {
+			systems[systemId] = req.body;
+			saveJSON();
+			res.status(200).send("System successfully updated");
+		} else {
+			res.status(400).send({
+				error: "Request body needs a name, star_count, orbital_radius, and theta."
+			});
+		}
+	} else {
+		res.status(400).send({
+			error: "Bad system ID."
 		});
 	}
 });
