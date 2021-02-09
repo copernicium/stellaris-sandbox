@@ -111,3 +111,7 @@ public/templates/*
 
 # Swap files
 *.swp
+
+# Temporary data storage files
+data.json
+

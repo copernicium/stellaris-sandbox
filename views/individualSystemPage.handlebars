@@ -1,0 +1,106 @@
+<main>
+	<script>
+		function returnToListPage() {
+			window.location.replace("/systems");
+		}
+
+		function editCancel() {
+			returnToListPage();
+		}
+
+		function editAccept() {
+			var creationForm = document.forms["system-form"];
+			var systemContext = {
+{{#unlessEquals type "create"}}
+				id: {{system.id}},
+{{/unlessEquals}}
+				name: creationForm["system-name"].value,
+				star_count: creationForm["star-count"].value,
+				orbital_radius: creationForm["system-orbital-radius"].value,
+				theta: creationForm["system-theta"].value
+			};
+{{#switch type}}
+	{{#case "create"}}
+			postToServer("/systems/add", systemContext);
+	{{/case}}
+	{{#case "edit"}}
+			postToServer("/systems/update/{{system.id}}", systemContext);
+	{{/case}}
+{{/switch}}
+			returnToListPage();
+		}
+
+		window.addEventListener("DOMContentLoaded", function() {
+			document.getElementById("cancel-button").addEventListener("click", editCancel);
+
+			var accept_button = document.getElementById("accept-button");
+			if (accept_button) accept_button.addEventListener("click", editAccept);
+		});
+	</script>
+	<div class="page-container has-right-col">
+		<div class="left-col">
+			<h2>
+				{{#switch type}}
+					{{#case "view"}} View System {{/case}}
+					{{#case "create"}} Create New System {{/case}}
+					{{#case "edit"}} Edit System {{/case}}
+				{{/switch}}
+			</h2>
+			<form name="system-form" {{#ifEquals type "view"}}class="immutable"{{/ifEquals}}>
+				<table>
+					<tr>
+						<td>
+							<label>Name:</label>
+						</td>
+						<td>
+							<input type="text" id="system-name" name="system-name" value="{{system.name}}" {{#ifEquals type "view"}}readonly{{/ifEquals}}>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label>Star Count:</label>
+						</td>
+						<td>
+							<input type="number" id="star-count" name="star-count" min="1" max="3" value="{{system.star_count}}" {{#ifEquals type "view"}}readonly{{/ifEquals}}>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label>Orbital Radius:</label>
+						</td>
+						<td>
+							<input type="number" id="system-orbital-radius" name="system-orbital-radius" min="0.1" max="1.0" value="{{system.orbital_radius}}" step="0.01" {{#ifEquals type "view"}}readonly{{/ifEquals}}>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label>Theta:</label>
+						</td>
+						<td>
+							<input type="number" id="system-theta" name="system-theta" min="0" max="360" value="{{system.theta}}" {{#ifEquals type "view"}}readonly{{/ifEquals}}>
+						</td>
+					</tr>
+				</table>
+			</form>
+			{{#unlessEquals type "view"}}
+			<button id="accept-button">
+				{{#switch type}}
+					{{#case "create"}} Create {{/case}}
+					{{#case "edit"}} Save {{/case}}
+				{{/switch}}
+			</button>
+			{{/unlessEquals}}
+			<button id="cancel-button">
+				{{#switch type}}
+					{{#case "view"}} Return {{/case}}
+					{{#case "create"}} Cancel {{/case}}
+					{{#case "edit"}} Cancel {{/case}}
+				{{/switch}}
+			</button>
+		</div>
+		<div class="right-col">
+			<canvas id="system-view"></canvas>
+		</div>
+	</div>
+</main>
+
