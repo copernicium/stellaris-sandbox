@@ -30,6 +30,7 @@ var bodies = [];
 
 var hyperlanes = [];
 var resourceStocks = [];
+var resourceDeposits = [];
 
 function loadJSON() { // TODO replace with database
 	if(!fs.existsSync("./data.json")) {
@@ -584,7 +585,38 @@ app.post('/resource-stocks/add', (req, res, next) => {
 			error: "Request body needs an empire, resource, and quanitity."
 		});
 	}
-})
+});
+
+//
+// RESOURCE DEPOSITS ===========================================================
+//
+
+app.get("/resource-deposits", (req, res, next) => {
+	var pageName = "resourceDepositPage";
+	var context = createDefaultContext(pageName);
+	context.resourceDeposits = resourceDeposits;
+	res.status(200).render(pageName, context);
+});
+
+app.post("/resource-deposits/add", (req, res, next) => {
+	if (req.hasOwnProperty("body") &&
+		req.body.hasOwnProperty("body") &&
+		req.body.hasOwnProperty("resource") &&
+		req.body.hasOwnProperty("quantity")
+	) {
+		resourceDeposits.push(req.body);
+		saveJSON();
+		res.status(200).send("Resource deposit successfully added");
+	} else {
+		res.status(400).send({
+			error: "Request body needs a body, resource, and quantity."
+		});
+	}
+});
+
+//
+// OTHER =======================================================================
+//
 
 app.get('*', (req, res) => {
 	res.status(404).send("The page you requested doesn't exist");

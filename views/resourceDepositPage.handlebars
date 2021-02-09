@@ -1,0 +1,100 @@
+<main>
+	<script src="/templates/resource_deposit_item_template.js" defer></script>
+	<script>
+		function modalHide() {
+			document.getElementById(MODAL_BACKDROP_ID).classList.add("hidden");
+			document.getElementById(MODAL_ID).classList.add("hidden");
+		}
+
+		function modalShow() {
+			document.getElementById(MODAL_BACKDROP_ID).classList.remove("hidden");
+			document.getElementById(MODAL_ID).classList.remove("hidden");
+			setupStarfield();
+		}
+
+		function modalOpen() {
+			modalShow();
+		}
+
+		function modalCancel() {
+			modalHide();
+		}
+
+		function modalAccept() {
+			var creationForm = document.forms["modal-form"];
+			var resourceDepositContext = {
+				empire: creationForm["resource-deposit-empire"].value,
+				resource: creationForm["resource-deposit-resource"].value,
+				quantity: creationForm["resource-deposit-quantity"].value
+			};
+			postToServer("/resource-deposits/add", resourceDepositContext);
+			var resourceDepositHTML = Handlebars.templates.resourceDepositItem(resourceDepositContext);
+			document.getElementById("resource-deposit-list").insertAdjacentHTML("beforeend", resourceDepositHTML);
+
+			modalHide();
+		}
+
+		window.addEventListener("DOMContentLoaded", function() {
+			document.getElementById(MODAL_OPEN_BUTTON_ID).addEventListener("click", modalOpen);
+			document.getElementById(MODAL_CANCEL_BUTTON_ID).addEventListener("click", modalCancel);
+			document.getElementById(MODAL_ACCEPT_BUTTON_ID).addEventListener("click", modalAccept);
+		});
+	</script>
+	<div class="page-container">
+		<div>
+			<div>
+				<button type="button" id="modal-open-button">Create New Resource Deposit</button>
+			</div>
+			<br>
+			<table id="resource-deposit-list">
+				<tr>
+					<th>Body</th>
+					<th>Resource</th>
+					<th>Quantity</th>
+					<th></th>
+				</tr>
+				{{#each resourceDeposits}}
+					{{> resourceDepositItem}}
+				{{/each}}
+			</table>
+		</div>
+    </div>
+	<div id="modal-backdrop" class="hidden">
+        <canvas id="starfield" class="starfield"></canvas>
+    </div>
+	<div id="modal" class="hidden">
+		<div id="modal-dialog">
+            <h2>Create New Resource Deposit</h2>
+			<form name="modal-form">
+                <table>
+                    <tr>
+                        <td>
+                            <label>Empire:</label>
+                        </td>
+                        <td>
+                            <input type="search" id="resource-deposit-body" name="resource-deposit-body">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>Resource:</label>
+                        </td>
+                        <td>
+                            <input type="search" id="resource-deposit-resource" name="resource-deposit-resource">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>Quantity:</label>
+                        </td>
+                        <td>
+                            <input type="number" id="resource-deposit-quantity" name="resource-deposit-quantity" min="0" value="0">
+                        </td>
+                    </tr>
+                </table>
+			</form>
+			<button id="modal-accept-button">Create</button>
+			<button id="modal-cancel-button">Cancel</button>
+		</div>
+	</div>
+</main>
