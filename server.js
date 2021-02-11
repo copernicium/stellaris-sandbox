@@ -110,7 +110,9 @@ for(var i = 0; i < 10; i++){
 */
 
 app.get("/", (req, res, next) => {
-	res.status(200).render("homePage");
+	var pageName = "homePage";
+	var context = createDefaultContext(pageName);
+	res.status(200).render(pageName, context);
 });
 
 //
