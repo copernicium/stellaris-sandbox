@@ -8,7 +8,7 @@
 	/* background-color: rgba(0, 0, 0, 0.85); */
 }
 
-#modal {
+#confirmation-modal {
 	display: flex;
 	align-items: center;
 	position: fixed;
@@ -19,11 +19,11 @@
 	z-index: 1010;
 }
 
-#modal-dialog {
+#confirmation-modal-dialog {
 	width: auto;
-	max-width: 600px;
-	min-width: 350px;
-	min-height: 300px;
+	max-width: 400px;
+	min-width: 200px;
+	min-height: 100px;
 	height: auto;
 	margin: 40px auto;
 	padding: 20px;
@@ -31,6 +31,19 @@
 	border-radius: 15px;
 	background-color: #36393F;
 	overflow: auto;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.modal-button-container {
+	width: 100%;
+	display: flex;
+	justify-content: flex-end;
+}
+
+.modal-button-container button {
+	margin: 0px 5px;
 }
 
 button {

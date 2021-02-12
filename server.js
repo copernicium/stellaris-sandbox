@@ -220,6 +220,30 @@ app.post("/empires/update/:id", (req, res, next) => {
 	}
 });
 
+app.post("/empires/delete", (req, res, next) => {
+	if (req.hasOwnProperty("body") && req.body.hasOwnProperty("id"))
+	{
+		var empireId = req.body.id;
+		if (empireId >= 0) {
+			// TODO: Replace with working with the DB
+			empires.splice(empireId, 1);
+			for (var i = empireId; i < empires.length; i++) {
+				empires[i].id -= 1;
+			}
+			saveJSON();
+			res.status(200).send("Empire successfully deleted");
+		} else {
+			res.status(400).send({
+				error: "Empire body ID."
+			});
+		}
+	} else {
+		res.status(400).send({
+			error: "Request body needs an id."
+		});
+	}
+});
+
 //
 // SYSTEMS =====================================================================
 //
@@ -331,6 +355,30 @@ app.post('/systems/search', (req, res, next) => {
 	} else {
 		res.status(400).send({
 			error: "Request body needs a search_query."
+		});
+	}
+});
+
+app.post("/systems/delete", (req, res, next) => {
+	if (req.hasOwnProperty("body") && req.body.hasOwnProperty("id"))
+	{
+		var systemId = req.body.id;
+		if (systemId >= 0) {
+			// TODO: Replace with working with the DB
+			systems.splice(systemId, 1);
+			for (var i = systemId; i < systems.length; i++) {
+				systems[i].id -= 1;
+			}
+			saveJSON();
+			res.status(200).send("System successfully deleted");
+		} else {
+			res.status(400).send({
+				error: "Bad system ID."
+			});
+		}
+	} else {
+		res.status(400).send({
+			error: "Request body needs an id."
 		});
 	}
 });
@@ -460,6 +508,30 @@ app.post("/resources/update/:id", (req, res, next) => {
 	}
 });
 
+app.post("/resources/delete", (req, res, next) => {
+	if (req.hasOwnProperty("body") && req.body.hasOwnProperty("id"))
+	{
+		var resourceId = req.body.id;
+		if (resourceId >= 0) {
+			// TODO: Replace with working with the DB
+			resources.splice(resourceId, 1);
+			for (var i = resourceId; i < resources.length; i++) {
+				resources[i].id -= 1;
+			}
+			saveJSON();
+			res.status(200).send("Resource successfully deleted");
+		} else {
+			res.status(400).send({
+				error: "Bad resource ID."
+			});
+		}
+	} else {
+		res.status(400).send({
+			error: "Request body needs an id."
+		});
+	}
+});
+
 //
 // BODIES ======================================================================
 // 
@@ -558,6 +630,30 @@ app.post("/bodies/update/:id", (req, res, next) => {
 	} else {
 		res.status(400).send({
 			error: "Bad body ID."
+		});
+	}
+});
+
+app.post("/bodies/delete", (req, res, next) => {
+	if (req.hasOwnProperty("body") && req.body.hasOwnProperty("id"))
+	{
+		var bodyId = req.body.id;
+		if (bodyId >= 0) {
+			// TODO: Replace with working with the DB
+			bodies.splice(bodyId, 1);
+			for (var i = bodyId; i < bodies.length; i++) {
+				bodies[i].id -= 1;
+			}
+			saveJSON();
+			res.status(200).send("Body successfully deleted");
+		} else {
+			res.status(400).send({
+				error: "Bad body ID."
+			});
+		}
+	} else {
+		res.status(400).send({
+			error: "Request body needs an id."
 		});
 	}
 });

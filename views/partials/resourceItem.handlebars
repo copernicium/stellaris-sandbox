@@ -10,6 +10,6 @@
     <td>
 		<button type="button" id="resource-view-button" onclick="window.location.replace('/resources/view/{{id}}')">View</button>
         <button type="button" id="resource-edit-button" onclick="window.location.replace('/resources/edit/{{id}}')">Edit</button>
-        <button type="button" id="resource-delete-button" onclick="alert('TODO');">Delete</button>
+        <button type="button" id="resource-delete-button" onclick="createDeleteModal('/resources/delete/', {{id}})">Delete</button>
     </td>
 </tr>

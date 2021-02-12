@@ -17,6 +17,6 @@
     <td>
 		<button type="button" id="empire-view-button" onclick="window.location.replace('/empires/view/{{id}}')">View</button>
         <button type="button" id="empire-edit-button" onclick="window.location.replace('/empires/edit/{{id}}')">Edit</button>
-        <button type="button" id="empire-delete-button" onclick="alert('TODO');">Delete</button>
+        <button type="button" id="empire-delete-button" onclick="createDeleteModal('/empires/delete/', {{id}})">Delete</button>
     </td>
 </tr>

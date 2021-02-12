@@ -145,6 +145,48 @@ function doSystemSearchUpdate() {
 	postToServer("/systems/search", context);
 }
 
+var confirmation_modal_confirm_function = undefined;
+
+function createDeleteModal(delete_url, id) {
+	createConfirmationModal(() => {
+		var delete_context = {
+			id: id
+		};
+		postToServer(delete_url, delete_context);
+		location.reload();
+	});
+}
+
+function confirmConfirmationModal() {
+	confirmation_modal_confirm_function();
+	removeConfirmationModal();
+}
+
+function removeConfirmationModal() {
+	document.getElementById("confirmation-modal").remove();
+	removeModalBackdrop();
+}
+
+function createConfirmationModal(confirm_function) {
+	confirmation_modal_confirm_function = confirm_function;
+
+	createModalBackdrop();
+	addAtEndOfMain(Handlebars.templates.confirmationModal());
+}
+
+function createModalBackdrop() {
+	addAtEndOfMain(Handlebars.templates.modalBackdrop());
+	setupStarfield();
+}
+
+function removeModalBackdrop() {
+	document.getElementById("modal-backdrop").remove();
+}
+
+function addAtEndOfMain(html) {
+	document.getElementsByTagName("main")[0].insertAdjacentHTML("beforeend", html);
+}
+
 window.addEventListener("DOMContentLoaded", function() {
 	setupStarfield();
 	setupSystemView(null);

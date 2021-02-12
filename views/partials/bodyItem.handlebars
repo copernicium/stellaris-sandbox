@@ -6,6 +6,6 @@
     <td>
         <button type="button" id="body-view-button" onclick="window.location.replace('/bodies/view/{{id}}')">View</button>
         <button type="button" id="body-edit-button" onclick="window.location.replace('/bodies/edit/{{id}}')">Edit</button>
-        <button type="button" id="body-delete-button" onclick="alert('TODO');">Delete</button>
+        <button type="button" id="body-delete-button" onclick="createDeleteModal('/bodies/delete/', {{id}})">Delete</button>
     </td>
 </tr>

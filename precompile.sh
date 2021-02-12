@@ -7,3 +7,5 @@ handlebars views/partials/bodyItem.handlebars -f public/templates/body_item_temp
 handlebars views/partials/resourceItem.handlebars -f public/templates/resource_item_template.js
 handlebars views/partials/hyperlaneItem.handlebars -f public/templates/hyperlane_item_template.js
 handlebars views/partials/resourceStockItem.handlebars -f public/templates/resource_stock_item_template.js
+handlebars views/partials/modalBackdrop.handlebars -f public/templates/modal_backdrop.js
+handlebars views/partials/confirmationModal.handlebars -f public/templates/confirmation_modal.js
