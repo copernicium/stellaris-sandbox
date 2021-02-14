@@ -96,7 +96,10 @@ function generateBody(systemName, count) {
 
 	var nDeposits = Math.floor(Math.random() * 3);
 	for (var i = 0; i < nDeposits; i++) {
-		body.deposits.push(generateResourceDeposit());
+		do {
+			var deposit = generateResourceDeposit();
+		} while (body.deposits.find(e => e.name == deposit.name) != undefined)
+		body.deposits.push(deposit);
 	}
 
 	return body;
