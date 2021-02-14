@@ -8,12 +8,12 @@ const asteroidPostfixes = require("./stellaris_data/asteroid_postfixes.json");
 const systemTypes = ["unary", "binary", "trinary"];
 
 const resourceData = [
-	{ name: "Energy Credits", baseMarketValue: 1, color: "EDE021", min: 1, max: 4 },
-	{ name: "Minerals", baseMarketValue: 0.5, color: "BA1F07", min: 3, max: 20 },
-	{ name: "Alloys", baseMarketValue: 2, color: "6C07BA", min: 1, max: 3 },
-	{ name: "Physics Research", baseMarketValue: null, color: "223BE0", min: 1, max: 6},
-	{ name: "Society Research", baseMarketValue: null, color: "0A7A1E", min: 1, max: 6},
-	{ name: "Engineering Research", baseMarketValue: null, color: "D9990F", min: 1, max: 6}
+	{ name: "Energy Credits", baseMarketValue: 1, color: "#EDE021", min: 1, max: 4 },
+	{ name: "Minerals", baseMarketValue: 0.5, color: "#BA1F07", min: 3, max: 20 },
+	{ name: "Alloys", baseMarketValue: 2, color: "#6C07BA", min: 1, max: 3 },
+	{ name: "Physics Research", baseMarketValue: null, color: "#223BE0", min: 1, max: 6},
+	{ name: "Society Research", baseMarketValue: null, color: "#0A7A1E", min: 1, max: 6},
+	{ name: "Engineering Research", baseMarketValue: null, color: "#D9990F", min: 1, max: 6}
 ]
 
 function generateStocks(quantityList) {
@@ -32,10 +32,10 @@ function generateStocks(quantityList) {
 }
 
 const empireData = [
-	{ name: "United Nations of Earth", aggressiveness: "moderate", primaryColor: "3841A1", secondaryColor: "000000", isFallenEmpire: false, stocks: generateStocks([4000, 6000, 4000, 4000, 3000, 5000]) },
-	{ name: "Tzynn Empire", aggressiveness: "aggressive", primaryColor: "000000", secondaryColor: "7A1707", isFallenEmpire: false, stocks: generateStocks([3000, 4500, 4000, 2000, 1500, 2500]) },
-	{ name: "Jehetma Dominion", aggressiveness: "passive", primaryColor: "693504", secondaryColor: "000000", isFallenEmpire: false, stocks: generateStocks([5000, 3000, 1500, 5500, 6500, 4000]) },
-	{ name: "Blorg Commonality", aggressiveness: "moderate", primaryColor: "20853C", secondaryColor: "BD4B4B", isFallenEmpire: true, stocks: generateStocks([80000, 100000, 90000, 135000, 130000, 140000]) }
+	{ name: "United Nations of Earth", aggressiveness: "moderate", primaryColor: "#3841A1", secondaryColor: "#000000", isFallenEmpire: false, stocks: generateStocks([4000, 6000, 4000, 4000, 3000, 5000]) },
+	{ name: "Tzynn Empire", aggressiveness: "aggressive", primaryColor: "#000000", secondaryColor: "#7A1707", isFallenEmpire: false, stocks: generateStocks([3000, 4500, 4000, 2000, 1500, 2500]) },
+	{ name: "Jehetma Dominion", aggressiveness: "passive", primaryColor: "#693504", secondaryColor: "#000000", isFallenEmpire: false, stocks: generateStocks([5000, 3000, 1500, 5500, 6500, 4000]) },
+	{ name: "Blorg Commonality", aggressiveness: "moderate", primaryColor: "#20853C", secondaryColor: "#BD4B4B", isFallenEmpire: true, stocks: generateStocks([80000, 100000, 90000, 135000, 130000, 140000]) }
 ]
 
 const MAX_BODIES = 10;
@@ -172,23 +172,23 @@ function generateHyperlaneSQL(hyperlane, SQLCollection) {
 }
 
 function startInserts(SQLCollection) {
-	SQLCollection.empireSQL += "INSERT INTO empires (name, aggressiveness, primaryColor, secondaryColor, isFallenEmpire) VALUES (\n";
-	SQLCollection.systemSQL += "INSERT INTO systems (name, type, theta, orbitalRadius) VALUES (\n";
-	SQLCollection.bodySQL += "INSERT INTO bodies (name, type, theta, orbitalRadius, systemID) VALUES (\n";
-	SQLCollection.resourceSQL += "INSERT INTO resources (name, baseMarketValue, color) VALUES (\n";
-	SQLCollection.hyperlaneSQL += "INSERT INTO hyperlanes (system1ID, system2ID) VALUES (\n";
-	SQLCollection.resourceStockSQL += "INSERT INTO resource_stocks (empireID, resourceID, quantity) VALUES (\n";
-	SQLCollection.resourceDepositSQL += "INSERT INTO resource_deposits (bodyID, resourceID, quantity) VALUES (\n";
+	SQLCollection.empireSQL += "INSERT INTO empires (name, aggressiveness, primaryColor, secondaryColor, isFallenEmpire) VALUES\n";
+	SQLCollection.systemSQL += "INSERT INTO systems (name, type, theta, orbitalRadius, empireID) VALUES\n";
+	SQLCollection.bodySQL += "INSERT INTO bodies (name, type, theta, orbitalRadius, systemID) VALUES\n";
+	SQLCollection.resourceSQL += "INSERT INTO resources (name, baseMarketValue, color) VALUES\n";
+	SQLCollection.hyperlaneSQL += "INSERT INTO hyperlanes (system1ID, system2ID) VALUES\n";
+	SQLCollection.resourceStockSQL += "INSERT INTO resource_stocks (empireID, resourceID, quantity) VALUES\n";
+	SQLCollection.resourceDepositSQL += "INSERT INTO resource_deposits (bodyID, resourceID, quantity) VALUES\n";
 }
 
 function endInserts(SQLCollection) {
-	SQLCollection.empireSQL += ");"
-	SQLCollection.systemSQL += ");";
-	SQLCollection.bodySQL += ");";
-	SQLCollection.resourceSQL += ");";
-	SQLCollection.hyperlaneSQL += ");";
-	SQLCollection.resourceStockSQL += ");";
-	SQLCollection.resourceDepositSQL += ");";
+	SQLCollection.empireSQL += ";"
+	SQLCollection.systemSQL += ";";
+	SQLCollection.bodySQL += ";";
+	SQLCollection.resourceSQL += ";";
+	SQLCollection.hyperlaneSQL += ";";
+	SQLCollection.resourceStockSQL += ";";
+	SQLCollection.resourceDepositSQL += ";";
 }
 
 function generateSQL(nSystems) {

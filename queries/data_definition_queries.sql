@@ -2,14 +2,15 @@ CREATE TABLE empires (
 	empireID int NOT NULL auto_increment,
 	name varchar(255) NOT NULL,
 	aggressiveness varchar(16) NOT NULL,
-	primaryColor varchar(6) NOT NULL,
-	secondaryColor varchar(6) NOT NULL,
+	primaryColor varchar(7) NOT NULL,
+	secondaryColor varchar(7) NOT NULL,
 	isFallenEmpire boolean NOT NULL,
 	CONSTRAINT PRIMARY KEY (empireID),
-	CONSTRAINT CHECK (primaryColor LIKE "[^0-9A-F]%"),
-	CONSTRAINT CHECK (secondaryColor LIKE "[^0-9A-F]%"),
+	CONSTRAINT CHECK (primaryColor RLIKE "#[[:xdigit:]]{6}"),
+	CONSTRAINT CHECK (secondaryColor RLIKE "#[[:xdigit:]]{6}"),
 	CONSTRAINT CHECK (aggressiveness IN ("passive", "moderate", "aggressive"))
 );
+
 
 CREATE TABLE systems (
 	systemID int NOT NULL auto_increment,
@@ -39,9 +40,9 @@ CREATE TABLE resources (
 	resourceID int NOT NULL auto_increment,
 	name varchar(255) NOT NULL,
 	baseMarketValue float,
-	color varchar(6) NOT NULL,
+	color varchar(7) NOT NULL,
 	CONSTRAINT PRIMARY KEY (resourceID),
-	CONSTRAINT CHECK (color LIKE "[^0-9A-F]%")
+	CONSTRAINT CHECK (color RLIKE "#[[:xdigit:]]{6}")
 );
 
 CREATE TABLE hyperlanes (
