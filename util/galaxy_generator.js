@@ -126,7 +126,7 @@ function generateHyperlane(systems, hyperlanes) {
 			system1Name: randFrom(systems).name,
 			system2Name: randFrom(systems).name
 		}
-	} while ((hyperlane.system1Name == hyperlane.system2Name) || (hyperlanes.find(e => (e.system1Name == hyperlane.system1Name) && (e.system2Name == hyperlane.system2Name)) != undefined));	
+	} while ((hyperlane.system1Name == hyperlane.system2Name) || (hyperlanes.find(e => (e.system1Name == hyperlane.system1Name) && (e.system2Name == hyperlane.system2Name)) != undefined));
 	return hyperlane;
 }
 
@@ -139,7 +139,7 @@ function generateResourceStockSQL(resourceStock, empireName, SQLCollection) {
 }
 
 function generateResourceSQL(resource, SQLCollection) {
-	SQLCollection.resourceSQL += `\t("${resource.name}", ${resource.baseMarketValue}, ${resource.color}),\n`;
+	SQLCollection.resourceSQL += `\t("${resource.name}", ${resource.baseMarketValue}, "${resource.color}"),\n`;
 }
 
 function generateBodySQL(body, systemName, SQLCollection) {
@@ -168,7 +168,7 @@ function generateEmpireSQL(empire, SQLCollection) {
 }
 
 function generateHyperlaneSQL(hyperlane, SQLCollection) {
-	SQLCollection.hyperlaneSQL += `\t((SELECT systemID FROM systems WHERE systems.name="${hyperlane.system1Name}"), (SELECT systemID from SYSTEMS WHERE systems.name="${hyperlane.system2Name}")),\n`;
+	SQLCollection.hyperlaneSQL += `\t((SELECT systemID FROM systems WHERE systems.name="${hyperlane.system1Name}"), (SELECT systemID from systems WHERE systems.name="${hyperlane.system2Name}")),\n`;
 }
 
 function startInserts(SQLCollection) {
@@ -245,10 +245,10 @@ function generateSQL(nSystems) {
 			hyperlanes.push(hyperlane);
 		}
 	}
-	
+
 	// End the INSERT queries
 	endInserts(SQLCollection);
-	
+
 	// Join together the queries and print
 	var insertSQL = [SQLCollection.empireSQL, SQLCollection.systemSQL, SQLCollection.bodySQL, SQLCollection.resourceSQL, SQLCollection.hyperlaneSQL, SQLCollection.resourceStockSQL, SQLCollection.resourceDepositSQL].join("\n\n");
 	console.log(insertSQL);
