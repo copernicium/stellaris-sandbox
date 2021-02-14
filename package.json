@@ -19,11 +19,13 @@
   },
   "homepage": "https://github.com/copernicium/stellaris-sandbox#readme",
   "dependencies": {
+    "argparse": "^2.0.1",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "express-handlebars": "^5.2.0",
     "forever": "^3.0.4",
     "fs": "0.0.1-security",
-    "mysql": "^2.18.1"
+    "mysql": "^2.18.1",
+    "roman-numerals": "^0.3.2"
   }
 }
