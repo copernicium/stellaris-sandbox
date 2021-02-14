@@ -251,8 +251,10 @@ app.post("/empires/delete", (req, res, next) => {
 app.get("/systems", (req, res, next) => {
 	var pageName = "systemsPage";
 	var context = createDefaultContext(pageName);
-	context.systems = systems;
-	res.status(200).render(pageName, context);
+	mysql.pool.query("SELECT * FROM systems", (err, rows, fields) => {
+		context.systems = rows;;
+		res.status(200).render(pageName, context);
+	});
 });
 
 app.get("/systems/create", (req, res, next) => {
@@ -277,10 +279,15 @@ app.get("/systems/view/:id", (req, res, next) => {
 		var context = createDefaultContext(pageName);
 		context.type = "view";
 
-		var system = systems[systemId]; // TODO: Replace with call to database
-		context.system = system;
+		mysql.pool.query("SELECT * FROM systems WHERE systems.systemID = " + systemId, (err, rows, fields) => {
+			if(rows.length == 1) {
+				context.system = rows[0];
+			} else {
+				// TODO error
+			}
 
-		res.status(200).render(pageName, context);
+			res.status(200).render(pageName, context);
+		});
 	} else {
 		next();
 	}

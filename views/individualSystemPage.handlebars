@@ -12,11 +12,11 @@
 			var creationForm = document.forms["system-form"];
 			var systemContext = {
 {{#unlessEquals type "create"}}
-				id: {{system.id}},
+				id: {{system.systemID}},
 {{/unlessEquals}}
 				name: creationForm["system-name"].value,
-				star_count: creationForm["star-count"].value,
-				orbital_radius: creationForm["system-orbital-radius"].value,
+				type: creationForm["system-type"].value,
+				orbitalRadius: creationForm["system-orbital-radius"].value,
 				theta: creationForm["system-theta"].value
 			};
 {{#switch type}}
@@ -24,7 +24,7 @@
 			postToServer("/systems/add", systemContext);
 	{{/case}}
 	{{#case "edit"}}
-			postToServer("/systems/update/{{system.id}}", systemContext);
+			postToServer("/systems/update/{{system.systemID}}", systemContext);
 	{{/case}}
 {{/switch}}
 			returnToListPage();
@@ -61,7 +61,11 @@
 							<label>Star Count:</label>
 						</td>
 						<td>
-							<input type="number" id="star-count" name="star-count" min="1" max="3" value="{{system.star_count}}" {{#ifEquals type "view"}}readonly{{/ifEquals}}>
+							<select id="system-type" name="system-type" {{#ifEquals type "view"}}disabled{{/ifEquals}}>
+								<option value="Passive" {{#ifEquals system.type "Unary"}}selected{{/ifEquals}}>Unary</option>
+								<option value="Moderate" {{#ifEquals system.type "Binary"}}selected{{/ifEquals}}>Binary</option>
+								<option value="Aggressive" {{#ifEquals system.type "Trinary"}}selected{{/ifEquals}}>Trinary</option>
+							</select>
 						</td>
 					</tr>
 					<tr>
@@ -69,7 +73,7 @@
 							<label>Orbital Radius:</label>
 						</td>
 						<td>
-							<input type="number" id="system-orbital-radius" name="system-orbital-radius" min="0.1" max="1.0" value="{{system.orbital_radius}}" step="0.01" {{#ifEquals type "view"}}readonly{{/ifEquals}}>
+							<input type="number" id="system-orbital-radius" name="system-orbital-radius" min="0.1" max="1.0" value="{{system.orbitalRadius}}" step="0.01" {{#ifEquals type "view"}}readonly{{/ifEquals}}>
 						</td>
 					</tr>
 					<tr>

@@ -1,11 +1,11 @@
 <tr>
     <td>{{name}}</td>
-    <td>{{star_count}}</td>
-    <td>{{orbital_radius}}</td>
+    <td>{{type}}</td>
+    <td>{{orbitalRadius}}</td>
     <td>{{theta}}</td>
     <td>
-        <button type="button" id="system-view-button" onclick="window.location.replace('/systems/view/{{id}}')">View</button>
-        <button type="button" id="system-edit-button" onclick="window.location.replace('/systems/edit/{{id}}')">Edit</button>
-        <button type="button" id="system-delete-button" onclick="createDeleteModal('/systems/delete/', {{id}})">Delete</button>
+        <button type="button" id="system-view-button" onclick="window.location.replace('/systems/view/{{systemID}}')">View</button>
+        <button type="button" id="system-edit-button" onclick="window.location.replace('/systems/edit/{{systemID}}')">Edit</button>
+        <button type="button" id="system-delete-button" onclick="createDeleteModal('/systems/delete/', {{systemID}})">Delete</button>
     </td>
 </tr>
