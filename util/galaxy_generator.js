@@ -260,8 +260,8 @@ function main() {
 	const parser = new ArgumentParser({
 		description: "Generate the SQL for a random galaxy for Stellaris Sandbox"
 	})
-	parser.addArgument("nSystems", { type: "int", help: "Number of systems to generate in the galaxy" });
-	args = parser.parseArgs();
+	parser.add_argument("nSystems", { type: "int", help: "Number of systems to generate in the galaxy" });
+	args = parser.parse_args();
 
 	generateSQL(args.nSystems);
 }
