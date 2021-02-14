@@ -1,58 +1,73 @@
 CREATE TABLE empires (
-	empireID int primary key auto_increment,
+	empireID int NOT NULL auto_increment,
 	name varchar(255) NOT NULL,
 	aggressiveness varchar(16) NOT NULL,
 	primaryColor varchar(6) NOT NULL,
 	secondaryColor varchar(6) NOT NULL,
 	isFallenEmpire boolean NOT NULL,
-	CHECK (primaryColor LIKE "[^0-9A-F]%"),
-	CHECK (secondaryColor LIKE "[^0-9A-F]%"),
-	CHECK (aggressiveness IN ("passive", "moderate", "aggressive")));
+	CONSTRAINT PRIMARY KEY (empireID),
+	CONSTRAINT CHECK (primaryColor LIKE "[^0-9A-F]%"),
+	CONSTRAINT CHECK (secondaryColor LIKE "[^0-9A-F]%"),
+	CONSTRAINT CHECK (aggressiveness IN ("passive", "moderate", "aggressive"))
+);
 
 CREATE TABLE systems (
-	systemID int primary key auto_increment,
+	systemID int NOT NULL auto_increment,
 	name varchar(255) NOT NULL,
 	starCount int NOT NULL,
 	type varchar(16) NOT NULL,
 	orbitalRadius float NOT NULL,
 	theta float NOT NULL,
 	empireID int DEFAULT NULL,
-	foreign key (empireID) references empires(empireID),
-	CHECK (type IN ("unary", "binary", "trinary")));
+	CONSTRAINT PRIMARY KEY (systemID),
+	CONSTRAINT FOREIGN KEY (empireID) REFERENCES empires(empireID),
+	CONSTRAINT CHECK (type IN ("unary", "binary", "trinary"))
+);
 
 CREATE TABLE bodies (
-	bodyID int primary key auto_increment,
+	bodyID int NOT NULL auto_increment,
 	name varchar(255) NOT NULL,
 	type varchar(16) NOT NULL,
 	orbitalRadius float NOT NULL,
 	theta float NOT NULL,
-	systemID int DEFAULT NULL,
-	foreign key (systemID) references systems(systemID),
-	CHECK (type IN ("planet", "asteroid")));
+	systemID int NOT NULL,
+	CONSTRAINT PRIMARY KEY (bodyID),
+	CONSTRAINT FOREIGN KEY (systemID) REFERENCES systems(systemID),
+	CONSTRAINT CHECK (type IN ("planet", "asteroid"))
+);
 
 CREATE TABLE resources (
-	resourceID int primary key auto_increment,
+	resourceID int NOT NULL auto_increment,
 	name varchar(255) NOT NULL,
 	baseMarketValue float NOT NULL,
 	color varchar(6) NOT NULL,
-	CHECK (color LIKE "[^0-9A-F]%"));
+	CONSTRAINT PRIMARY KEY (resourceID),
+	CONSTRAINT CHECK (color LIKE "[^0-9A-F]%")
+);
 
 CREATE TABLE hyperlanes (
-	system1 int DEFAULT NULL,
-	system2 int DEFAULT NULL,
-	foreign key (system1) references systems(systemID),
-	foreign key (system2) references systems(systemID));
+	system1ID int NOT NULL,
+	system2ID int NOT NULL,
+	CONSTRAINT PRIMARY KEY (system1ID, system2ID),
+	CONSTRAINT FOREIGN KEY (system1ID) REFERENCES systems(systemID),
+	CONSTRAINT FOREIGN KEY (system2ID) REFERENCES systems(systemID)
+);
 
-CREATE TABLE resource_stock (
-	empireID int DEFAULT NULL,
-	resourceID int DEFAULT NULL,
+CREATE TABLE resource_stocks (
+	empireID int NOT NULL,
+	resourceID int NOT NULL,
 	quantity int NOT NULL,
-	foreign key (empireID) references empires(empireID),
-	foreign key (resourceID) references resources(resourceID));
+	CONSTRAINT PRIMARY KEY (empireID, resourceID),
+	CONSTRAINT FOREIGN KEY (empireID) REFERENCES empires(empireID),
+	CONSTRAINT FOREIGN KEY (resourceID) REFERENCES resources(resourceID)
+);
 
 CREATE TABLE resource_deposits (
-	bodyID int DEFAULT NULL,
-	resourceID int DEFAULT NULL,
+	bodyID int NOT NULL,
+	resourceID int NOT NULL,
 	quantity int NOT NULL,
-	foreign key (bodyID) references bodies(bodyID),
-	foreign key (resourceID) references resources(resourceID));
+	CONSTRAINT PRIMARY KEY (bodyID, resourceID),
+	CONSTRAINT FOREIGN KEY (bodyID) REFERENCES bodies(bodyID),
+	CONSTRAINT FOREIGN KEY (resourceID) REFERENCES resources(resourceID)
+);
+
