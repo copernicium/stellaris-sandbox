@@ -23,8 +23,8 @@
 		function modalAccept() {
 			var creationForm = document.forms["modal-form"];
 			var resourceStockContext = {
-				empire: creationForm["resource-stock-empire"].value,
-				resource: creationForm["resource-stock-resource"].value,
+				empireID: creationForm["resource-stock-empire"].value,
+				resourceID: creationForm["resource-stock-resource"].value,
 				quantity: creationForm["resource-stock-quantity"].value
 			};
 			postToServer("/resource-stocks/add", resourceStockContext);

@@ -37,8 +37,12 @@ app.get("/empires", (req, res, next) => {
 	var pageName = "empiresPage";
 	var context = createDefaultContext(pageName);
 	mysql.pool.query("SELECT * FROM empires", (err, rows, fields) => {
-		context.empires = rows;;
-		res.status(200).render(pageName, context);
+		if(err) {
+			res.status(500).send(err);
+		} else {
+			context.empires = rows;;
+			res.status(200).render(pageName, context);
+		}
 	});
 });
 
@@ -66,13 +70,16 @@ app.get("/empires/view/:id", (req, res, next) => {
 		context.type = "view";
 
 		mysql.pool.query("SELECT * FROM empires WHERE empires.empireID = " + empireId, (err, rows, fields) => {
-			if(rows != null && rows.length == 1) {
-				context.empire = rows[0];
+			if(err) {
+				res.status(500).send(err);
 			} else {
-				// TODO error
+				if(rows != null && rows.length == 1) {
+					context.empire = rows[0];
+				} else {
+					// TODO error
+				}
+				res.status(200).render(pageName, context);
 			}
-
-			res.status(200).render(pageName, context);
 		});
 	} else {
 		next();
@@ -173,8 +180,12 @@ app.get("/systems", (req, res, next) => {
 	var pageName = "systemsPage";
 	var context = createDefaultContext(pageName);
 	mysql.pool.query("SELECT * FROM systems", (err, rows, fields) => {
-		context.systems = rows;;
-		res.status(200).render(pageName, context);
+		if(err) {
+			res.status(500).send(err);
+		} else {
+			context.systems = rows;;
+			res.status(200).render(pageName, context);
+		}
 	});
 });
 
@@ -201,21 +212,29 @@ app.get("/systems/view/:id", (req, res, next) => {
 		context.type = "view";
 
 		mysql.pool.query("SELECT * FROM systems WHERE systems.systemID = " + systemId, (err, rows, fields) => {
-			if(rows != null && rows.length == 1) {
-				context.system = rows[0];
-
-				mysql.pool.query("SELECT * FROM bodies WHERE bodies.systemID = " + systemId, (err, rows, fields) => {
-					if(rows != null) {
-						context.encoded_system = encodeURIComponent(JSON.stringify(context.system));
-						context.encoded_system_bodies = encodeURIComponent(JSON.stringify(rows));
-					} else {
-						// TODO error
-					}
-
-					res.status(200).render(pageName, context);
-				});
+			if(err) {
+				res.status(500).send(err);
 			} else {
-				// TODO error
+				if(rows != null && rows.length == 1) {
+					context.system = rows[0];
+
+					mysql.pool.query("SELECT * FROM bodies WHERE bodies.systemID = " + systemId, (err, rows, fields) => {
+						if(err) {
+							res.status(500).send(err);
+						} else {
+							if(rows != null) {
+								context.encoded_system = encodeURIComponent(JSON.stringify(context.system));
+								context.encoded_system_bodies = encodeURIComponent(JSON.stringify(rows));
+							} else {
+								// TODO error
+							}
+
+							res.status(200).render(pageName, context);
+						}
+					});
+				} else {
+					// TODO error
+				}
 			}
 		});
 	} else {
@@ -327,8 +346,14 @@ app.post("/systems/delete", (req, res, next) => {
 app.get("/hyperlanes", (req, res, next) => {
 	var pageName = "hyperlanesPage";
 	var context = createDefaultContext(pageName);
-	context.hyperlanes = hyperlanes;
-	res.status(200).render(pageName, context);
+	mysql.pool.query("SELECT * FROM hyperlanes", (err, rows, fields) => {
+		if(err) {
+			res.status(500).send(err);
+		} else {
+			context.hyperlanes = rows;;
+			res.status(200).render(pageName, context);
+		}
+	});
 });
 
 app.post('/hyperlanes/add', (req, res, next) => {
@@ -354,8 +379,12 @@ app.get("/resources", (req, res, next) => {
 	var pageName = "resourcesPage";
 	var context = createDefaultContext(pageName);
 	mysql.pool.query("SELECT * FROM resources", (err, rows, fields) => {
-		context.resources = rows;;
-		res.status(200).render(pageName, context);
+		if(err) {
+			res.status(500).send(err);
+		} else {
+			context.resources = rows;;
+			res.status(200).render(pageName, context);
+		}
 	});
 });
 
@@ -381,13 +410,17 @@ app.get("/resources/view/:id", (req, res, next) => {
 		context.type = "view";
 
 		mysql.pool.query("SELECT * FROM resources WHERE resources.resourceID = " + resourceId, (err, rows, fields) => {
-			if(rows != null && rows.length == 1) {
-				context.resource = rows[0];
+			if(err) {
+				res.status(500).send(err);
 			} else {
-				// TODO error
-			}
+				if(rows != null && rows.length == 1) {
+					context.resource = rows[0];
+				} else {
+					// TODO error
+				}
 
-			res.status(200).render(pageName, context);
+				res.status(200).render(pageName, context);
+			}
 		});
 	} else {
 		next();
@@ -484,8 +517,12 @@ app.get("/bodies", (req, res, next) => {
 	var pageName = "bodiesPage";
 	var context = createDefaultContext(pageName);
 	mysql.pool.query("SELECT * FROM bodies", (err, rows, fields) => {
-		context.bodies = rows;;
-		res.status(200).render(pageName, context);
+		if(err) {
+			res.status(500).send(err);
+		} else {
+			context.bodies = rows;;
+			res.status(200).render(pageName, context);
+		}
 	});
 });
 
@@ -512,13 +549,17 @@ app.get("/bodies/view/:id", (req, res, next) => {
 		context.type = "view";
 
 		mysql.pool.query("SELECT * FROM bodies WHERE bodies.bodyID = " + bodyId, (err, rows, fields) => {
-			if(rows != null && rows.length == 1) {
-				context.body = rows[0];
+			if(err) {
+				res.status(500).send(err);
 			} else {
-				// TODO error
-			}
+				if(rows != null && rows.length == 1) {
+					context.body = rows[0];
+				} else {
+					// TODO error
+				}
 
-			res.status(200).render(pageName, context);
+				res.status(200).render(pageName, context);
+			}
 		});
 	} else {
 		next();
@@ -616,8 +657,14 @@ app.post("/bodies/delete", (req, res, next) => {
 app.get("/resource-stocks", (req, res, next) => {
 	var pageName = "resourceStockPage";
 	var context = createDefaultContext(pageName);
-	context.resourceStocks = resourceStocks;
-	res.status(200).render(pageName, context);
+	mysql.pool.query("SELECT * FROM resource_stocks", (err, rows, fields) => {
+		if(err) {
+			res.status(500).send(err);
+		} else {
+			context.resourceStocks = rows;;
+			res.status(200).render(pageName, context);
+		}
+	});
 });
 
 app.post('/resource-stocks/add', (req, res, next) => {
@@ -643,8 +690,14 @@ app.post('/resource-stocks/add', (req, res, next) => {
 app.get("/resource-deposits", (req, res, next) => {
 	var pageName = "resourceDepositPage";
 	var context = createDefaultContext(pageName);
-	context.resourceDeposits = resourceDeposits;
-	res.status(200).render(pageName, context);
+	mysql.pool.query("SELECT * FROM resource_deposits", (err, rows, fields) => {
+		if(err) {
+			res.status(500).send(err);
+		} else {
+			context.resourceDeposits = rows;;
+			res.status(200).render(pageName, context);
+		}
+	});
 });
 
 app.post("/resource-deposits/add", (req, res, next) => {

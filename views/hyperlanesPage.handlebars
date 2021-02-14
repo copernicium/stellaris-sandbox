@@ -23,8 +23,8 @@
 		function modalAccept() {
 			var creationForm = document.forms["modal-form"];
 			var hyperlaneContext = {
-				system1: creationForm["hyperlane-system1"].value,
-				system2: creationForm["hyperlane-system2"].value,
+				system1ID: creationForm["hyperlane-system1"].value,
+				system2ID: creationForm["hyperlane-system2"].value,
 			};
 			postToServer("/hyperlanes/add", hyperlaneContext);
 			var hyperlaneHTML = Handlebars.templates.hyperlaneItem(hyperlaneContext);
