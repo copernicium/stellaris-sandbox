@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/copernicium/stellaris-sandbox#readme",
   "dependencies": {
-    "argparse": "1.0.10",
+    "argparse": "^2.0.1",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "express-handlebars": "^5.2.0",
