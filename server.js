@@ -203,11 +203,20 @@ app.get("/systems/view/:id", (req, res, next) => {
 		mysql.pool.query("SELECT * FROM systems WHERE systems.systemID = " + systemId, (err, rows, fields) => {
 			if(rows != null && rows.length == 1) {
 				context.system = rows[0];
+
+				mysql.pool.query("SELECT * FROM bodies WHERE bodies.systemID = " + systemId, (err, rows, fields) => {
+					if(rows != null) {
+						context.encoded_system = encodeURIComponent(JSON.stringify(context.system));
+						context.encoded_system_bodies = encodeURIComponent(JSON.stringify(rows));
+					} else {
+						// TODO error
+					}
+
+					res.status(200).render(pageName, context);
+				});
 			} else {
 				// TODO error
 			}
-
-			res.status(200).render(pageName, context);
 		});
 	} else {
 		next();

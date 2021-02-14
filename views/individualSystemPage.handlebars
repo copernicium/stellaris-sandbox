@@ -35,6 +35,10 @@
 
 			var accept_button = document.getElementById("accept-button");
 			if (accept_button) accept_button.addEventListener("click", editAccept);
+
+			var system = JSON.parse(decodeURIComponent("{{{encoded_system}}}"));
+			var system_bodies = JSON.parse(decodeURIComponent("{{{encoded_system_bodies}}}"));
+			setupSystemView(system, system_bodies);
 		});
 	</script>
 	<div class="page-container has-right-col">

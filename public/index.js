@@ -56,7 +56,15 @@ function setupStarfield() {
 	}
 }
 
-function setupSystemView(system) { // TODO
+function setupSystemView(system, system_bodies) { // TODO
+	if(system == null){
+		console.error("system is null");
+		return;
+	}
+	if(system_bodies == null){
+		console.error("system_bodies is null");
+		return;
+	}
 	var canvas = document.getElementById("system-view");
 	if(canvas == null) {
 		return;
@@ -70,25 +78,6 @@ function setupSystemView(system) { // TODO
 	context.lineWidth = 5;
 	context.strokeRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
 
-	var bodies = [
-		{
-			orbital_radius: 1,
-			theta: 0
-		},
-		{
-			orbital_radius: 0.3,
-			theta: 90
-		},
-		{
-			orbital_radius: 0.4,
-			theta: 180
-		},
-		{
-			orbital_radius: 0.1,
-			theta: 270
-		}
-	];
-
 	var max_radius = 0.9 * 0.5 * Math.min(canvas.offsetWidth, canvas.offsetHeight);
 
 	var center_x = canvas.offsetWidth / 2;
@@ -96,9 +85,9 @@ function setupSystemView(system) { // TODO
 	
 	// TODO stars
 
-	for(var i = 0; i < bodies.length; i++) {
-		var radius = max_radius * bodies[i].orbital_radius;
-		var theta = bodies[i].theta * 2 * Math.PI / 360;
+	for(var i = 0; i < system_bodies.length; i++) {
+		var radius = max_radius * system_bodies[i].orbitalRadius;
+		var theta = system_bodies[i].theta * 2 * Math.PI / 360;
 		var x = center_x +  radius * Math.cos(theta);
 		var y = center_y + radius * Math.sin(theta);
 		
@@ -189,8 +178,8 @@ function addAtEndOfMain(html) {
 
 window.addEventListener("DOMContentLoaded", function() {
 	setupStarfield();
-	setupSystemView(null);
-	setupGalaxyView(null);
+	// setupSystemView(null, null);
+	// setupGalaxyView(null);
 
 	var searchInput = document.getElementById("system-search-input");
 	if (searchInput) {
