@@ -1,6 +1,6 @@
 <tr>
     <td>{{name}}</td>
-    <td>{{base_market_value}}</td>
+    <td>{{baseMarketValue}}</td>
     <td>
         <div class="flex-row">
             <div class="color-swab" style="background-color: {{color}};"></div>
@@ -8,8 +8,8 @@
         </div>
     </td>
     <td>
-		<button type="button" id="resource-view-button" onclick="window.location.replace('/resources/view/{{id}}')">View</button>
-        <button type="button" id="resource-edit-button" onclick="window.location.replace('/resources/edit/{{id}}')">Edit</button>
-        <button type="button" id="resource-delete-button" onclick="createDeleteModal('/resources/delete/', {{id}})">Delete</button>
+		<button type="button" id="resource-view-button" onclick="window.location.replace('/resources/view/{{resourceID}}')">View</button>
+        <button type="button" id="resource-edit-button" onclick="window.location.replace('/resources/edit/{{resourceID}}')">Edit</button>
+        <button type="button" id="resource-delete-button" onclick="createDeleteModal('/resources/delete/', {{resourceID}})">Delete</button>
     </td>
 </tr>

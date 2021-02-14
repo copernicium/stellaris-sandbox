@@ -2,7 +2,6 @@ var express = require("express");
 var exphbs = require("express-handlebars");
 var bodyParser = require("body-parser");
 var mysql = require('./dbcon.js');
-var fs = require("fs"); // TODO replace with database
 
 var app = express();
 var port = 3845;
@@ -23,91 +22,6 @@ function createDefaultContext(name) {
 	};
 }
 
-var empires = [];
-var systems = [];
-var resources = [];
-var bodies = [];
-
-var hyperlanes = [];
-var resourceStocks = [];
-var resourceDeposits = [];
-
-function loadJSON() { // TODO replace with database
-	if(!fs.existsSync("./data.json")) {
-		return;
-	}
-
-	var data = require("./data.json");
-	empires = data.empires;
-	systems = data.systems;
-	resources = data.resources;
-	bodies = data.bodies;
-}
-loadJSON();
-
-function saveJSON() { // TODO replace with database
-	var data = {
-		empires: empires,
-		systems: systems,
-		resources: resources,
-		bodies: bodies
-	}
-	fs.writeFile("./data.json", JSON.stringify(data, null, 4), (err) => {
-		if (err) {
-			console.error(err);
-		}
-	});
-}
-
-for(var i = 0; i < systems.length; i++){
-	var j = systems.length - 1 - i;
-	if(j > i) {
-		hyperlanes.push({
-			system1: systems[i].name,
-			system2: systems[j].name
-		});
-	} else {
-		break;
-	}
-}
-
-/*
-for(var i = 0; i < 10; i++){
-	empires.push({
-        name: "The Allied Suns",
-        aggressiveness: "passive",
-        primary_color: "#FF0000",
-        secondary_color: "#00FF00",
-        fallen_empire: false
-    });
-}
-
-for(var i = 0; i < 10; i++){
-	systems.push({
-        name: "Alpha Centauri",
-        star_count: 1,
-        orbital_radius: .5,
-        theta: 90
-    });
-}
-
-for(var i = 0; i < 10; i++){
-	resources.push({
-        name: "Minerals",
-        base_market_value: 15,
-        color: "#0000FF"
-    });
-}
-
-for(var i = 0; i < 10; i++){
-	bodies.push({
-        name: "Earth",
-        type: "Planet",
-        orbital_radius: .5,
-        theta: 90
-    });
-}
-*/
 
 app.get("/", (req, res, next) => {
 	var pageName = "homePage";
@@ -122,8 +36,10 @@ app.get("/", (req, res, next) => {
 app.get("/empires", (req, res, next) => {
 	var pageName = "empiresPage";
 	var context = createDefaultContext(pageName);
-	context.empires = empires;
-	res.status(200).render(pageName, context);
+	mysql.pool.query("SELECT * FROM empires", (err, rows, fields) => {
+		context.empires = rows;;
+		res.status(200).render(pageName, context);
+	});
 });
 
 app.get("/empires/create", (req, res, next) => {
@@ -133,9 +49,9 @@ app.get("/empires/create", (req, res, next) => {
 	context.empire = {
 		"name": "",
 		"aggressiveness": "Moderate",
-		"primary_color": "#000000",
-		"secondary_color": "#FFFFFF",
-		"fallen_empire": false
+		"primaryColor": "#000000",
+		"secondaryColor": "#FFFFFF",
+		"isFallenEmpire": false
 	};
 
 	res.status(200).render(pageName, context);
@@ -149,10 +65,15 @@ app.get("/empires/view/:id", (req, res, next) => {
 		var context = createDefaultContext(pageName);
 		context.type = "view";
 
-		var empire = empires[empireId]; // TODO: Replace with call to database
-		context.empire = empire;
+		mysql.pool.query("SELECT * FROM empires WHERE empires.empireID = " + empireId, (err, rows, fields) => {
+			if(rows != null && rows.length == 1) {
+				context.empire = rows[0];
+			} else {
+				// TODO error
+			}
 
-		res.status(200).render(pageName, context);
+			res.status(200).render(pageName, context);
+		});
 	} else {
 		next();
 	}
@@ -280,7 +201,7 @@ app.get("/systems/view/:id", (req, res, next) => {
 		context.type = "view";
 
 		mysql.pool.query("SELECT * FROM systems WHERE systems.systemID = " + systemId, (err, rows, fields) => {
-			if(rows.length == 1) {
+			if(rows != null && rows.length == 1) {
 				context.system = rows[0];
 			} else {
 				// TODO error
@@ -423,8 +344,10 @@ app.post('/hyperlanes/add', (req, res, next) => {
 app.get("/resources", (req, res, next) => {
 	var pageName = "resourcesPage";
 	var context = createDefaultContext(pageName);
-	context.resources = resources;
-	res.status(200).render(pageName, context);
+	mysql.pool.query("SELECT * FROM resources", (err, rows, fields) => {
+		context.resources = rows;;
+		res.status(200).render(pageName, context);
+	});
 });
 
 app.get("/resources/create", (req, res, next) => {
@@ -448,10 +371,15 @@ app.get("/resources/view/:id", (req, res, next) => {
 		var context = createDefaultContext(pageName);
 		context.type = "view";
 
-		var resource = resources[resourceId]; // TODO: Replace with call to database
-		context.resource = resource;
+		mysql.pool.query("SELECT * FROM resources WHERE resources.resourceID = " + resourceId, (err, rows, fields) => {
+			if(rows != null && rows.length == 1) {
+				context.resource = rows[0];
+			} else {
+				// TODO error
+			}
 
-		res.status(200).render(pageName, context);
+			res.status(200).render(pageName, context);
+		});
 	} else {
 		next();
 	}
@@ -546,8 +474,10 @@ app.post("/resources/delete", (req, res, next) => {
 app.get("/bodies", (req, res, next) => {
 	var pageName = "bodiesPage";
 	var context = createDefaultContext(pageName);
-	context.bodies = bodies;
-	res.status(200).render(pageName, context);
+	mysql.pool.query("SELECT * FROM bodies", (err, rows, fields) => {
+		context.bodies = rows;;
+		res.status(200).render(pageName, context);
+	});
 });
 
 app.get("/bodies/create", (req, res, next) => {
@@ -572,10 +502,15 @@ app.get("/bodies/view/:id", (req, res, next) => {
 		var context = createDefaultContext(pageName);
 		context.type = "view";
 
-		var body = bodies[bodyId]; // TODO: Replace with call to database
-		context.body = body;
+		mysql.pool.query("SELECT * FROM bodies WHERE bodies.bodyID = " + bodyId, (err, rows, fields) => {
+			if(rows != null && rows.length == 1) {
+				context.body = rows[0];
+			} else {
+				// TODO error
+			}
 
-		res.status(200).render(pageName, context);
+			res.status(200).render(pageName, context);
+		});
 	} else {
 		next();
 	}

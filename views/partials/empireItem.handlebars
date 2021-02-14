@@ -4,19 +4,19 @@
     <td>
         <div class="flex-row">
             <div class="color-swab" style="background-color: {{primary_color}};"></div>
-            <div>{{primary_color}}</div>
+            <div>{{primaryColor}}</div>
         </div>
     </td>
     <td>
         <div class="flex-row">
             <div class="color-swab" style="background-color: {{secondary_color}};"></div>
-            <div>{{secondary_color}}</div>
+            <div>{{secondaryColor}}</div>
         </div>
     </td>
-    <td>{{fallen_empire}}</td>
+    <td>{{isFallenEmpire}}</td>
     <td>
-		<button type="button" id="empire-view-button" onclick="window.location.replace('/empires/view/{{id}}')">View</button>
-        <button type="button" id="empire-edit-button" onclick="window.location.replace('/empires/edit/{{id}}')">Edit</button>
-        <button type="button" id="empire-delete-button" onclick="createDeleteModal('/empires/delete/', {{id}})">Delete</button>
+		<button type="button" id="empire-view-button" onclick="window.location.replace('/empires/view/{{empireID}}')">View</button>
+        <button type="button" id="empire-edit-button" onclick="window.location.replace('/empires/edit/{{empireID}}')">Edit</button>
+        <button type="button" id="empire-delete-button" onclick="createDeleteModal('/empires/delete/', {{empireID}})">Delete</button>
     </td>
 </tr>

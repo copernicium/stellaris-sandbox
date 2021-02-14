@@ -12,7 +12,7 @@
 			var creationForm = document.forms["system-form"];
 			var systemContext = {
 {{#unlessEquals type "create"}}
-				id: {{system.systemID}},
+				systemID: {{system.systemID}},
 {{/unlessEquals}}
 				name: creationForm["system-name"].value,
 				type: creationForm["system-type"].value,

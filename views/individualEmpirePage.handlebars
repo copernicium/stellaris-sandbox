@@ -12,20 +12,20 @@
 			var creationForm = document.forms["empire-form"];
 			var empireContext = {
 {{#unlessEquals type "create"}}
-				id: {{empire.id}},
+				empireID: {{empire.empireID}},
 {{/unlessEquals}}
 				name: creationForm["empire-name"].value,
 				aggressiveness: creationForm["empire-aggressiveness"].value,
-				primary_color: creationForm["empire-primary-color"].value,
-				secondary_color: creationForm["empire-secondary-color"].value,
-				fallen_empire: creationForm["empire-is-fallen"].checked
+				primaryColor: creationForm["empire-primary-color"].value,
+				secondaryColor: creationForm["empire-secondary-color"].value,
+				isFallenEmpire: creationForm["empire-is-fallen"].checked
 			};
 {{#switch type}}
 	{{#case "create"}}
 			postToServer("/empires/add", empireContext);
 	{{/case}}
 	{{#case "edit"}}
-			postToServer("/empires/update/{{empire.id}}", empireContext);
+			postToServer("/empires/update/{{empire.empireID}}", empireContext);
 	{{/case}}
 {{/switch}}
 			returnToListPage();
@@ -73,7 +73,7 @@
 						<label>Primary Color:</label>
 					</td>
 					<td>
-						<input type="color" id="empire-primary-color" name="empire-primary-color" value="{{empire.primary_color}}" {{#ifEquals type "view"}}disabled{{/ifEquals}}>
+						<input type="color" id="empire-primary-color" name="empire-primary-color" value="{{empire.primaryColor}}" {{#ifEquals type "view"}}disabled{{/ifEquals}}>
 					</td>
 				</tr>
 				<tr>
@@ -81,7 +81,7 @@
 						<label>Secondary Color:</label>
 					</td>
 					<td>
-						<input type="color" id="empire-secondary-color" name="empire-secondary-color"value="{{empire.secondary_color}}" {{#ifEquals type "view"}}disabled{{/ifEquals}}>
+						<input type="color" id="empire-secondary-color" name="empire-secondary-color"value="{{empire.secondaryColor}}" {{#ifEquals type "view"}}disabled{{/ifEquals}}>
 					</td>
 				</tr>
 				<tr>
@@ -89,7 +89,7 @@
 						<label>Fallen Empire:</label>
 					</td>
 					<td>
-						<input type="checkbox" id="empire-is-fallen" name="empire-is-fallen" {{#if empire.fallen_empire}}checked{{/if}} {{#ifEquals type "view"}}disabled{{/ifEquals}}>
+						<input type="checkbox" id="empire-is-fallen" name="empire-is-fallen" {{#if empire.isFallenEmpire}}checked{{/if}} {{#ifEquals type "view"}}disabled{{/ifEquals}}>
 					</td>
 				</tr>
 			</table>

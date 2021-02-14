@@ -12,10 +12,10 @@
 			var creationForm = document.forms["resource-form"];
 			var resourceContext = {
 {{#unlessEquals type "create"}}
-				id: {{resource.id}},
+				resourceID: {{resource.resourceID}},
 {{/unlessEquals}}
 				name: creationForm["resource-name"].value,
-				base_market_value: creationForm["resource-base-market-value"].value,
+				baseMarketValue: creationForm["resource-base-market-value"].value,
 				color: creationForm["resource-color"].value
 			};
 {{#switch type}}
@@ -23,7 +23,7 @@
 			postToServer("/resources/add", resourceContext);
 	{{/case}}
 	{{#case "edit"}}
-			postToServer("/resources/update/{{resource.id}}", resourceContext);
+			postToServer("/resources/update/{{resource.resourceID}}", resourceContext);
 	{{/case}}
 {{/switch}}
 			returnToListPage();
@@ -59,7 +59,7 @@
 						<label>Base Market Value:</label>
 					</td>
 					<td>
-						<input type="number" id="resource-base-market-value" name="resource-base-market-value" min="0" value="{{resource.base_market_value}}" step="0.01" {{#ifEquals type "view"}}readonly{{/ifEquals}}>
+						<input type="number" id="resource-base-market-value" name="resource-base-market-value" min="0" value="{{resource.baseMarketValue}}" step="0.01" {{#ifEquals type "view"}}readonly{{/ifEquals}}>
 					</td>
 				</tr>
 				<tr>
