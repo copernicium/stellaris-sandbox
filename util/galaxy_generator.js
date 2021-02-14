@@ -185,13 +185,12 @@ function startInserts(SQLCollection) {
 }
 
 function endInserts(SQLCollection) {
-	SQLCollection.empireSQL += ";"
-	SQLCollection.systemSQL += ";";
-	SQLCollection.bodySQL += ";";
-	SQLCollection.resourceSQL += ";";
-	SQLCollection.hyperlaneSQL += ";";
-	SQLCollection.resourceStockSQL += ";";
-	SQLCollection.resourceDepositSQL += ";";
+	var queries = ["empireSQL", "systemSQL", "bodySQL", "resourceSQL", "hyperlaneSQL", "resourceStockSQL", "resourceDepositSQL"];
+	queries.map(x => {
+		// Remove the last comma and add a semicolon
+		var lastCommaIndex = SQLCollection[x].lastIndexOf(",");
+		SQLCollection[x] = SQLCollection[x].substring(0, lastCommaIndex) + SQLCollection[x].substring(lastCommaIndex + 1) + ";";
+	});
 }
 
 function generateSQL(nSystems) {
@@ -261,8 +260,8 @@ function main() {
 	const parser = new ArgumentParser({
 		description: "Generate the SQL for a random galaxy for Stellaris Sandbox"
 	})
-	parser.add_argument("nSystems", { type: "int", help: "Number of systems to generate in the galaxy" });
-	args = parser.parse_args();
+	parser.addArgument("nSystems", { type: "int", help: "Number of systems to generate in the galaxy" });
+	args = parser.parseArgs();
 
 	generateSQL(args.nSystems);
 }
