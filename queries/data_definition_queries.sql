@@ -14,7 +14,6 @@ CREATE TABLE empires (
 CREATE TABLE systems (
 	systemID int NOT NULL auto_increment,
 	name varchar(255) NOT NULL,
-	starCount int NOT NULL,
 	type varchar(16) NOT NULL,
 	orbitalRadius float NOT NULL,
 	theta float NOT NULL,
@@ -39,7 +38,7 @@ CREATE TABLE bodies (
 CREATE TABLE resources (
 	resourceID int NOT NULL auto_increment,
 	name varchar(255) NOT NULL,
-	baseMarketValue float NOT NULL,
+	baseMarketValue float,
 	color varchar(6) NOT NULL,
 	CONSTRAINT PRIMARY KEY (resourceID),
 	CONSTRAINT CHECK (color LIKE "[^0-9A-F]%")
