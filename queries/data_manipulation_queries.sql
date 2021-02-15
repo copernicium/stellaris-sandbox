@@ -5,6 +5,7 @@ SELECT * FROM empires;
 
 -- Individual empire view
 SELECT * FROM empires WHERE empireID = ":empireID";
+SELECT systemID, name FROM systems WHERE empireID = ":empireID";
 SELECT resources.resourceID, resources.name, rd.quantity FROM (SELECT * FROM resource_stocks WHERE resource_stocks.empireID = ":empireID") AS rd INNER JOIN resources ON rd.resourceID = resources.resourceID;
 
 -- Systems list
@@ -12,6 +13,7 @@ SELECT * FROM systems;
 
 -- Individual system view
 SELECT * FROM systems WHERE systemID = ":systemID";
+SELECT bodyID, name, type FROM bodies WHERE systemID = ":systemID";
 
 -- System search (system page)
 SELECT * FROM systems WHERE systems.name LIKE "%:searchQuery";
