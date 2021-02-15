@@ -19,7 +19,7 @@ SELECT * FROM systems;
 -- Individual system view
 SELECT * FROM systems WHERE systemID = ":systemID";
 SELECT bodyID, name, type FROM bodies WHERE systemID = ":systemID";
-INSERT INTO systems (name, type, theta, orbitalRadius) VALUES (":systemName", ":systemType", ":systemTheta", ":systemOrbitalRadius");
+INSERT INTO systems (name, type, theta, orbitalRadius, empireID) VALUES (":systemName", ":systemType", ":systemTheta", ":systemOrbitalRadius", ":empireID");
 UPDATE systems SET name=":systemName", type=":systemType", theta=":systemTheta", orbitalRadius=":systemOrbitalRadius" WHERE systemID = ":systemID";
 
 -- System search (system page)
@@ -34,7 +34,7 @@ SELECT * FROM bodies;
 -- Individual body view
 SELECT * FROM bodies WHERE bodyID = ":bodyID";
 SELECT resources.resourceID, resources.name, rd.quantity FROM (SELECT * FROM resource_deposits WHERE resource_deposits.bodyID = ":bodyID") AS rd INNER JOIN resources ON rd.resourceID = resources.resourceID;
-INSERT INTO bodies (name, type, theta, orbitalRadius) VALUES (":bodyName", ":bodyType", ":bodyTheta", ":bodyOrbitalRadius");
+INSERT INTO bodies (name, type, theta, orbitalRadius, systemID) VALUES (":bodyName", ":bodyType", ":bodyTheta", ":bodyOrbitalRadius", ":systemID");
 INSERT INTO resource_deposits (bodyID, resourceID, quantity) VALUES (":bodyID", ":resourceID", ":quantity");
 UPDATE bodies SET name=":bodyName", type=":bodyType", theta=":bodyTheta", orbitalRadius=":bodyOrbitalRadius" WHERE bodyID = ":bodyID";
 UPDATE resource_deposits SET quantity=":quantity" WHERE bodyID = ":bodyID" AND resourceID = ":resourceID";
