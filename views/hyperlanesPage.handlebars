@@ -37,9 +37,13 @@
 			document.getElementById(MODAL_OPEN_BUTTON_ID).addEventListener("click", modalOpen);
 			document.getElementById(MODAL_CANCEL_BUTTON_ID).addEventListener("click", modalCancel);
 			document.getElementById(MODAL_ACCEPT_BUTTON_ID).addEventListener("click", modalAccept);
+
+			var hyperlanes = JSON.parse(decodeURIComponent("{{{encoded_hyperlane_details}}}"));
+			var systems = JSON.parse(decodeURIComponent("{{{encoded_systems}}}"));
+			setupGalaxyView(hyperlanes, systems);
 		});
 	</script>
-	<div class="page-container">
+	<div class="page-container has-right-col">
         <div class="left">
             <div>
                 <div>
@@ -58,7 +62,7 @@
                 </table>
             </div>
         </div>
-        <div class="right">
+        <div class="right-col">
             <canvas id="galaxy-view"></canvas>
         </div>
     </div>

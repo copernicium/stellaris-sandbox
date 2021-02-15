@@ -104,7 +104,7 @@ function setupSystemView(system, system_bodies) { // TODO
 	}
 }
 
-function setupGalaxyView(hyperlanes) { // TODO
+function setupGalaxyView(hyperlanes, systems) {
 	var canvas = document.getElementById("galaxy-view");
 	if(canvas == null) {
 		return;
@@ -123,7 +123,39 @@ function setupGalaxyView(hyperlanes) { // TODO
 	var center_x = canvas.offsetWidth / 2;
 	var center_y = canvas.offsetHeight / 2;
 
-	// TODO systems and hyperlanes
+	// Draw systems
+	for(var i = 0; i < systems.length; i++) {
+		var radius = max_radius * systems[i].orbitalRadius;
+		var theta = systems[i].theta * 2 * Math.PI / 360;
+		var x = center_x +  radius * Math.cos(theta);
+		var y = center_y + radius * Math.sin(theta);
+
+		context.beginPath();
+		context.arc(x, y, 2, 0, 360);
+		context.fillStyle = "rgb(255, 255, 255)";
+		context.fill();
+	}
+
+	// Draw hyperlanes
+	for(var i = 0; i < hyperlanes.length; i++) {
+		var radius1 = max_radius * hyperlanes[i].system1OrbitalRadius;
+		var theta1 = hyperlanes[i].system1Theta * 2 * Math.PI / 360;
+		var start_x = center_x +  radius1 * Math.cos(theta1);
+		var start_y = center_y + radius1 * Math.sin(theta1);
+
+		var radius2 = max_radius * hyperlanes[i].system2OrbitalRadius;
+		var theta2 = hyperlanes[i].system2Theta * 2 * Math.PI / 360;
+		var end_x = center_x +  radius2 * Math.cos(theta2);
+		var end_y = center_y + radius2 * Math.sin(theta2);
+
+		context.beginPath();
+		context.lineWidth = 1;
+		context.strokeStyle = "rgba(255, 255, 255, 0.5)";
+		context.moveTo(start_x, start_y);
+		context.lineTo(end_x, end_y);
+		context.stroke();
+
+	}
 }
 
 function doSystemSearchUpdate() {
