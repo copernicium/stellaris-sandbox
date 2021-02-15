@@ -90,6 +90,21 @@
 					</tr>
 				</table>
 			</form>
+			<h3>Bodies</h3>
+			<table id="body-table">
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Type</th>
+						<th></th>
+					</rt>
+				</thead>
+				<tbody>
+					{{#each system_bodies}}
+						{{> systemBodyItem}}
+					{{/each}}
+				</tbody>
+			</table>
 			{{#unlessEquals type "view"}}
 			<button id="accept-button">
 				{{#switch type}}

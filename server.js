@@ -223,6 +223,7 @@ app.get("/systems/view/:id", (req, res, next) => {
 							res.status(500).send(err);
 						} else {
 							if(rows != null) {
+								context.system_bodies = rows;
 								context.encoded_system = encodeURIComponent(JSON.stringify(context.system));
 								context.encoded_system_bodies = encodeURIComponent(JSON.stringify(rows));
 							} else {
