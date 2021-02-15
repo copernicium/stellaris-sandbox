@@ -9,6 +9,9 @@ SELECT systemID, name FROM systems WHERE empireID = ":empireID";
 SELECT resources.resourceID, resources.name, rd.quantity FROM (SELECT * FROM resource_stocks WHERE resource_stocks.empireID = ":empireID") AS rd INNER JOIN resources ON rd.resourceID = resources.resourceID;
 INSERT INTO empires (name, aggressiveness, primaryColor, secondaryColor, isFallenEmpire) VALUES (":empireName", ":empireAggressiveness", ":empirePrimaryColor", ":empireSecondaryColor", ":empireIsFallenEmpire");
 INSERT INTO resource_stocks (empireID, resourceID, quantity) VALUES (":empireID", ":resourceID", ":quantity");
+UPDATE empires SET name=":empireName", aggressiveness=":empireAggressiveness", primaryColor=":empirePrimaryColor", secondaryColor=":empireSecondaryColor", isFallenEmpire=":empireIsFallenEmpire" WHERE empireID = ":empireID";
+UPDATE resource_stocks SET quantity=":quantity" WHERE empireID = ":empireID" AND resourceID = ":resourceID";
+UPDATE systems SET empireID=":empireID" WHERE systemID = ":systemID";
 
 -- Systems list
 SELECT * FROM systems;
@@ -17,6 +20,7 @@ SELECT * FROM systems;
 SELECT * FROM systems WHERE systemID = ":systemID";
 SELECT bodyID, name, type FROM bodies WHERE systemID = ":systemID";
 INSERT INTO systems (name, type, theta, orbitalRadius) VALUES (":systemName", ":systemType", ":systemTheta", ":systemOrbitalRadius");
+UPDATE systems SET name=":systemName", type=":systemType", theta=":systemTheta", orbitalRadius=":systemOrbitalRadius" WHERE systemID = ":systemID";
 
 -- System search (system page)
 SELECT * FROM systems WHERE systems.name LIKE "%:searchQuery";
@@ -32,6 +36,8 @@ SELECT * FROM bodies WHERE bodyID = ":bodyID";
 SELECT resources.resourceID, resources.name, rd.quantity FROM (SELECT * FROM resource_deposits WHERE resource_deposits.bodyID = ":bodyID") AS rd INNER JOIN resources ON rd.resourceID = resources.resourceID;
 INSERT INTO bodies (name, type, theta, orbitalRadius) VALUES (":bodyName", ":bodyType", ":bodyTheta", ":bodyOrbitalRadius");
 INSERT INTO resource_deposits (bodyID, resourceID, quantity) VALUES (":bodyID", ":resourceID", ":quantity");
+UPDATE bodies SET name=":bodyName", type=":bodyType", theta=":bodyTheta", orbitalRadius=":bodyOrbitalRadius" WHERE bodyID = ":bodyID";
+UPDATE resource_deposits SET quantity=":quantity" WHERE bodyID = ":bodyID" AND resourceID = ":resourceID";
 
 -- Resources list
 SELECT * FROM resources;
@@ -39,6 +45,7 @@ SELECT * FROM resources;
 -- Individual resource view
 SELECT * FROM resources WHERE resourceID = ":resourceID";
 INSERT INTO resources (name, baseMarketValue, color) VALUES (":resourceName", ":resourceBaseMarketValue", ":resourceColor");
+UPDATE resources SET name=":resourceName", baseMarketValue=":resourceBaseMarketValue", color=":color" WHERE resourceID = ":resourceID";
 
 -- Resource search (other pages)
 SELECT resources.resourceID, resources.name FROM resources WHERE resources.name LIKE "%:searchQuery%";
