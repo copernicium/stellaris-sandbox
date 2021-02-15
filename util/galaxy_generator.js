@@ -54,8 +54,8 @@ function randTheta() {
 	return roundToTwoPlaces(Math.random() * MAX_THETA);
 }
 
-function randOrbitalRadius() {
-	return roundToTwoPlaces(Math.random());
+function randOrbitalRadius(minRadius) {
+	return roundToTwoPlaces(minRadius + (1 - minRadius) * Math.random());
 }
 
 function randFrom(list) {
@@ -80,7 +80,7 @@ function generateResourceDeposit() {
 function generateBody(systemName, count) {
 	var body = {
 		theta: randTheta(),
-		orbitalRadius: randOrbitalRadius(),
+		orbitalRadius: randOrbitalRadius(0.1),
 		deposits: []
 	}
 
@@ -110,7 +110,7 @@ function generateSystem() {
 		name: takeFrom(systemNames), // To ensure no two systems have the same name
 		type: randFrom(systemTypes),
 		theta: randTheta(),
-		orbitalRadius: randOrbitalRadius(),
+		orbitalRadius: randOrbitalRadius(0.1),
 		bodies: [],
 		empireName: null
 	};
@@ -121,6 +121,36 @@ function generateSystem() {
 	}
 
 	return system;
+}
+
+function getSystemPosition(system){
+	const MAX_RADIUS = 1.0;
+	var radius = MAX_RADIUS * system.orbitalRadius;
+	var theta = system.theta * 2 * Math.PI / 360;
+	var x = radius * Math.cos(theta);
+	var y = radius * Math.sin(theta);
+	return {
+		x: x,
+		y: y
+	};
+}
+
+function getSystemsWithinRadius(system, systems, radius){
+	var center = getSystemPosition(system);
+	var result = [];
+	for(var i = 0; i < systems.length; i++){
+		if(systems[i].name == system.name){
+			continue;
+		}
+		var pos = getSystemPosition(systems[i]);
+		var x_delta = pos.x - center.x;
+		var y_delta = pos.y - center.y;
+		var distance = Math.sqrt(x_delta * x_delta + y_delta * y_delta);
+		if(distance <= radius){
+			result.push(systems[i]);
+		}
+	}
+	return result;
 }
 
 function generateHyperlane(systems, hyperlanes) {
@@ -237,6 +267,7 @@ function generateSQL(nSystems) {
 	}
 
 	// Generate hyperlanes & their SQL
+	/*
 	if (nSystems > 1) {
 		var hyperlanes = [];
 		var maxHyperlanes = (nSystems * (nSystems + 1)) / 2;
@@ -245,6 +276,30 @@ function generateSQL(nSystems) {
 			var hyperlane = generateHyperlane(systems, hyperlanes);
 			generateHyperlaneSQL(hyperlane, SQLCollection);
 			hyperlanes.push(hyperlane);
+		}
+	}
+	*/
+
+	if(nSystems > 1) {
+		const MAX_HYPERLANE_DIST = 0.1;
+		var hyperlanes = [];
+		for(var i = 0; i < systems.length; i++) {
+			var connection_candidates = getSystemsWithinRadius(systems[i], systems, MAX_HYPERLANE_DIST);
+
+			for(var j = 0; j < connection_candidates.length; j++) {
+				if(Math.random() < 0.9) {
+					var hyperlane = {
+						system1Name: systems[i].name,
+						system2Name: connection_candidates[j].name
+					}
+					if(hyperlanes.find(e => ((e.system1Name == hyperlane.system1Name) && (e.system2Name == hyperlane.system2Name)) ||
+						((e.system1Name == hyperlane.system2Name) && (e.system2Name == hyperlane.system1Name))) == undefined) {
+
+						generateHyperlaneSQL(hyperlane, SQLCollection);
+						hyperlanes.push(hyperlane);
+					}
+				}
+			}
 		}
 	}
 
