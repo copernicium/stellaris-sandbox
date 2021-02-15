@@ -13,6 +13,9 @@ UPDATE empires SET name=":empireName", aggressiveness=":empireAggressiveness", p
 UPDATE resource_stocks SET quantity=":quantity" WHERE empireID = ":empireID" AND resourceID = ":resourceID";
 UPDATE systems SET empireID=":empireID" WHERE systemID = ":systemID";
 
+-- Empire search (other pages)
+SELECT empireID, name FROM empires WHERE name LIKE "%:searchQuery%";
+
 -- Systems list
 SELECT * FROM systems;
 
