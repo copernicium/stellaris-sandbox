@@ -1,0 +1,9 @@
+<tr>
+	<td>{{name}}</td>
+	<td>{{type}}</td>
+	<td>
+		<a href="/bodies/view/{{bodyID}}"><button type="button">View</button></a>
+		<a href="/bodies/edit/{{bodyID}}"><button type="button">Edit</button></a>
+		<button type="button" onclick="createDeleteModal('/bodies/delete/', {{bodyId}})">Delete</button>
+	</td>
+</tr>

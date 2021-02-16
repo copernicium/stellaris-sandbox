@@ -15,8 +15,8 @@
     </td>
     <td>{{isFallenEmpire}}</td>
     <td>
-		<button type="button" id="empire-view-button" onclick="window.location.replace('/empires/view/{{empireID}}')">View</button>
-        <button type="button" id="empire-edit-button" onclick="window.location.replace('/empires/edit/{{empireID}}')">Edit</button>
+		<a href="/empires/view/{{empireID}}"><button type="button" id="empire-view-button">View</button></a>
+        <a href="/empires/edit/{{empireID}}"><button type="button" id="empire-edit-button">Edit</button></a>
         <button type="button" id="empire-delete-button" onclick="createDeleteModal('/empires/delete/', {{empireID}})">Delete</button>
     </td>
 </tr>

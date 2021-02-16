@@ -29,7 +29,7 @@ INSERT INTO systems (name, type, theta, orbitalRadius, empireID) VALUES (":syste
 UPDATE systems SET name=":systemName", type=":systemType", theta=":systemTheta", orbitalRadius=":systemOrbitalRadius" WHERE systemID = ":systemID";
 
 -- System search (system page)
-SELECT * FROM systems WHERE systems.name LIKE "%:searchQuery";
+SELECT * FROM systems WHERE systems.name LIKE "%:searchQuery%";
 
 -- System search (other pages)
 SELECT systems.systemID, systems.name FROM systems WHERE systems.name LIKE "%:searchQuery%";
