@@ -41,7 +41,6 @@ const empireData = [
 const MAX_BODIES = 10;
 const MAX_THETA = 360;
 
-const HYPERLANE_PERCENT = 0.1;
 const SYSTEM_OWNERSHIP_PERCENT = 0.05; // Percent of total systems an empire will own
 
 const ASTEROID_PROBABILITY = 0.1;
@@ -60,6 +59,10 @@ function randOrbitalRadius(minRadius) {
 
 function randFrom(list) {
 	return list[Math.floor(Math.random() * list.length)];
+}
+
+function randomFromInterval(min, max) {
+	return Math.random() * (max - min) + min;
 }
 
 function takeFrom(list) {
@@ -88,7 +91,7 @@ function generateBody(systemName, count) {
 	if (rand < ASTEROID_PROBABILITY) {
 		body.type = "asteroid";
 // Assuming will never end up with two asteroids of the same name
-		body.name = randFrom(asteroidPrefixes) + randFrom(asteroidPostfixes);
+		body.name = systemName + " " + randFrom(asteroidPrefixes) + randFrom(asteroidPostfixes);
 	} else {
 		body.type = "planet";
 		body.name = systemName + " " + toRoman(count + 1);
@@ -105,12 +108,12 @@ function generateBody(systemName, count) {
 	return body;
 }
 
-function generateSystem() {
+function generateSystem(orbitalRadius, theta) {
 	var system = {
 		name: takeFrom(systemNames), // To ensure no two systems have the same name
 		type: randFrom(systemTypes),
-		theta: randTheta(),
-		orbitalRadius: randOrbitalRadius(0.1),
+		theta: theta,
+		orbitalRadius: orbitalRadius,
 		bodies: [],
 		empireName: null
 	};
@@ -151,16 +154,6 @@ function getSystemsWithinRadius(system, systems, radius){
 		}
 	}
 	return result;
-}
-
-function generateHyperlane(systems, hyperlanes) {
-	do {
-		var hyperlane = {
-			system1Name: randFrom(systems).name,
-			system2Name: randFrom(systems).name
-		}
-	} while ((hyperlane.system1Name == hyperlane.system2Name) || (hyperlanes.find(e => (e.system1Name == hyperlane.system1Name) && (e.system2Name == hyperlane.system2Name)) != undefined));
-	return hyperlane;
 }
 
 function generateResourceDepositSQL(deposit, bodyName, SQLCollection) {
@@ -244,9 +237,29 @@ function generateSQL(nSystems) {
 
 	// Generate systems
 	var systems = [];
-	for (var i = 0; i < nSystems; i++) {
-		systems.push(generateSystem());
+	const RING_DISTANCE = 0.05;
+	const SYSTEM_DISTANCE = 0.1;
+	const MIN_ORBITAL_RADIUS = 0.25;
+	const MAX_ORBITAL_RADIUS = 1.0;
+	const MAX_VARIANCE_PERCENT = 0.35;
+	var ring_count = (MAX_ORBITAL_RADIUS - MIN_ORBITAL_RADIUS) / RING_DISTANCE;
+	for(var i = 0; i < ring_count; i++) {
+		var radius = MIN_ORBITAL_RADIUS + (i / ring_count) * (MAX_ORBITAL_RADIUS - MIN_ORBITAL_RADIUS);
+		var circumference = 2 * Math.PI * radius;
+		var step_count = Math.floor(circumference / SYSTEM_DISTANCE);
+		var theta_step = 360 / step_count;
+		for(var j = 0; j < step_count; j++) {
+			var theta = j * theta_step;
+
+			radius = radius + (randomFromInterval(-1, 1) * RING_DISTANCE * MAX_VARIANCE_PERCENT);
+			theta = theta + (randomFromInterval(-1, 1) * theta_step * MAX_VARIANCE_PERCENT);
+			if(radius >= MIN_ORBITAL_RADIUS && radius <= MAX_ORBITAL_RADIUS) {
+				systems.push(generateSystem(radius, theta));
+			}
+		}
 	}
+	// console.log("Generated " + systems.length + " systems");
+	nSystems = systems.length; // TODO
 
 	// Assign systems to empires
 	for (var i = 0; i < empireData.length; i++) {
@@ -267,18 +280,6 @@ function generateSQL(nSystems) {
 	}
 
 	// Generate hyperlanes & their SQL
-	/*
-	if (nSystems > 1) {
-		var hyperlanes = [];
-		var maxHyperlanes = (nSystems * (nSystems + 1)) / 2;
-		var nHyperlanes = maxHyperlanes * HYPERLANE_PERCENT;
-		for (var i = 0; i < nHyperlanes; i++) {
-			var hyperlane = generateHyperlane(systems, hyperlanes);
-			generateHyperlaneSQL(hyperlane, SQLCollection);
-			hyperlanes.push(hyperlane);
-		}
-	}
-	*/
 
 	if(nSystems > 1) {
 		const MAX_HYPERLANE_DIST = 0.1;
