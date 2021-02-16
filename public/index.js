@@ -78,6 +78,9 @@ function setupSystemView(system, system_bodies) { // TODO
 	context.lineWidth = 5;
 	context.strokeRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
 
+	context.fillStyle = "rgb(0, 0, 0)";
+	context.fillRect(0, 0, canvas.width, canvas.height);
+
 	var max_radius = 0.9 * 0.5 * Math.min(canvas.offsetWidth, canvas.offsetHeight);
 
 	var center_x = canvas.offsetWidth / 2;
@@ -117,6 +120,9 @@ function setupGalaxyView(hyperlanes, systems) {
 	context.stokeStyle = "rgb(0, 0, 0)";
 	context.lineWidth = 5;
 	context.strokeRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
+
+	context.fillStyle = "rgb(0, 0, 0)";
+	context.fillRect(0, 0, canvas.width, canvas.height);
 
 	var max_radius = 0.9 * 0.5 * Math.min(canvas.offsetWidth, canvas.offsetHeight);
 
