@@ -1,7 +1,20 @@
 const { ArgumentParser } = require("argparse");
 var toRoman = require("roman-numerals").toRoman;
 
-const systemNames = require("./stellaris_data/system_names.json");
+const rawSystemNames = require("./stellaris_data/system_names.json");
+
+function generateUniqueSystemNames(){
+    var list = [];
+    for(var i = 0; i < rawSystemNames.length; i++) {
+        var count = list.filter(e => e == rawSystemNames[i]).length;
+        if(count == 0){
+            list.push(rawSystemNames[i]);
+        }
+    }
+    return list;
+}
+var systemNames = generateUniqueSystemNames();
+
 const asteroidPrefixes = require("./stellaris_data/asteroid_prefixes.json");
 const asteroidPostfixes = require("./stellaris_data/asteroid_postfixes.json");
 
@@ -120,7 +133,11 @@ function generateSystem(orbitalRadius, theta) {
 
 	var nBodies = Math.floor(Math.random() * MAX_BODIES);
 	for (var i = 0; i < nBodies; i++) {
-		system.bodies.push(generateBody(system.name, i));
+        var body = null;
+        do {
+            body = generateBody(system.name, i);
+        } while(system.bodies.find(e => e.name == body.name) != undefined);
+        system.bodies.push(body);
 	}
 
 	return system;
@@ -239,10 +256,15 @@ function generateSQL(nSystems) {
 	var systems = [];
 	const RING_DISTANCE = 0.05;
 	const SYSTEM_DISTANCE = 0.1;
+
 	const MIN_ORBITAL_RADIUS = 0.25;
 	const MAX_ORBITAL_RADIUS = 1.0;
-	const MAX_VARIANCE_PERCENT = 0.35;
+
+	const MAX_RADIUS_VARIANCE_PERCENT = 0.05;
+	const MAX_THETA_VARIANCE_PERCENT = 0.35;
+
 	var ring_count = (MAX_ORBITAL_RADIUS - MIN_ORBITAL_RADIUS) / RING_DISTANCE;
+
 	for(var i = 0; i < ring_count; i++) {
 		var radius = MIN_ORBITAL_RADIUS + (i / ring_count) * (MAX_ORBITAL_RADIUS - MIN_ORBITAL_RADIUS);
 		var circumference = 2 * Math.PI * radius;
@@ -251,8 +273,8 @@ function generateSQL(nSystems) {
 		for(var j = 0; j < step_count; j++) {
 			var theta = j * theta_step;
 
-			radius = radius + (randomFromInterval(-1, 1) * RING_DISTANCE * MAX_VARIANCE_PERCENT);
-			theta = theta + (randomFromInterval(-1, 1) * theta_step * MAX_VARIANCE_PERCENT);
+			radius = radius + (randomFromInterval(-1, 1) * RING_DISTANCE * MAX_RADIUS_VARIANCE_PERCENT);
+			theta = theta + (randomFromInterval(-1, 1) * theta_step * MAX_THETA_VARIANCE_PERCENT);
 			if(radius >= MIN_ORBITAL_RADIUS && radius <= MAX_ORBITAL_RADIUS) {
 				systems.push(generateSystem(radius, theta));
 			}
@@ -260,6 +282,24 @@ function generateSQL(nSystems) {
 	}
 	// console.log("Generated " + systems.length + " systems");
 	nSystems = systems.length; // TODO
+
+    var bodies = [];
+    // Check for duplicate system names
+    for(var i = 0; i < systems.length; i++) {
+        bodies = bodies.concat(systems[i].bodies);
+        var count = systems.filter(e => e.name == systems[i].name).length;
+        if(count != 1){
+            console.error("Error: " + count + " systems with name \"" + systems[i].name + "\"");
+        }
+    }
+
+    // Check for duplicate body names
+    for(var i = 0; i < bodies.length; i++) {
+        var count = bodies.filter(e => e.name == bodies[i].name).length;
+        if(count != 1){
+            console.error("Error: " + count + " bodies with name \"" + bodies[i].name + "\"");
+        }
+    }
 
 	// Assign systems to empires
 	for (var i = 0; i < empireData.length; i++) {
@@ -282,10 +322,17 @@ function generateSQL(nSystems) {
 	// Generate hyperlanes & their SQL
 
 	if(nSystems > 1) {
-		const MAX_HYPERLANE_DIST = 0.1;
+		const HYPERLANE_DIST_STEP = 0.02;
 		var hyperlanes = [];
 		for(var i = 0; i < systems.length; i++) {
-			var connection_candidates = getSystemsWithinRadius(systems[i], systems, MAX_HYPERLANE_DIST);
+			var connection_candidates = [];
+			var dist = HYPERLANE_DIST_STEP;
+			while(connection_candidates.length < 2) {
+				connection_candidates = getSystemsWithinRadius(systems[i], systems, dist);
+				dist += HYPERLANE_DIST_STEP;
+			}
+
+			var connection_count = 0;
 
 			for(var j = 0; j < connection_candidates.length; j++) {
 				if(Math.random() < 0.9) {
@@ -297,6 +344,7 @@ function generateSQL(nSystems) {
 						((e.system1Name == hyperlane.system2Name) && (e.system2Name == hyperlane.system1Name))) == undefined) {
 
 						generateHyperlaneSQL(hyperlane, SQLCollection);
+						connection_count++;
 						hyperlanes.push(hyperlane);
 					}
 				}
