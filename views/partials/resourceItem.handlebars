@@ -8,8 +8,8 @@
         </div>
     </td>
     <td>
-		<button type="button" id="resource-view-button" onclick="window.location.replace('/resources/view/{{resourceID}}')">View</button>
-        <button type="button" id="resource-edit-button" onclick="window.location.replace('/resources/edit/{{resourceID}}')">Edit</button>
+		<a href="/resources/view/{{resourceID}}"><button type="button" id="resource-view-button">View</button></a>
+        <a href="/resources/edit/{{resourceID}}"><button type="button" id="resource-edit-button">Edit</button></a>
         <button type="button" id="resource-delete-button" onclick="createDeleteModal('/resources/delete/', {{resourceID}})">Delete</button>
     </td>
 </tr>
