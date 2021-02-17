@@ -4,6 +4,7 @@
     <td>{{orbitalRadius}}</td>
     <td>{{theta}}</td>
     <td>
+        <button type="button" id="system-highlight-button" onclick="highlightSystem({{systemID}});">Highlight</button>
         <a href="/systems/view/{{systemID}}"><button type="button" id="system-view-button">View</button></a>
         <a href="/systems/edit/{{systemID}}"><button type="button" id="system-edit-button">Edit</button></a>
         <button type="button" id="system-delete-button" onclick="createDeleteModal('/systems/delete/', {{systemID}})">Delete</button>

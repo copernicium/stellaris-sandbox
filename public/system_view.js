@@ -1,3 +1,5 @@
+const HIGHLIGHT_COLOR = "rgb(242, 231, 15)";
+
 // Determine (x, y) position of a body from its polar coordinates
 function polarToCartesian(max_radius, center_x, center_y, orbital_radius, theta){
 	var radius = max_radius * orbital_radius;
@@ -12,6 +14,12 @@ function polarToCartesian(max_radius, center_x, center_y, orbital_radius, theta)
 	};
 }
 
+function drawBodyName(context, datum) {
+	context.fillStyle = HIGHLIGHT_COLOR;
+	context.font = "12px Helvetica, sans-serif";
+	context.fillText(datum.name, datum.x + datum.radius, datum.y - datum.radius);
+}
+
 // Add body/system name tooltip on hover in canvas
 function canvasHandleMouseMove(e, data, canvas, context, saved_canvas) {
 	var mouseX = e.pageX - canvas.offsetLeft;
@@ -20,13 +28,12 @@ function canvasHandleMouseMove(e, data, canvas, context, saved_canvas) {
 	context.putImageData(saved_canvas, 0, 0);
 	document.body.style.cursor = "default";
 
-	context.font = "12px Helvetica, sans-serif";
 	for (var i = 0; i < data.length; i++) {
 		var datum = data[i];
 		var dx = mouseX - datum.x;
 		var dy = mouseY - datum.y;
 		if ((dx * dx + dy * dy) < (datum.radius * datum.radius)) {
-			context.fillText(datum.name, datum.x + datum.radius, datum.y - datum.radius);
+			drawBodyName(context, datum);
 			document.body.style.cursor = "pointer";
 		}
 	}
@@ -205,6 +212,7 @@ function drawGalaxyView(hyperlanes, systems) {
 	}
 	var saved_canvas = context.getImageData(0, 0, canvas.width, canvas.height);
 	galaxy_data = {
+		system_data: system_data,
 		hyperlane_data: hyperlane_data,
 		saved_canvas: saved_canvas,
 		context: context,
@@ -227,10 +235,34 @@ function highlightHyperlane(system1ID, system2ID){
 			if(hyperlane != null) {
 				context.beginPath();
 				context.lineWidth = 3;
-				context.strokeStyle = "rgb(242, 231, 15)";
+				context.strokeStyle = HIGHLIGHT_COLOR;
 				context.moveTo(hyperlane.start_x, hyperlane.start_y);
 				context.lineTo(hyperlane.end_x, hyperlane.end_y);
 				context.stroke();
+			}
+			galaxy_data.highlighted = new_highlighted;
+		} else {
+			galaxy_data.highlighted = null;
+		}
+	}
+}
+function highlightSystem(systemID){
+	if(galaxy_data != null){
+		saved_canvas = galaxy_data.saved_canvas;
+		context = galaxy_data.context;
+		context.putImageData(saved_canvas, 0, 0);
+
+		var new_highlighted = systemID;
+		if(galaxy_data.highlighted != new_highlighted) {
+
+			var system = galaxy_data.system_data.find(e => e.id == systemID);
+			if(system != null) {
+				console.log("HERE");
+				context.beginPath();
+				context.arc(system.x, system.y, system.radius * 1.5, 0, 360);
+				context.fillStyle = HIGHLIGHT_COLOR;
+				context.fill();
+				drawBodyName(context, system);
 			}
 			galaxy_data.highlighted = new_highlighted;
 		} else {

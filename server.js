@@ -34,6 +34,13 @@ app.get("/", (req, res, next) => {
 });
 
 //
+// QUERIES =====================================================================
+//
+
+const HYPERLANES_QUERY = "SELECT s1.system1ID, s1.system2ID, s1.name AS system1Name, s2.name AS system2Name, s1.orbitalRadius AS system1OrbitalRadius, s1.theta AS system1Theta, s2.orbitalRadius AS system2OrbitalRadius, s2.theta AS system2Theta FROM (SELECT hyperlanes.system1ID, hyperlanes.system2ID, systems.name, systems.orbitalRadius, systems.theta FROM hyperlanes INNER JOIN systems ON hyperlanes.system1ID = systems.systemID) AS s1 INNER JOIN (SELECT hyperlanes.system1ID, hyperlanes.system2ID, systems.name, systems.orbitalRadius, systems.theta FROM hyperlanes INNER JOIN systems ON hyperlanes.system2ID = systems.systemID) AS s2 ON s1.system1ID = s2.system1ID AND s1.system2ID = s2.system2ID;";
+
+
+//
 // EMPIRES =====================================================================
 //
 
@@ -201,7 +208,20 @@ app.get("/systems", (req, res, next) => {
 			res.status(500).send(err);
 		} else {
 			context.systems = rows;
-			res.status(200).render(pageName, context);
+			mysql.pool.query(HYPERLANES_QUERY, (err, rows, fields) => {
+				if(err) {
+					res.status(500).send(err);
+				} else {
+					if(rows != null) {
+						context.encoded_hyperlane_details = encodeURIComponent(JSON.stringify(rows));
+						context.encoded_systems = encodeURIComponent(JSON.stringify(context.systems));
+						res.status(200).render(pageName, context);
+
+					} else {
+						// TODO error
+					}
+				}
+			});
 		}
 	});
 });
@@ -391,7 +411,7 @@ app.get("/hyperlanes", (req, res, next) => {
 		} else {
 			context.hyperlanes = rows;;
 
-			mysql.pool.query("SELECT s1.system1ID, s1.system2ID, s1.name AS system1Name, s2.name AS system2Name, s1.orbitalRadius AS system1OrbitalRadius, s1.theta AS system1Theta, s2.orbitalRadius AS system2OrbitalRadius, s2.theta AS system2Theta FROM (SELECT hyperlanes.system1ID, hyperlanes.system2ID, systems.name, systems.orbitalRadius, systems.theta FROM hyperlanes INNER JOIN systems ON hyperlanes.system1ID = systems.systemID) AS s1 INNER JOIN (SELECT hyperlanes.system1ID, hyperlanes.system2ID, systems.name, systems.orbitalRadius, systems.theta FROM hyperlanes INNER JOIN systems ON hyperlanes.system2ID = systems.systemID) AS s2 ON s1.system1ID = s2.system1ID AND s1.system2ID = s2.system2ID;", (err, rows, fields) => {
+			mysql.pool.query(HYPERLANES_QUERY, (err, rows, fields) => {
 				if(err) {
 					res.status(500).send(err);
 				} else {
