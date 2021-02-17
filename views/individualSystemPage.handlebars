@@ -17,7 +17,8 @@
 				name: creationForm["system-name"].value,
 				type: creationForm["system-type"].value,
 				orbitalRadius: creationForm["system-orbital-radius"].value,
-				theta: creationForm["system-theta"].value
+				theta: creationForm["system-theta"].value,
+				owningEmpireID: creationForm["owning-empire-name"].dataset.id
 			};
 {{#switch type}}
 	{{#case "create"}}
@@ -36,9 +37,16 @@
 			var accept_button = document.getElementById("accept-button");
 			if (accept_button) accept_button.addEventListener("click", editAccept);
 
+{{#unlessEquals type "view"}}
+			var empire_search_list = JSON.parse(decodeURIComponent("{{{encoded_empire_search_list}}}"));
+			setupSearchList(empire_search_list, "empire-search-container", "empire-search-bar", "empire-search-list", "empireID", "name", true);
+{{/unlessEquals}}
+
+{{#unlessEquals type "create"}}
 			var system = JSON.parse(decodeURIComponent("{{{encoded_system}}}"));
 			var system_bodies = JSON.parse(decodeURIComponent("{{{encoded_system_bodies}}}"));
 			drawSystemView(system, system_bodies);
+{{/unlessEquals}}
 		});
 	</script>
 	<div class="page-container has-right-col">
@@ -88,6 +96,14 @@
 							<input type="number" id="system-theta" name="system-theta" min="0" max="360" value="{{system.theta}}" {{#ifEquals type "view"}}readonly{{/ifEquals}}>
 						</td>
 					</tr>
+					<tr>
+						<td>
+							<label>Owning Empire:</label>
+						</td>
+						<td id="empire-search-container">
+							<input type="text" id="empire-search-bar" class="list-search-bar" name="owning-empire-name" data-id="{{system.empireID}}" value="{{owning_empire_name}}" {{#ifEquals type "view"}}readonly{{/ifEquals}}>
+							<div class="search-list hidden" id="empire-search-list" tabindex="-1"></div>
+						</td>
 				</table>
 			</form>
 			<h3>Bodies</h3>

@@ -22,6 +22,10 @@ function createDefaultContext(name) {
 	};
 }
 
+function convertNullableString(str) {
+	return str == "null" ? null : str;
+}
+
 
 app.get("/", (req, res, next) => {
 	var pageName = "homePage";
@@ -172,6 +176,19 @@ app.post("/empires/delete", (req, res, next) => {
 	}
 });
 
+function addEmpireSearchList(context, res, contFunc) {
+	mysql.pool.query("SELECT empireID, name FROM empires ORDER BY name", (err, rows, fields) => {
+		if (err) {
+			res.status(500).send(err);
+		} else if (rows == null) {
+			res.status(500).send("No rows returned");
+		} else {
+			context.encoded_empire_search_list = encodeURIComponent(JSON.stringify(rows));
+			contFunc(context, res);
+		}
+	});
+}
+
 //
 // SYSTEMS =====================================================================
 //
@@ -179,11 +196,11 @@ app.post("/empires/delete", (req, res, next) => {
 app.get("/systems", (req, res, next) => {
 	var pageName = "systemsPage";
 	var context = createDefaultContext(pageName);
-	mysql.pool.query("SELECT * FROM systems", (err, rows, fields) => {
+	mysql.pool.query("SELECT * FROM systems ORDER BY name", (err, rows, fields) => {
 		if(err) {
 			res.status(500).send(err);
 		} else {
-			context.systems = rows;;
+			context.systems = rows;
 			res.status(200).render(pageName, context);
 		}
 	});
@@ -200,8 +217,9 @@ app.get("/systems/create", (req, res, next) => {
 		"theta": 0
 	};
 	context.system_bodies = [];
-
-	res.status(200).render(pageName, context);
+	addEmpireSearchList(context, res, (context, res) => {
+		res.status(200).render(pageName, context);
+	});
 });
 
 function viewEditSystemData(type, req, res, next) {
@@ -212,29 +230,49 @@ function viewEditSystemData(type, req, res, next) {
 		var context = createDefaultContext(pageName);
 		context.type = type;
 
-		mysql.pool.query("SELECT * FROM systems WHERE systems.systemID = " + systemId, (err, rows, fields) => {
+		mysql.pool.query("SELECT * FROM systems WHERE systems.systemID = ?", systemId, (err, rows, fields) => {
 			if(err) {
 				res.status(500).send(err);
+			} else if (rows == null) {
+				res.status(500).send("No rows returned");
+			} else if (rows.length > 1) {
+				res.status(500).send("Too many rows returned");
 			} else {
-				if(rows != null && rows.length == 1) {
-					context.system = rows[0];
+				context.system = rows[0];
 
-					mysql.pool.query("SELECT * FROM bodies WHERE bodies.systemID = " + systemId, (err, rows, fields) => {
+				var bodiesCallback = (context) => {
+					mysql.pool.query("SELECT * FROM bodies WHERE bodies.systemID = ?", systemId, (err, rows, fields) => {
 						if(err) {
 							res.status(500).send(err);
+						} else if (rows == null) {
+							res.status(500).send("No rows returned");
 						} else {
-							if(rows != null) {
-								context.system_bodies = rows;
-								context.encoded_system = encodeURIComponent(JSON.stringify(context.system));
-								context.encoded_system_bodies = encodeURIComponent(JSON.stringify(context.system_bodies));
-							} else {
-								res.status(500).send("No rows returned");
-							}
+							context.system_bodies = rows;
+							context.encoded_system = encodeURIComponent(JSON.stringify(context.system));
+							context.encoded_system_bodies = encodeURIComponent(JSON.stringify(context.system_bodies));
+							addEmpireSearchList(context, res, (context, res) => {
+								res.status(200).render(pageName, context);
+							});
 						}
-						res.status(200).render(pageName, context);
+					});
+				}
+
+				if (context.system.empireID != null) {
+					mysql.pool.query("SELECT name FROM empires WHERE empireID = ?", context.system.empireID, (err, rows, fields) => {
+						if (err) {
+							res.status(500).send(err);
+						} else if (rows == null) {
+							res.status(500).send("No rows returned");
+						} else if (rows > 1) {
+							res.status(500).send("Too many rows returned");
+						} else {
+							context.owning_empire_name = rows[0].name;
+							bodiesCallback(context);
+						}
 					});
 				} else {
-					res.status(500).send("No rows/too many rows returned");
+					context.owning_empire_name = "None"
+					bodiesCallback(context);
 				}
 			}
 		});
@@ -256,9 +294,10 @@ app.post('/systems/add', (req, res, next) => {
 		req.body.hasOwnProperty("name") &&
 		req.body.hasOwnProperty("type") &&
 		req.body.hasOwnProperty("orbitalRadius") &&
-		req.body.hasOwnProperty("theta")
+		req.body.hasOwnProperty("theta") &&
+		req.body.hasOwnProperty("owningEmpireID")
 	) {
-		mysql.pool.query("INSERT INTO systems(name, type, orbitalRadius, theta) VALUES (?,?,?,?)", [req.body.name, req.body.type, req.body.orbitalRadius, req.body.theta], (error, result, fields) => {
+		mysql.pool.query("INSERT INTO systems(name, type, orbitalRadius, theta, empireID) VALUES (?,?,?,?,?)", [req.body.name, req.body.type, req.body.orbitalRadius, req.body.theta, convertNullableString(req.body.owningEmpireID)], (error, result, fields) => {
 			if (error) {
 				res.status(500).send(error);
 			} else {
@@ -267,7 +306,7 @@ app.post('/systems/add', (req, res, next) => {
 		});
 	} else {
 		res.status(400).send({
-			error: "Request body needs a name, type, orbitalRadius, and theta."
+			error: "Request body needs a name, type, orbitalRadius, theta, and owningEmpireID."
 		});
 	}
 });
@@ -280,9 +319,10 @@ app.post("/systems/update/:id", (req, res, next) => {
 			req.body.hasOwnProperty("name") &&
 			req.body.hasOwnProperty("type") &&
 			req.body.hasOwnProperty("orbitalRadius") &&
-			req.body.hasOwnProperty("theta")
+			req.body.hasOwnProperty("theta") &&
+			req.body.hasOwnProperty("owningEmpireID")
 		) {
-			mysql.pool.query("UPDATE systems SET name=?, type=?, orbitalRadius=?, theta=? WHERE systemID=?", [req.body.name, req.body.type, req.body.orbitalRadius, req.body.theta, systemId], (error, result, fields) => {
+			mysql.pool.query("UPDATE systems SET name=?, type=?, orbitalRadius=?, theta=?, empireId=? WHERE systemID=?", [req.body.name, req.body.type, req.body.orbitalRadius, req.body.theta, convertNullableString(req.body.owningEmpireID), systemId], (error, result, fields) => {
 				if (error) {
 					res.status(500).send(error);
 				} else {
@@ -291,7 +331,7 @@ app.post("/systems/update/:id", (req, res, next) => {
 			});
 		} else {
 			res.status(400).send({
-				error: "Request body needs a name, type, orbitalRadius, and theta."
+				error: "Request body needs a name, type, orbitalRadius, theta, and owningEmpireID."
 			});
 		}
 	} else {

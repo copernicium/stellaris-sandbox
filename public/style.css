@@ -46,6 +46,24 @@
 	margin: 0px 5px;
 }
 
+.search-list {
+	overflow: scroll;
+	overflow-x: hidden;
+	display: flex;
+	flex-direction: column;
+	max-height: 300px;
+	position: absolute;
+	background-color: black;
+}
+
+.search-list-item {
+	height: 30px;
+}
+
+.search-list-item:hover {
+	background-color: green;
+}
+
 button {
 	border: 1px solid #AAA;
 	border-radius: 2px;

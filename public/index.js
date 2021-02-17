@@ -64,6 +64,49 @@ function doSystemSearchUpdate() {
 	postToServer("/systems/search", context);
 }
 
+function setupSearchList(dataList, searchContainerId, searchBarId, searchListId, idProp, textProp, nullable) {
+	var searchContainer = document.getElementById(searchContainerId);
+	var searchBar = document.getElementById(searchBarId);
+	var searchList = document.getElementById(searchListId);
+
+	function addSearchItem(datum) {
+		var searchItemContext = {
+			id: datum[idProp],
+			text: datum[textProp]
+		};
+		var searchItemHTML = Handlebars.templates.searchItem(searchItemContext);
+		searchList.insertAdjacentHTML("beforeend", searchItemHTML);
+		var searchItem = searchList.lastElementChild;
+		searchItem.addEventListener("click", (event) => {
+			searchList.classList.add("hidden");
+			searchBar.dataset.id = event.target.dataset.id;
+			searchBar.value = event.target.dataset.text;
+		});
+	}
+
+	if (nullable) {
+		var nullDatum = {};
+		nullDatum[idProp] = "null";
+		nullDatum[textProp] = "None";
+		addSearchItem(nullDatum);
+	}
+
+	for (var i = 0; i < dataList.length; i++) {
+		addSearchItem(dataList[i]);
+	}
+
+	searchBar.addEventListener("focusin", () => {
+		searchList.classList.remove("hidden");
+		searchList.focus();
+	});
+	searchList.addEventListener("focusout", () => {
+		searchList.classList.add("hidden");
+	});
+	searchBar.addEventListener("keyup", () => {
+		// TODO
+	});
+}
+
 var confirmation_modal_confirm_function = undefined;
 
 function createDeleteModal(delete_url, id) {
