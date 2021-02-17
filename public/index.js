@@ -56,8 +56,8 @@ function setupStarfield() {
 	}
 }
 
-// Add body name tooltip on hover in canvas
-function systemCanvasHandleMouseMove(e, body_data, canvas, context, saved_canvas) {
+// Add body/system name tooltip on hover in canvas
+function canvasHandleMouseMove(e, data, canvas, context, saved_canvas) {
 	var mouseX = e.pageX - canvas.offsetLeft;
 	var mouseY = e.pageY - canvas.offsetTop;
 
@@ -65,28 +65,28 @@ function systemCanvasHandleMouseMove(e, body_data, canvas, context, saved_canvas
 	document.body.style.cursor = "default";
 
 	context.font = "12px Helvetica, sans-serif";
-	for (var i = 0; i < body_data.length; i++) {
-		var body_datum = body_data[i];
-		var dx = mouseX - body_datum.x;
-		var dy = mouseY - body_datum.y;
-		if ((dx * dx + dy * dy) < (body_datum.radius * body_datum.radius)) {
-			context.fillText(body_datum.data.name, body_datum.x + body_datum.radius, body_datum.y - body_datum.radius);
+	for (var i = 0; i < data.length; i++) {
+		var datum = data[i];
+		var dx = mouseX - datum.x;
+		var dy = mouseY - datum.y;
+		if ((dx * dx + dy * dy) < (datum.radius * datum.radius)) {
+			context.fillText(datum.name, datum.x + datum.radius, datum.y - datum.radius);
 			document.body.style.cursor = "pointer";
 		}
 	}
 }
 
-// Make clicking on bodies navigate to the body's page
-function systemCanvasHandleMouseDown(e, body_data, canvas) {
+// Make clicking on bodies/systems navigate to the appropriate page
+function canvasHandleMouseDown(e, data, canvas, url_base) {
 	var mouseX = e.pageX - canvas.offsetLeft;
 	var mouseY = e.pageY - canvas.offsetTop;
 
-	for (var i = 0; i < body_data.length; i++) {
-		var body_datum = body_data[i];
-		var dx = mouseX - body_datum.x;
-		var dy = mouseY - body_datum.y;
-		if ((dx * dx + dy * dy) < (body_datum.radius * body_datum.radius)) {
-			window.location.href = "/bodies/view/" + body_datum.data.bodyID;
+	for (var i = 0; i < data.length; i++) {
+		var datum = data[i];
+		var dx = mouseX - datum.x;
+		var dy = mouseY - datum.y;
+		if ((dx * dx + dy * dy) < (datum.radius * datum.radius)) {
+			window.location.href = url_base + datum.id;
 		}
 	}
 }
@@ -150,7 +150,8 @@ function setupSystemView(system, system_bodies) { // TODO
 			x: x,
 			y: y,
 			radius: size,
-			data: system_bodies[i]
+			name: system_bodies[i].name,
+			id: system_bodies[i].bodyID
 		});
 
 		// Draw orbit path
@@ -169,9 +170,11 @@ function setupSystemView(system, system_bodies) { // TODO
 	}
 
 	var saved_canvas = context.getImageData(0, 0, canvas.width, canvas.height);
-	canvas.addEventListener('mousemove', e => systemCanvasHandleMouseMove(e, body_data, canvas, context, saved_canvas));
-	canvas.addEventListener('mousedown', e => systemCanvasHandleMouseDown(e, body_data, canvas));
+	canvas.addEventListener('mousemove', e => canvasHandleMouseMove(e, body_data, canvas, context, saved_canvas));
+	canvas.addEventListener('mousedown', e => canvasHandleMouseDown(e, body_data, canvas, "/bodies/view/"));
 }
+
+var galaxy_data = null;
 
 function setupGalaxyView(hyperlanes, systems) {
 	var canvas = document.getElementById("galaxy-view");
@@ -195,6 +198,10 @@ function setupGalaxyView(hyperlanes, systems) {
 	var center_x = canvas.offsetWidth / 2;
 	var center_y = canvas.offsetHeight / 2;
 
+	var system_data = [];
+
+	var size = 2;
+
 	// Draw systems
 	for(var i = 0; i < systems.length; i++) {
 		var radius = max_radius * systems[i].orbitalRadius;
@@ -203,10 +210,20 @@ function setupGalaxyView(hyperlanes, systems) {
 		var y = center_y + radius * Math.sin(theta);
 
 		context.beginPath();
-		context.arc(x, y, 2, 0, 360);
+		context.arc(x, y, size, 0, 360);
 		context.fillStyle = "rgb(255, 255, 255)";
 		context.fill();
+
+		system_data.push({
+			x: x,
+			y: y,
+			radius: size,
+			name: systems[i].name,
+			id: systems[i].systemID,
+		});
 	}
+
+	var hyperlane_data = [];
 
 	// Draw hyperlanes
 	for(var i = 0; i < hyperlanes.length; i++) {
@@ -227,6 +244,44 @@ function setupGalaxyView(hyperlanes, systems) {
 		context.lineTo(end_x, end_y);
 		context.stroke();
 
+		hyperlane_data.push({
+			start_x: start_x,
+			start_y: start_y,
+			end_x: end_x,
+			end_y: end_y,
+			data: hyperlanes[i]
+		});
+	}
+	var saved_canvas = context.getImageData(0, 0, canvas.width, canvas.height);
+	galaxy_data = {
+		hyperlane_data: hyperlane_data,
+		saved_canvas: saved_canvas,
+		context: context,
+		highlighted: false
+	};
+	canvas.addEventListener('mousemove', e => canvasHandleMouseMove(e, system_data, canvas, context, saved_canvas));
+	canvas.addEventListener('mousedown', e => canvasHandleMouseDown(e, system_data, canvas, "/systems/view/"));
+}
+
+function highlightHyperlane(system1ID, system2ID){
+	if(galaxy_data != null){
+		saved_canvas = galaxy_data.saved_canvas;
+		context = galaxy_data.context;
+		context.putImageData(saved_canvas, 0, 0);
+
+		if(!galaxy_data.highlighted) {
+
+			var hyperlane = galaxy_data.hyperlane_data.find(e => e.data.system1ID == system1ID && e.data.system2ID == system2ID);
+			if(hyperlane != null) {
+				context.beginPath();
+				context.lineWidth = 3;
+				context.strokeStyle = "rgb(242, 231, 15)";
+				context.moveTo(hyperlane.start_x, hyperlane.start_y);
+				context.lineTo(hyperlane.end_x, hyperlane.end_y);
+				context.stroke();
+			}
+		}
+		galaxy_data.highlighted = !galaxy_data.highlighted;
 	}
 }
 
@@ -282,8 +337,6 @@ function addAtEndOfMain(html) {
 
 window.addEventListener("DOMContentLoaded", function() {
 	setupStarfield();
-	// setupSystemView(null, null);
-	// setupGalaxyView(null);
 
 	var searchInput = document.getElementById("system-search-input");
 	if (searchInput) {
