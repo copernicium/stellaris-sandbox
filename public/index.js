@@ -56,6 +56,41 @@ function setupStarfield() {
 	}
 }
 
+// Add body name tooltip on hover in canvas
+function systemCanvasHandleMouseMove(e, body_data, canvas, context, saved_canvas) {
+	var mouseX = e.pageX - canvas.offsetLeft;
+	var mouseY = e.pageY - canvas.offsetTop;
+
+	context.putImageData(saved_canvas, 0, 0);
+	document.body.style.cursor = "default";
+
+	context.font = "12px Helvetica, sans-serif";
+	for (var i = 0; i < body_data.length; i++) {
+		var body_datum = body_data[i];
+		var dx = mouseX - body_datum.x;
+		var dy = mouseY - body_datum.y;
+		if ((dx * dx + dy * dy) < (body_datum.radius * body_datum.radius)) {
+			context.fillText(body_datum.data.name, body_datum.x + body_datum.radius, body_datum.y - body_datum.radius);
+			document.body.style.cursor = "pointer";
+		}
+	}
+}
+
+// Make clicking on bodies navigate to the body's page
+function systemCanvasHandleMouseDown(e, body_data, canvas) {
+	var mouseX = e.pageX - canvas.offsetLeft;
+	var mouseY = e.pageY - canvas.offsetTop;
+
+	for (var i = 0; i < body_data.length; i++) {
+		var body_datum = body_data[i];
+		var dx = mouseX - body_datum.x;
+		var dy = mouseY - body_datum.y;
+		if ((dx * dx + dy * dy) < (body_datum.radius * body_datum.radius)) {
+			window.location.href = "/bodies/view/" + body_datum.data.bodyID;
+		}
+	}
+}
+
 function setupSystemView(system, system_bodies) { // TODO
 	if(system == null){
 		console.error("system is null");
@@ -88,6 +123,8 @@ function setupSystemView(system, system_bodies) { // TODO
 	
 	// TODO stars
 
+	var body_data = [];
+
 	for(var i = 0; i < system_bodies.length; i++) {
 		var radius = max_radius * system_bodies[i].orbitalRadius;
 		var theta = system_bodies[i].theta * 2 * Math.PI / 360;
@@ -95,16 +132,45 @@ function setupSystemView(system, system_bodies) { // TODO
 		var y = center_y + radius * Math.sin(theta);
 		
 		context.beginPath();
-		context.arc(x, y, 10, 0, 360);
-		context.fillStyle = "rgb(255, 255, 255)";
-		context.fill();
-		context.beginPath();
+		var size = 0;
+		var color = "rgb(255, 255, 255)";
+		switch(system_bodies[i].type){
+			case "asteroid":
+				size = 5;
+				color = "rgb(180, 180, 180)";
+				break;
+			case "planet":
+				size = 10;
+				break;
+			default:
+				console.error("Unknown planet type: " + system_bodies[i].type);
+		}
+
+		body_data.push({
+			x: x,
+			y: y,
+			radius: size,
+			data: system_bodies[i]
+		});
+
+		// Draw orbit path
 		context.arc(center_x, center_y, radius, 0, 360);
 		context.setLineDash([5, 15]);
 		context.lineWidth = 1;
 		context.strokeStyle = "rgb(255, 255, 255)";
 		context.stroke();
+
+		context.beginPath();
+
+		// Draw body
+		context.arc(x, y, size, 0, 360);
+		context.fillStyle = color;
+		context.fill();
 	}
+
+	var saved_canvas = context.getImageData(0, 0, canvas.width, canvas.height);
+	canvas.addEventListener('mousemove', e => systemCanvasHandleMouseMove(e, body_data, canvas, context, saved_canvas));
+	canvas.addEventListener('mousedown', e => systemCanvasHandleMouseDown(e, body_data, canvas));
 }
 
 function setupGalaxyView(hyperlanes, systems) {
