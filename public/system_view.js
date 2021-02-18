@@ -21,9 +21,10 @@ function drawBodyName(context, datum) {
 }
 
 // Add body/system name tooltip on hover in canvas
-function canvasHandleMouseMove(e, data, canvas, context, saved_canvas) {
-	var mouseX = e.pageX - canvas.offsetLeft;
-	var mouseY = e.pageY - canvas.offsetTop;
+function canvasHandleMouseMove(e, data, context, saved_canvas) {
+	var rect = e.target.getBoundingClientRect();
+	var mouseX = e.clientX - rect.left;
+	var mouseY = e.clientY - rect.top;
 
 	context.putImageData(saved_canvas, 0, 0);
 	document.body.style.cursor = "default";
@@ -40,9 +41,10 @@ function canvasHandleMouseMove(e, data, canvas, context, saved_canvas) {
 }
 
 // Make clicking on bodies/systems navigate to the appropriate page
-function canvasHandleMouseDown(e, data, canvas, url_base) {
-	var mouseX = e.pageX - canvas.offsetLeft;
-	var mouseY = e.pageY - canvas.offsetTop;
+function canvasHandleMouseDown(e, data,  url_base) {
+	var rect = e.target.getBoundingClientRect();
+	var mouseX = e.clientX - rect.left;
+	var mouseY = e.clientY - rect.top;
 
 	for (var i = 0; i < data.length; i++) {
 		var datum = data[i];
@@ -189,8 +191,8 @@ async function drawSystemView(system, system_bodies) {
 	}
 
 	var saved_canvas = context.getImageData(0, 0, canvas.width, canvas.height);
-	canvas.addEventListener('mousemove', e => canvasHandleMouseMove(e, body_data, canvas, context, saved_canvas));
-	canvas.addEventListener('mousedown', e => canvasHandleMouseDown(e, body_data, canvas, "/bodies/view/"));
+	canvas.addEventListener('mousemove', e => canvasHandleMouseMove(e, body_data, context, saved_canvas));
+	canvas.addEventListener('mousedown', e => canvasHandleMouseDown(e, body_data, "/bodies/view/"));
 }
 
 var galaxy_data = null;
@@ -285,8 +287,8 @@ async function drawGalaxyView(hyperlanes, systems) {
 		context: context,
 		highlighted: null
 	};
-	canvas.addEventListener('mousemove', e => canvasHandleMouseMove(e, system_data, canvas, context, saved_canvas));
-	canvas.addEventListener('mousedown', e => canvasHandleMouseDown(e, system_data, canvas, "/systems/view/"));
+	canvas.addEventListener('mousemove', e => canvasHandleMouseMove(e, system_data, context, saved_canvas));
+	canvas.addEventListener('mousedown', e => canvasHandleMouseDown(e, system_data, "/systems/view/"));
 }
 
 function highlightHyperlane(system1ID, system2ID){
