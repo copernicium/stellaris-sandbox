@@ -4,6 +4,21 @@ const MODAL_OPEN_BUTTON_ID = "modal-open-button";
 const MODAL_CANCEL_BUTTON_ID = "modal-cancel-button";
 const MODAL_ACCEPT_BUTTON_ID = "modal-accept-button";
 
+function getFromServer(url, callback) {
+	var request = new XMLHttpRequest();
+	request.open("GET", url);
+
+	request.addEventListener("load", function (event) {
+		if (event.target.status === 200) {
+			callback(event.target.response);
+		} else {
+			alert("Error: " + event.target.response);
+		}
+	});
+
+	request.send(null);
+}
+
 function postToServer(url, context) {
 	var request = new XMLHttpRequest();
 	request.open("POST", url);
@@ -14,7 +29,7 @@ function postToServer(url, context) {
 		if (event.target.status === 200) {
 			// TODO
 		} else {
-			alert("Error adding empire on server: " + event.target.response);
+			alert("Error: " + event.target.response);
 		}
 	});
 
@@ -54,14 +69,6 @@ function setupStarfield() {
 		context.fillStyle = "hsl(" + hue + ", " + sat + "%, 88%)";
 		context.fill();
 	}
-}
-
-function doSystemSearchUpdate() {
-	var search_query = document.getElementById("system-search-input").value;
-	var context = {
-		search_query: search_query
-	};
-	postToServer("/systems/search", context);
 }
 
 function setupSearchList(dataList, searchContainerId, searchBarId, searchListId, idProp, textProp, nullable) {
@@ -151,9 +158,4 @@ function addAtEndOfMain(html) {
 
 window.addEventListener("DOMContentLoaded", function() {
 	setupStarfield();
-
-	var searchInput = document.getElementById("system-search-input");
-	if (searchInput) {
-		searchInput.addEventListener("input", doSystemSearchUpdate);
-	}
 });

@@ -359,17 +359,15 @@ app.post("/systems/update/:id", (req, res, next) => {
 	}
 });
 
-app.post('/systems/search', (req, res, next) => {
-	if (req.hasOwnProperty("body") &&
-		req.body.hasOwnProperty("search_query")
-	) {
-		console.log("Searched " + req.body.search_query); // TODO
-		res.status(200).send("Searched query");
-	} else {
-		res.status(400).send({
-			error: "Request body needs a search_query."
-		});
-	}
+app.get("/systems/search/:search_query?", (req, res, next) => {
+	var search_query = (req.params == null || req.params.search_query == null) ? "" : req.params.search_query;
+	mysql.pool.query("SELECT * FROM systems WHERE systems.name LIKE \"%" + search_query + "%\" ORDER BY name;", (err, rows, fields) => {
+		if(err) {
+			res.status(500).send(err);
+		} else {
+			res.status(200).send(rows);
+		}
+	});
 });
 
 app.post("/systems/delete", (req, res, next) => {

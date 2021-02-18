@@ -1,9 +1,28 @@
 <main>
+	<script src="/templates/system_item_template.js" defer></script>
 	<script>
+		function doSystemSearchUpdate() {
+			var search_query = document.getElementById("system-search-input").value;
+			var parent = document.getElementById("systems-list");
+			parent.innerHTML = "";
+			getFromServer("/systems/search/" + search_query, raw_results => {
+				var results = JSON.parse(raw_results);
+				for(var i = 0; i < results.length; i++) {
+					var systemHTML = Handlebars.templates.systemItem(results[i]);
+					parent.insertAdjacentHTML("beforeend", systemHTML);
+				}
+			});
+		}
+
 		window.addEventListener("DOMContentLoaded", function() {
 			var hyperlanes = JSON.parse(decodeURIComponent("{{{encoded_hyperlane_details}}}"));
 			var systems = JSON.parse(decodeURIComponent("{{{encoded_systems}}}"));
 			drawGalaxyView(hyperlanes, systems);
+
+			var searchInput = document.getElementById("system-search-input");
+			if (searchInput) {
+				searchInput.addEventListener("input", doSystemSearchUpdate);
+			}
 		});
 	</script>
 	<div class="page-container has-right-col">
