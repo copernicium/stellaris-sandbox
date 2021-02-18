@@ -16,8 +16,8 @@
 {{/unlessEquals}}
 				name: creationForm["empire-name"].value,
 				aggressiveness: creationForm["empire-aggressiveness"].value,
-				primaryColor: creationForm["empire-primary-color"].value,
-				secondaryColor: creationForm["empire-secondary-color"].value,
+				primaryColor: creationForm["empire-primary-color"].value.toUpperCase(),
+				secondaryColor: creationForm["empire-secondary-color"].value.toUpperCase(),
 				isFallenEmpire: creationForm["empire-is-fallen"].checked
 			};
 {{#switch type}}
@@ -62,9 +62,9 @@
 					</td>
 					<td>
 						<select id="empire-aggressiveness" name="empire-aggressiveness" {{#ifEquals type "view"}}disabled{{/ifEquals}}>
-							<option value="Passive" {{#ifEquals empire.aggressiveness "Passive"}}selected{{/ifEquals}}>Passive</option>
-							<option value="Moderate" {{#ifEquals empire.aggressiveness "Moderate"}}selected{{/ifEquals}}>Moderate</option>
-							<option value="Aggressive" {{#ifEquals empire.aggressiveness "Aggressive"}}selected{{/ifEquals}}>Aggressive</option>
+							<option value="passive" {{#ifEquals empire.aggressiveness "passive"}}selected{{/ifEquals}}>Passive</option>
+							<option value="moderate" {{#ifEquals empire.aggressiveness "moderate"}}selected{{/ifEquals}}>Moderate</option>
+							<option value="aggressive" {{#ifEquals empire.aggressiveness "aggressive"}}selected{{/ifEquals}}>Aggressive</option>
 						</select>
 					</td>
 				</tr>

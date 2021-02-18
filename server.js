@@ -47,7 +47,7 @@ const HYPERLANES_QUERY = "SELECT s1.system1ID, s1.system2ID, s1.name AS system1N
 app.get("/empires", (req, res, next) => {
 	var pageName = "empiresPage";
 	var context = createDefaultContext(pageName);
-	mysql.pool.query("SELECT * FROM empires", (err, rows, fields) => {
+	mysql.pool.query("SELECT * FROM empires ORDER BY name", (err, rows, fields) => {
 		if(err) {
 			res.status(500).send(err);
 		} else {
@@ -72,63 +72,57 @@ app.get("/empires/create", (req, res, next) => {
 	res.status(200).render(pageName, context);
 });
 
-app.get("/empires/view/:id", (req, res, next) => {
+function viewEditEmpireData(type, req, res, next) {
 	var empireId = parseInt(req.params.id);
 	var idIsInt = (empireId != NaN) && (String(empireId) == req.params.id);
 	if (idIsInt && empireId >= 0) {
 		var pageName = "individualEmpirePage";
 		var context = createDefaultContext(pageName);
-		context.type = "view";
+		context.type = type;
 
-		mysql.pool.query("SELECT * FROM empires WHERE empires.empireID = " + empireId, (err, rows, fields) => {
+		mysql.pool.query("SELECT * FROM empires WHERE empireID = ?", empireId, (err, rows, fields) => {
 			if(err) {
 				res.status(500).send(err);
+			} else if (rows == null) {
+				res.status(500).send("No rows returned");
+			} else if (rows.length > 1) {
+				res.status(500).send("Too many rows returned");
 			} else {
-				if(rows != null && rows.length == 1) {
-					context.empire = rows[0];
-				} else {
-					// TODO error
-				}
+				context.empire = rows[0];
 				res.status(200).render(pageName, context);
 			}
 		});
 	} else {
 		next();
 	}
+}
+
+app.get("/empires/view/:id", (req, res, next) => {
+	viewEditEmpireData("view", req, res, next);
 });
 
 app.get("/empires/edit/:id", (req, res, next) => {
-	var empireId = parseInt(req.params.id);
-	var idIsInt = (empireId != NaN) && (String(empireId) == req.params.id);
-	if (idIsInt && empireId >= 0) {
-		var pageName = "individualEmpirePage";
-		var context = createDefaultContext(pageName);
-		context.type = "edit";
-
-		var empire = empires[empireId]; // TODO: Replace with call to database
-		context.empire = empire;
-
-		res.status(200).render(pageName, context);
-	} else {
-		next();
-	}
+	viewEditEmpireData("edit", req, res, next);
 });
 
 app.post('/empires/add', (req, res, next) => {
 	if (req.hasOwnProperty("body") &&
 		req.body.hasOwnProperty("name") &&
 		req.body.hasOwnProperty("aggressiveness") &&
-		req.body.hasOwnProperty("primary_color") &&
-		req.body.hasOwnProperty("secondary_color") &&
-		req.body.hasOwnProperty("fallen_empire")
+		req.body.hasOwnProperty("primaryColor") &&
+		req.body.hasOwnProperty("secondaryColor") &&
+		req.body.hasOwnProperty("isFallenEmpire")
 	) {
-		req.body["id"] = empires.length;
-		empires.push(req.body);
-		saveJSON();
-		res.status(200).send("Empire successfully added");
+		mysql.pool.query("INSERT INTO empires(name, aggressiveness, primaryColor, secondaryColor, isFallenEmpire) VALUES (?,?,?,?,?)", [req.body.name, req.body.aggressiveness, req.body.primaryColor, req.body.secondaryColor, req.body.isFallenEmpire], (error, result, fields) => {
+			if (error) {
+				res.status(500).send(error);
+			} else {
+				res.status(200).send("Empire successfully added");
+			}
+		});
 	} else {
 		res.status(400).send({
-			error: "Request body needs a name, aggresiveness, primary_color, secondary_color, and fallen_empire."
+			error: "Request body needs a name, aggressiveness, primaryColor, secondaryColor, and iSFallenEmpire."
 		});
 	}
 });
@@ -140,13 +134,17 @@ app.post("/empires/update/:id", (req, res, next) => {
 		if (req.hasOwnProperty("body") &&
 			req.body.hasOwnProperty("name") &&
 			req.body.hasOwnProperty("aggressiveness") &&
-			req.body.hasOwnProperty("primary_color") &&
-			req.body.hasOwnProperty("secondary_color") &&
-			req.body.hasOwnProperty("fallen_empire")
+			req.body.hasOwnProperty("primaryColor") &&
+			req.body.hasOwnProperty("secondaryColor") &&
+			req.body.hasOwnProperty("isFallenEmpire")
 		) {
-			empires[empireId] = req.body;
-			saveJSON();
-			res.status(200).send("Empire successfully updated");
+			mysql.pool.query("UPDATE empires SET name=?, aggressiveness=?, primaryColor=?, secondaryColor=?, isFallenEmpire=? WHERE empireID=?", [req.body.name, req.body.aggressiveness, req.body.primaryColor, req.body.secondaryColor, req.body.isFallenEmpire, empireId], (error, result, fields) => {
+				if (error) {
+					res.status(500).send(error);
+				} else {
+					res.status(200).send("Empire successfully updated");
+				}
+			});
 		} else {
 			res.status(400).send({
 				error: "Request body needs a name, aggressiveness, primary color, secondary color, and whether it is a fallen empire.."
@@ -164,13 +162,13 @@ app.post("/empires/delete", (req, res, next) => {
 	{
 		var empireId = req.body.id;
 		if (empireId >= 0) {
-			// TODO: Replace with working with the DB
-			empires.splice(empireId, 1);
-			for (var i = empireId; i < empires.length; i++) {
-				empires[i].id -= 1;
-			}
-			saveJSON();
-			res.status(200).send("Empire successfully deleted");
+			mysql.pool.query("DELETE FROM empires WHERE empireID=?", [empireId], (error, results, fields) => {
+				if (error) {
+					res.status(500).send(error);
+				} else {
+					res.status(200).send("Empire successfully deleted");
+				}
+			});
 		} else {
 			res.status(400).send({
 				error: "Empire body ID."
