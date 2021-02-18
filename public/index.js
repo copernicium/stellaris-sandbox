@@ -76,9 +76,28 @@ function setupStarfield() {
 	}
 }
 
-function setupSearchList(dataList, searchContainerId, searchBarId, searchListId, idProp, textProp, nullable) {
-	var searchContainer = document.getElementById(searchContainerId);
+function doSystemSearchUpdate() {
+	var search_query = document.getElementById("system-search-input").value;
+	var context = {
+		search_query: search_query
+	};
+	postToServer("/systems/search", context);
+}
+
+var currentSearchBar = null;
+
+function registerNewSearchBar(searchBarId, searchListId) {
 	var searchBar = document.getElementById(searchBarId);
+	var searchList = document.getElementById(searchListId);
+	searchBar.addEventListener("focusin", (event) => {
+		currentSearchBar = event.target;
+		currentSearchBar.parentElement.appendChild(searchList);
+		searchList.classList.remove("hidden");
+		searchList.focus();
+	});
+}
+
+function setupSearchList(dataList, searchBarIds, searchListId, idProp, textProp, nullable, chosenCallback) {
 	var searchList = document.getElementById(searchListId);
 
 	function addSearchItem(datum) {
@@ -91,8 +110,8 @@ function setupSearchList(dataList, searchContainerId, searchBarId, searchListId,
 		var searchItem = searchList.lastElementChild;
 		searchItem.addEventListener("click", (event) => {
 			searchList.classList.add("hidden");
-			searchBar.dataset.id = event.target.dataset.id;
-			searchBar.value = event.target.dataset.text;
+			currentSearchBar.dataset.id = event.target.dataset.id;
+			currentSearchBar.value = event.target.dataset.text;
 		});
 	}
 
@@ -107,27 +126,38 @@ function setupSearchList(dataList, searchContainerId, searchBarId, searchListId,
 		addSearchItem(dataList[i]);
 	}
 
-	searchBar.addEventListener("focusin", () => {
-		searchList.classList.remove("hidden");
-		searchList.focus();
-	});
+	for (var i = 0; i < searchBarIds.length; i++) {
+		var searchBar = document.getElementById(searchBarIds[i]);
+		searchBar.addEventListener("focusin", (event) => {
+			currentSearchBar = event.target;
+			currentSearchBar.parentElement.appendChild(searchList);
+			searchList.classList.remove("hidden");
+			searchList.focus();
+		});
+		searchBar.addEventListener("keyup", () => {
+			// TODO
+		});
+	}
 	searchList.addEventListener("focusout", () => {
 		searchList.classList.add("hidden");
+		if (chosenCallback != null) {
+			chosenCallback(currentSearchBar);
+		}
+		currentSearchBar = null;
 	});
-	searchBar.addEventListener("keyup", () => {
-		// TODO
-	});
+	
 }
 
 var confirmation_modal_confirm_function = undefined;
 
 function createDeleteModal(delete_url, id) {
+	createDeleteModalWithCallback(delete_url, {id: id}, () => { window.location.reload() });
+}
+
+function createDeleteModalWithCallback(delete_url, delete_context, callback) {
 	createConfirmationModal(() => {
-		var delete_context = {
-			id: id
-		};
 		postToServer(delete_url, delete_context);
-		location.reload();
+		callback();
 	});
 }
 

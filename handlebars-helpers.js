@@ -13,6 +13,9 @@ module.exports = {
 	},
 	unlessEquals: function(value1, value2, options) {
 		return (value1 != value2) ? options.fn(this) : options.inverse(this);
+	},
+	isEqual: function(value1, value2) {
+		return value1 == value2;
 	}
 }
 

@@ -1,0 +1,15 @@
+<tr>
+	<td>
+		{{#if create}}
+			<input type="text" class="resource-stock-name list-search-bar resource-search-bar" id="resource-search-bar" data-id="{{resourceID}}" value="{{name}}" {{#if readonly}}readonly{{/if}}>
+		{{else}}
+			<span data-id="{{resourceID}}">{{name}}</span>
+		{{/if}}
+	</td>
+	<td><input type="number" class="resource-stock-quantity" min="1" value="{{quantity}}" {{#if readonly}}readonly{{/if}}></td>
+	<td>
+		{{#unless readonly}}
+		<button type="button" onclick="createDeleteModalWithCallback('/resource-stocks/delete/', {resourceID: this.parentElement.parentElement.firstElementChild.lastElementChild.dataset.id, empireID: {{empireID}} }, () => {this.parentElement.parentElement.remove()})">Delete</button>
+		{{/unless}}
+	</td>
+</tr>
