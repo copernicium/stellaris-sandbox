@@ -156,6 +156,15 @@ function addAtEndOfMain(html) {
 	document.getElementsByTagName("main")[0].insertAdjacentHTML("beforeend", html);
 }
 
+function addImageProcess(src){
+	return new Promise((resolve, reject) => {
+	  var image = new Image();
+	  image.src = src;
+	  image.onload = () => resolve(image);
+	  image.onerror = reject
+	})
+  }
+
 window.addEventListener("DOMContentLoaded", function() {
 	setupStarfield();
 });

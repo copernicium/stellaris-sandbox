@@ -134,7 +134,7 @@ function drawSystemView(system, system_bodies) {
 
 var galaxy_data = null;
 
-function drawGalaxyView(hyperlanes, systems) {
+async function drawGalaxyView(hyperlanes, systems) {
 	if(hyperlanes == null){
 		console.error("hyperlanes is null");
 		return;
@@ -156,6 +156,7 @@ function drawGalaxyView(hyperlanes, systems) {
 	context.fillStyle = "rgb(0, 0, 0)";
 	context.fillRect(0, 0, canvas.width, canvas.height);
 
+	var min_radius = 0.55 * 0.5 * Math.min(canvas.offsetWidth, canvas.offsetHeight);
 	var max_radius = 0.9 * 0.5 * Math.min(canvas.offsetWidth, canvas.offsetHeight);
 
 	var center_x = canvas.offsetWidth / 2;
@@ -164,6 +165,11 @@ function drawGalaxyView(hyperlanes, systems) {
 	var system_data = [];
 
 	var system_size = 2;
+
+	// Draw galactic center
+	var galactic_center_width = min_radius * 2;
+	var base_image = await addImageProcess("galactic_center.png");
+	context.drawImage(base_image, center_x - galactic_center_width / 2, center_y - galactic_center_width / 2, galactic_center_width, galactic_center_width);
 
 	// Draw systems
 	for(var i = 0; i < systems.length; i++) {
