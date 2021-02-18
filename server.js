@@ -821,7 +821,7 @@ app.post("/resource-deposits/add", (req, res, next) => {
 //
 
 app.get('*', (req, res) => {
-	res.status(404).send("The page you requested doesn't exist");
+	res.status(404).render("404");
 });
 
 app.listen(port, () => {
