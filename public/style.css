@@ -245,7 +245,20 @@ form.immutable input {
 	border-radius: 6px;
 }
 
+.caption-container {
+	display: flex;
+	flex-direction: column;	
+	align-items: center;
+	width: 100%;
+}
+
+.caption {
+	font-style: italic;
+    color: #BBB;
+	width: 75%;
+	text-align: center;
+}
+
 .hidden {
 	display: none !important;
 }
-
