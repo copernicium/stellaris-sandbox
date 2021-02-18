@@ -342,7 +342,7 @@ app.post("/systems/update/:id", (req, res, next) => {
 			req.body.hasOwnProperty("theta") &&
 			req.body.hasOwnProperty("owningEmpireID")
 		) {
-			mysql.pool.query("UPDATE systems SET name=?, type=?, orbitalRadius=?, theta=?, empireId=? WHERE systemID=?", [req.body.name, req.body.type, req.body.orbitalRadius, req.body.theta, convertNullableString(req.body.owningEmpireID), systemId], (error, result, fields) => {
+			mysql.pool.query("UPDATE systems SET name=?, type=?, orbitalRadius=?, theta=?, empireID=? WHERE systemID=?", [req.body.name, req.body.type, req.body.orbitalRadius, req.body.theta, convertNullableString(req.body.owningEmpireID), systemId], (error, result, fields) => {
 				if (error) {
 					res.status(500).send(error);
 				} else {
@@ -397,6 +397,19 @@ app.post("/systems/delete", (req, res, next) => {
 		});
 	}
 });
+
+function addSystemSearchList(context, res, contFunc) {
+	mysql.pool.query("SELECT systemID, name FROM systems ORDER BY name", (err, rows, fields) => {
+		if (err) {
+			res.status(500).send(err);
+		} else if (rows == null) {
+			res.status(500).send("No rows returned");
+		} else {
+			context.encoded_system_search_list = encodeURIComponent(JSON.stringify(rows));
+			contFunc(context, res);
+		}
+	});
+}
 
 //
 // HYPERLANES ==================================================================
@@ -596,7 +609,7 @@ app.post("/resources/delete", (req, res, next) => {
 app.get("/bodies", (req, res, next) => {
 	var pageName = "bodiesPage";
 	var context = createDefaultContext(pageName);
-	mysql.pool.query("SELECT * FROM bodies", (err, rows, fields) => {
+	mysql.pool.query("SELECT * FROM bodies ORDER BY name", (err, rows, fields) => {
 		if(err) {
 			res.status(500).send(err);
 		} else {
@@ -616,67 +629,77 @@ app.get("/bodies/create", (req, res, next) => {
 		"orbital_radius": 0.5,
 		"theta": 0
 	};
-
-	res.status(200).render(pageName, context);
+	addSystemSearchList(context, res, (context, res) => {
+		res.status(200).render(pageName, context);
+	});
 });
 
-app.get("/bodies/view/:id", (req, res, next) => {
+function viewEditBodyData(type, req, res, next) {
 	var bodyId = parseInt(req.params.id);
 	var idIsInt = (bodyId != NaN) && (String(bodyId) == req.params.id);
 	if (idIsInt && bodyId >= 0) {
 		var pageName = "individualBodyPage";
 		var context = createDefaultContext(pageName);
-		context.type = "view";
+		context.type = type;
 
-		mysql.pool.query("SELECT * FROM bodies WHERE bodies.bodyID = " + bodyId, (err, rows, fields) => {
+		mysql.pool.query("SELECT * FROM bodies WHERE bodies.bodyID = ?", bodyId, (err, rows, fields) => {
 			if(err) {
 				res.status(500).send(err);
+			} else if (rows == null) {
+				res.status(500).send("No rows returned");
+			} else if (rows.length > 1) {
+				res.status(500).send("Too many rows returned");
 			} else {
-				if(rows != null && rows.length == 1) {
-					context.body = rows[0];
-				} else {
-					// TODO error
-				}
+				context.body = rows[0];
 
-				res.status(200).render(pageName, context);
+				mysql.pool.query("SELECT name FROM systems WHERE systemID = ?", context.body.systemID, (err, rows, fields) => {
+					if (err) {
+						res.status(500).send(err);
+					} else if (rows == null) {
+						res.status(500).send("No rows returned");
+					} else if (rows > 1) {
+						res.status(500).send("Too many rows returned");
+					} else {
+						context.parent_system_name = rows[0].name;
+						addSystemSearchList(context, res, (context, res) => {
+							res.status(200).render(pageName, context);
+						});
+					}
+				});
 			}
 		});
 	} else {
 		next();
 	}
+}
+
+app.get("/bodies/view/:id", (req, res, next) => {
+	viewEditBodyData("view", req, res, next);
 });
 
 app.get("/bodies/edit/:id", (req, res, next) => {
-	var bodyId = parseInt(req.params.id);
-	var idIsInt = (bodyId != NaN) && (String(bodyId) == req.params.id);
-	if (idIsInt && bodyId >= 0) {
-		var pageName = "individualBodyPage";
-		var context = createDefaultContext(pageName);
-		context.type = "edit";
-
-		var body = bodies[bodyId]; // TODO: Replace with call to database
-		context.body = body;
-
-		res.status(200).render(pageName, context);
-	} else {
-		next();
-	}
+	viewEditBodyData("edit", req, res, next);
 });
 
 app.post('/bodies/add', (req, res, next) => {
 	if (req.hasOwnProperty("body") &&
 		req.body.hasOwnProperty("name") &&
 		req.body.hasOwnProperty("type") &&
-		req.body.hasOwnProperty("orbital_radius") &&
-		req.body.hasOwnProperty("theta")
+		req.body.hasOwnProperty("orbitalRadius") &&
+		req.body.hasOwnProperty("theta") &&
+		req.body.hasOwnProperty("parentSystemID")
 	) {
-		req.body["id"] = bodies.length;
-		bodies.push(req.body);
-		saveJSON();
-		res.status(200).send("Body successfully added");
+		console.log(req.body);
+		mysql.pool.query("INSERT INTO bodies(name, type, orbitalRadius, theta, systemID) VALUES (?,?,?,?,?)", [req.body.name, req.body.type, req.body.orbitalRadius, req.body.theta, req.body.parentSystemID], (error, result, fields) => {
+			if (error) {
+				res.status(500).send(error);
+			} else {
+				res.status(200).send("Body successfully added");
+			}
+		});
 	} else {
 		res.status(400).send({
-			error: "Request body needs a name, type, orbital_radius, and theta."
+			error: "Request body needs a name, type, orbitalRadius, theta, and parentSystemID."
 		});
 	}
 });
@@ -688,15 +711,20 @@ app.post("/bodies/update/:id", (req, res, next) => {
 		if (req.hasOwnProperty("body") &&
 			req.body.hasOwnProperty("name") &&
 			req.body.hasOwnProperty("type") &&
-			req.body.hasOwnProperty("orbital_radius") &&
-			req.body.hasOwnProperty("theta")
+			req.body.hasOwnProperty("orbitalRadius") &&
+			req.body.hasOwnProperty("theta") &&
+			req.body.hasOwnProperty("parentSystemID")
 		) {
-			bodies[bodyId] = req.body;
-			saveJSON();
-			res.status(200).send("Body successfully updated");
+			mysql.pool.query("UPDATE bodies SET name=?, type=?, orbitalRadius=?, theta=?, systemID=? WHERE bodyID=?", [req.body.name, req.body.type, req.body.orbitalRadius, req.body.theta, req.body.parentSystemID, bodyId], (error, result, fields) => {
+				if (error) {
+					res.status(500).send(error);
+				} else {
+					res.status(200).send("Body successfully updated");
+				}
+			});
 		} else {
 			res.status(400).send({
-				error: "Request body needs a name, type, orbital_radius, and theta."
+				error: "Request body needs a name, type, orbitalRadius, theta, and parentSystemID."
 			});
 		}
 	} else {
@@ -711,13 +739,13 @@ app.post("/bodies/delete", (req, res, next) => {
 	{
 		var bodyId = req.body.id;
 		if (bodyId >= 0) {
-			// TODO: Replace with working with the DB
-			bodies.splice(bodyId, 1);
-			for (var i = bodyId; i < bodies.length; i++) {
-				bodies[i].id -= 1;
-			}
-			saveJSON();
-			res.status(200).send("Body successfully deleted");
+			mysql.pool.query("DELETE FROM bodies WHERE bodyID=?", [bodyId], (error, results, fields) => {
+				if (error) {
+					res.status(500).send(error);
+				} else {
+					res.status(200).send("Body successfully deleted");
+				}
+			});
 		} else {
 			res.status(400).send({
 				error: "Bad body ID."
