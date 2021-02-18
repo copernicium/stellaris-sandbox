@@ -76,14 +76,6 @@ function setupStarfield() {
 	}
 }
 
-function doSystemSearchUpdate() {
-	var search_query = document.getElementById("system-search-input").value;
-	var context = {
-		search_query: search_query
-	};
-	postToServer("/systems/search", context);
-}
-
 var currentSearchBar = null;
 
 function registerNewSearchBar(searchBarId, searchListId) {
