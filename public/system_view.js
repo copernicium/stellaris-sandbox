@@ -5,7 +5,7 @@ function polarToCartesian(max_radius, center_x, center_y, orbital_radius, theta)
 	var radius = max_radius * orbital_radius;
 	var rad_theta = theta * Math.PI / 180;
 	var x = center_x +  radius * Math.cos(rad_theta);
-	var y = center_y + radius * Math.sin(rad_theta);
+	var y = center_y - radius * Math.sin(rad_theta);
 
 	return {
 		radius: radius,
@@ -54,8 +54,61 @@ function canvasHandleMouseDown(e, data, canvas, url_base) {
 	}
 }
 
+async function drawSystemCenter(max_radius, center_x, center_y, system_type, context) {
+	var star_radius = 15;
+	switch(system_type) {
+		case "unary":
+			context.fillStyle =  getRandomStarColor();
+			context.arc(center_x, center_y, star_radius, 0, 360);
+			context.fill();
+			break;
+		case "binary":
+			var distance = 0.08;
+			var pos1 = polarToCartesian(max_radius, center_x, center_y, distance, 135);
+			context.fillStyle =  getRandomStarColor();
+			context.arc(pos1.x, pos1.y, star_radius, 0, 360);
+			context.fill();
+			var pos2 = polarToCartesian(max_radius, center_x, center_y, distance, 315);
+			context.beginPath();
+			context.fillStyle = getRandomStarColor();
+			context.arc(pos2.x, pos2.y, star_radius, 0, 360);
+			context.fill();
+			break;
+		case "trinary":
+			var distance = 0.1;
+			var pos1 = polarToCartesian(max_radius, center_x, center_y, distance, 0);
+			context.fillStyle =  getRandomStarColor();
+			context.arc(pos1.x, pos1.y, star_radius, 0, 360);
+			context.fill();
+			var pos2 = polarToCartesian(max_radius, center_x, center_y, distance, 120);
+			context.beginPath();
+			context.fillStyle = getRandomStarColor();
+			context.arc(pos2.x, pos2.y, star_radius, 0, 360);
+			context.fill();
+			var pos3 = polarToCartesian(max_radius, center_x, center_y, distance, 240);
+			context.beginPath();
+			context.fillStyle = getRandomStarColor();
+			context.arc(pos3.x, pos3.y, star_radius, 0, 360);
+			context.fill();
+			break;
+		default:
+			console.error("Unrecognized system type: " + system_type);
+	}
+}
+
+function getRandomBodyColor() {
+	var colors = [
+		"rgba(147, 123, 52)", // Desert
+		"rgb(72, 114, 39)", // Tropical
+		"rgb(186, 222, 227)", // Arctic
+		"rgb(54, 46, 38)", // Tundra
+		"rgb(15, 74, 97)", // Ocean
+	];
+	return colors[getRandom(0, colors.length - 1)];
+}
+
 // Draw the system view
-function drawSystemView(system, system_bodies) {
+async function drawSystemView(system, system_bodies) {
 	if(system == null){
 		console.error("system is null");
 		return;
@@ -74,6 +127,7 @@ function drawSystemView(system, system_bodies) {
 
 	var context = canvas.getContext("2d");
 
+	// Draw black background behind everything
 	context.fillStyle = "rgb(0, 0, 0)";
 	context.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -82,16 +136,30 @@ function drawSystemView(system, system_bodies) {
 	var center_x = canvas.offsetWidth / 2;
 	var center_y = canvas.offsetHeight / 2;
 
-	// TODO stars
+	// Draw stars
+	drawSystemCenter(max_radius, center_x, center_y, system.type, context);
 
+	// Draw orbit paths
+	for(var i = 0; i < system_bodies.length; i++) {
+		var pos = polarToCartesian(max_radius, center_x, center_y, system_bodies[i].orbitalRadius, system_bodies[i].theta);
+
+		
+		context.beginPath();
+		context.arc(center_x, center_y, pos.radius, 0, 360);
+		context.setLineDash([20, 15]);
+		context.lineWidth = 1;
+		context.strokeStyle = "rgb(255, 255, 255)";
+		context.stroke();
+	}
+
+	// Draw bodies
 	var body_data = [];
 
 	for(var i = 0; i < system_bodies.length; i++) {
 		var pos = polarToCartesian(max_radius, center_x, center_y, system_bodies[i].orbitalRadius, system_bodies[i].theta);
 
-		context.beginPath();
 		var size = 0;
-		var color = "rgb(255, 255, 255)";
+		var color = "";
 		switch(system_bodies[i].type){
 			case "asteroid":
 				size = 5;
@@ -99,6 +167,7 @@ function drawSystemView(system, system_bodies) {
 				break;
 			case "planet":
 				size = 10;
+				color = getRandomBodyColor();
 				break;
 			default:
 				console.error("Unknown planet type: " + system_bodies[i].type);
@@ -112,16 +181,8 @@ function drawSystemView(system, system_bodies) {
 			id: system_bodies[i].bodyID
 		});
 
-		// Draw orbit path
-		context.arc(center_x, center_y, pos.radius, 0, 360);
-		context.setLineDash([20, 15]);
-		context.lineWidth = 1;
-		context.strokeStyle = "rgb(255, 255, 255)";
-		context.stroke();
-
-		context.beginPath();
-
 		// Draw body
+		context.beginPath();
 		context.arc(pos.x, pos.y, size, 0, 360);
 		context.fillStyle = color;
 		context.fill();
@@ -168,8 +229,8 @@ async function drawGalaxyView(hyperlanes, systems) {
 
 	// Draw galactic center
 	var galactic_center_width = min_radius * 2;
-	var base_image = await addImageProcess("galactic_center.png");
-	context.drawImage(base_image, center_x - galactic_center_width / 2, center_y - galactic_center_width / 2, galactic_center_width, galactic_center_width);
+	var image = await addImageProcess("/galactic_center.png");
+	context.drawImage(image, center_x - galactic_center_width / 2, center_y - galactic_center_width / 2, galactic_center_width, galactic_center_width);
 
 	// Draw systems
 	for(var i = 0; i < systems.length; i++) {
@@ -177,7 +238,7 @@ async function drawGalaxyView(hyperlanes, systems) {
 
 		context.beginPath();
 		context.arc(pos.x, pos.y, system_size, 0, 360);
-		context.fillStyle = "rgb(255, 255, 255)";
+		context.fillStyle = getRandomStarColor();
 		context.fill();
 
 		system_data.push({
