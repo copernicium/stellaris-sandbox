@@ -689,7 +689,6 @@ app.post('/bodies/add', (req, res, next) => {
 		req.body.hasOwnProperty("theta") &&
 		req.body.hasOwnProperty("parentSystemID")
 	) {
-		console.log(req.body);
 		mysql.pool.query("INSERT INTO bodies(name, type, orbitalRadius, theta, systemID) VALUES (?,?,?,?,?)", [req.body.name, req.body.type, req.body.orbitalRadius, req.body.theta, req.body.parentSystemID], (error, result, fields) => {
 			if (error) {
 				res.status(500).send(error);
