@@ -18,7 +18,8 @@ function createDefaultContext(name) {
 	var active = {};
 	active[name] = true;
 	return {
-		active: active
+		active: active,
+		page_title: name
 	};
 }
 
@@ -30,6 +31,7 @@ function convertNullableString(str) {
 app.get("/", (req, res, next) => {
 	var pageName = "homePage";
 	var context = createDefaultContext(pageName);
+	context.page_title = "Stellaris Sandbox";
 	res.status(200).render(pageName, context);
 });
 
@@ -47,6 +49,7 @@ const HYPERLANES_QUERY = "SELECT s1.system1ID, s1.system2ID, s1.name AS system1N
 app.get("/empires", (req, res, next) => {
 	var pageName = "empiresPage";
 	var context = createDefaultContext(pageName);
+	context.page_title = "Empires";
 	mysql.pool.query("SELECT * FROM empires ORDER BY name", (err, rows, fields) => {
 		if(err) {
 			res.status(500).send(err);
@@ -60,6 +63,7 @@ app.get("/empires", (req, res, next) => {
 app.get("/empires/create", (req, res, next) => {
 	var pageName = "individualEmpirePage";
 	var context = createDefaultContext(pageName);
+	context.page_title = "Create Empire";
 	context.type = "create";
 	context.empire = {
 		"name": "",
@@ -78,6 +82,7 @@ function viewEditEmpireData(type, req, res, next) {
 	if (idIsInt && empireId >= 0) {
 		var pageName = "individualEmpirePage";
 		var context = createDefaultContext(pageName);
+		context.page_title = type.charAt(0).toUpperCase() + type.slice(1) + " Empire";
 		context.type = type;
 
 		mysql.pool.query("SELECT * FROM empires WHERE empireID = ?", empireId, (err, rows, fields) => {
@@ -201,6 +206,7 @@ function addEmpireSearchList(context, res, contFunc) {
 app.get("/systems", (req, res, next) => {
 	var pageName = "systemsPage";
 	var context = createDefaultContext(pageName);
+	context.page_title = "Systems";
 	mysql.pool.query("SELECT * FROM systems ORDER BY name", (err, rows, fields) => {
 		if(err) {
 			res.status(500).send(err);
@@ -227,6 +233,7 @@ app.get("/systems", (req, res, next) => {
 app.get("/systems/create", (req, res, next) => {
 	var pageName = "individualSystemPage";
 	var context = createDefaultContext(pageName);
+	context.page_title = "Create System";
 	context.type = "create";
 	context.system = {
 		"name": "",
@@ -246,6 +253,7 @@ function viewEditSystemData(type, req, res, next) {
 	if (idIsInt && systemId >= 0) {
 		var pageName = "individualSystemPage";
 		var context = createDefaultContext(pageName);
+		context.page_title = type.charAt(0).toUpperCase() + type.slice(1) + " System";
 		context.type = type;
 
 		mysql.pool.query("SELECT * FROM systems WHERE systems.systemID = ?", systemId, (err, rows, fields) => {
@@ -414,6 +422,7 @@ function addSystemSearchList(context, res, contFunc) {
 app.get("/hyperlanes", (req, res, next) => {
 	var pageName = "hyperlanesPage";
 	var context = createDefaultContext(pageName);
+	context.page_title = "Hyperlanes";
 	mysql.pool.query("SELECT * FROM hyperlanes", (err, rows, fields) => {
 		if(err) {
 			res.status(500).send(err);
@@ -467,6 +476,7 @@ app.post('/hyperlanes/add', (req, res, next) => {
 app.get("/resources", (req, res, next) => {
 	var pageName = "resourcesPage";
 	var context = createDefaultContext(pageName);
+	context.page_title = "Resources";
 	mysql.pool.query("SELECT * FROM resources ORDER BY name", (err, rows, fields) => {
 		if(err) {
 			res.status(500).send(err);
@@ -480,6 +490,7 @@ app.get("/resources", (req, res, next) => {
 app.get("/resources/create", (req, res, next) => {
 	var pageName = "individualResourcePage";
 	var context = createDefaultContext(pageName);
+	context.page_title = "Create Resource";
 	context.type = "create";
 	context.resource = {
 		"name": "",
@@ -496,6 +507,7 @@ function viewEditResourceData(type, req, res, next) {
 	if (idIsInt && resourceId >= 0) {
 		var pageName = "individualResourcePage";
 		var context = createDefaultContext(pageName);
+		context.page_title = type.charAt(0).toUpperCase() + type.slice(1) + " Resource";
 		context.type = type;
 
 		mysql.pool.query("SELECT * FROM resources WHERE resourceID = ?", resourceId, (err, rows, fields) => {
@@ -602,6 +614,7 @@ app.post("/resources/delete", (req, res, next) => {
 app.get("/bodies", (req, res, next) => {
 	var pageName = "bodiesPage";
 	var context = createDefaultContext(pageName);
+	context.page_title = "Bodies";
 	mysql.pool.query("SELECT * FROM bodies ORDER BY name", (err, rows, fields) => {
 		if(err) {
 			res.status(500).send(err);
@@ -615,6 +628,7 @@ app.get("/bodies", (req, res, next) => {
 app.get("/bodies/create", (req, res, next) => {
 	var pageName = "individualBodyPage";
 	var context = createDefaultContext(pageName);
+	context.page_title = "Create Body";
 	context.type = "create";
 	context.body = {
 		"name": "",
@@ -633,6 +647,7 @@ function viewEditBodyData(type, req, res, next) {
 	if (idIsInt && bodyId >= 0) {
 		var pageName = "individualBodyPage";
 		var context = createDefaultContext(pageName);
+		context.page_title = type.charAt(0).toUpperCase() + type.slice(1) + " Body";
 		context.type = type;
 
 		mysql.pool.query("SELECT * FROM bodies WHERE bodies.bodyID = ?", bodyId, (err, rows, fields) => {
