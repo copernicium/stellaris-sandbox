@@ -107,15 +107,15 @@
 				</table>
 			</form>
 			<h3>Bodies</h3>
-			<table id="body-table">
+			<table>
 				<thead>
 					<tr>
 						<th>Name</th>
 						<th>Type</th>
 						<th></th>
-					</rt>
+					</tr>
 				</thead>
-				<tbody>
+				<tbody id="body-table">
 					{{#each system_bodies}}
 						{{> systemBodyItem}}
 					{{/each}}
