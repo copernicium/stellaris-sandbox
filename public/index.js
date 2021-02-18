@@ -185,13 +185,28 @@ function addAtEndOfMain(html) {
 
 function addImageProcess(src){
 	return new Promise((resolve, reject) => {
-	  var image = new Image();
-	  image.src = src;
-	  image.onload = () => resolve(image);
-	  image.onerror = reject
-	})
-  }
+		var image = new Image();
+		image.src = src;
+		image.onload = () => resolve(image);
+		image.onerror = reject;
+	});
+}
+
+function matchColumnLengths() { 
+	var rightCol = document.getElementsByClassName("right-col");
+	if(rightCol != null && rightCol.length > 0) {
+		rightCol = rightCol[0];
+		var leftCol = document.getElementsByClassName("left-col");
+		if(leftCol != null && leftCol.length > 0) {
+			leftCol = leftCol[0];
+			rightCol.offsetHeight = leftCol.offsetHeight;
+			rightCol.setAttribute("style","height:" + leftCol.offsetHeight + "px !important;");
+		}
+	}
+}
 
 window.addEventListener("DOMContentLoaded", function() {
 	setupStarfield();
+
+	matchColumnLengths();
 });

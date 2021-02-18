@@ -263,6 +263,11 @@ form.immutable input {
 	text-align: center;
 }
 
+.canvas-container {
+	position: sticky;
+	top: 0;
+	padding-top: 15px;
+}
 
 .error-container {
 	margin-top: 50px;
