@@ -1,4 +1,5 @@
 <main>
+	<script src="/templates/body_resource_deposit_item.js" defer></script>
 	<script>
 		function returnToListPage() {
 			window.history.back();
@@ -20,6 +21,17 @@
 				theta: creationForm["body-theta"].value,
 				parentSystemID: creationForm["parent-system-name"].dataset.id
 			};
+
+			bodyContext.resourceDeposits = [];
+			var resourceDeposits = document.getElementsByClassName("resource-deposit-quantity");
+			for (var i = 0; i < resourceDeposits.length; i++) {
+				var resourceDeposit = resourceDeposits[i];
+				bodyContext.resourceDeposits.push({
+					resourceID: resourceDeposit.parentElement.parentElement.firstElementChild.lastElementChild.dataset.id,
+					quantity: resourceDeposit.value
+				});
+			}
+
 {{#switch type}}
 	{{#case "create"}}
 			postToServer("/bodies/add", bodyContext);
@@ -31,6 +43,20 @@
 			returnToListPage();
 		}
 
+		function createNewResourceDeposit() {
+			var resourceDepositList = document.getElementById("resource-deposit-list");
+			var resourceDepositHTML = Handlebars.templates.bodyResourceDepositItem({
+				type: "{{type}}",
+{{#unlessEquals type "create"}}
+				bodyID: {{body.bodyID}},
+{{/unlessEquals}}
+				create: true
+			});
+			resourceDepositList.insertAdjacentHTML("beforeend", resourceDepositHTML);
+			var newDeposit = resourceDepositList.lastElementChild;
+			registerNewSearchBar("resource-search-bar", "resource-search-list");
+		}
+
 		window.addEventListener("DOMContentLoaded", function() {
 			document.getElementById("cancel-button").addEventListener("click", editCancel);
 
@@ -38,8 +64,18 @@
 			if (accept_button) accept_button.addEventListener("click", editAccept);
 
 {{#unlessEquals type "view"}}
-			var system_search_list = JSON.parse(decodeURIComponent("{{{encoded_system_search_list}}}"));
-			setupSearchList(system_search_list, "system-search-container", "system-search-bar", "system-search-list", "systemID", "name", false);
+			var systemSearchList = JSON.parse(decodeURIComponent("{{{encoded_system_search_list}}}"));
+			setupSearchList(systemSearchList, ["system-search-bar"], "system-search-list", "systemID", "name", false, null);
+
+			var resourceSearchList = JSON.parse(decodeURIComponent("{{{encoded_resource_search_list}}}"));
+			setupSearchList(resourceSearchList, [], "resource-search-list", "resourceID", "name", false, (searchBar) => {
+				var parent = searchBar.parentElement;
+				var resourceName = document.createElement("span");
+				resourceName.dataset.id = searchBar.dataset.id;
+				resourceName.innerHTML = searchBar.value;
+				searchBar.remove();
+				parent.appendChild(resourceName);
+			});
 {{/unlessEquals}}
 		});
 	</script>
@@ -99,6 +135,24 @@
 				</tr>
 			</table>
 		</form>
+		<h3>Resource Deposits</h3>
+		{{#unlessEquals type "view"}}
+		<button type="button" onclick="createNewResourceDeposit()">Create New Resource Deposit</button>
+		{{/unlessEquals}}
+		<table id="resource-deposit-table">
+			<thead>
+				<tr>
+					<th>Resource</th>
+					<th>Quantity</th>
+				</tr>
+			</thead>
+			<tbody id="resource-deposit-list">
+				{{#each body_resource_deposits}}
+					{{> bodyResourceDepositItem bodyID=../body.bodyID readonly=(isEqual ../type "view") }}
+				{{/each}}
+			</tbody>
+		</table>
+		<div id="resource-search-list" class="search-list hidden" tabindex="-1"></div>
 		<div>
 			{{#unlessEquals type "view"}}
 			<button id="accept-button">

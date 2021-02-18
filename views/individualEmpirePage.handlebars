@@ -145,7 +145,7 @@
 			</thead>
 			<tbody id="resource-stock-list">
 				{{#each empire_resource_stocks}}
-					{{> empireResourceStockItem empireID=../empire.empireID readonly=(isEqual type "view") }}
+					{{> empireResourceStockItem empireID=../empire.empireID readonly=(isEqual ../type "view") }}
 				{{/each}}
 			</tbody>
 		</table>

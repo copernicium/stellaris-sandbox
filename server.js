@@ -162,7 +162,7 @@ app.post('/empires/add', (req, res, next) => {
 		});
 	} else {
 		res.status(400).send({
-			error: "Request body needs a name, aggressiveness, primaryColor, secondaryColor, and iSFallenEmpire."
+			error: "Request body needs a name, aggressiveness, primaryColor, secondaryColor, isFallenEmpire, and resourceStocks."
 		});
 	}
 });
@@ -701,7 +701,9 @@ app.get("/bodies/create", (req, res, next) => {
 		"theta": 0
 	};
 	addSystemSearchList(context, res, (context, res) => {
-		res.status(200).render(pageName, context);
+		addResourceSearchList(context, res, (context, res) => {
+			res.status(200).render(pageName, context);
+		});
 	});
 });
 
@@ -733,8 +735,17 @@ function viewEditBodyData(type, req, res, next) {
 						res.status(500).send("Too many rows returned");
 					} else {
 						context.parent_system_name = rows[0].name;
-						addSystemSearchList(context, res, (context, res) => {
-							res.status(200).render(pageName, context);
+						mysql.pool.query("SELECT resources.resourceID, resources.name, rd.quantity FROM (SELECT * FROM resource_deposits WHERE resource_deposits.bodyID = ?) AS rd INNER JOIN resources ON rd.resourceID = resources.resourceID", [bodyId], (error, rows, fields) => {
+							if (error) {
+								res.status(500).send(error);
+							} else {
+								context.body_resource_deposits = rows;
+								addSystemSearchList(context, res, (context, res) => {
+									addResourceSearchList(context, res, (context, res) => {
+										res.status(200).render(pageName, context);
+									});
+								});
+							}
 						});
 					}
 				});
@@ -759,18 +770,34 @@ app.post('/bodies/add', (req, res, next) => {
 		req.body.hasOwnProperty("type") &&
 		req.body.hasOwnProperty("orbitalRadius") &&
 		req.body.hasOwnProperty("theta") &&
-		req.body.hasOwnProperty("parentSystemID")
+		req.body.hasOwnProperty("parentSystemID") &&
+		req.body.hasOwnProperty("resourceDeposits")
 	) {
 		mysql.pool.query("INSERT INTO bodies(name, type, orbitalRadius, theta, systemID) VALUES (?,?,?,?,?)", [req.body.name, req.body.type, req.body.orbitalRadius, req.body.theta, req.body.parentSystemID], (error, result, fields) => {
 			if (error) {
 				res.status(500).send(error);
 			} else {
-				res.status(200).send("Body successfully added");
+				var resourceDeposits = req.body.resourceDeposits;
+				var depositCallback = (depositIndex) => {
+					if (depositIndex == resourceDeposits.length) {
+						res.status(200).send("Body successfully added");
+					} else {
+						var resourceDeposit = resourceDeposits[depositIndex];
+						mysql.pool.query("INSERT INTO resource_deposits(resourceID, bodyID, quantity) VALUES (?,?,?) ON DUPLICATE KEY UPDATE quantity=?", [resourceDeposit.resourceID, result.insertId, resourceDeposit.quantity, resourceDeposit.quantity], (error, result, fields) => {
+							if (error) {
+								res.status(500).send(error);
+							} else {
+								depositCallback(depositIndex + 1);
+							}
+						});
+					}
+				};
+				depositCallback(0);
 			}
 		});
 	} else {
 		res.status(400).send({
-			error: "Request body needs a name, type, orbitalRadius, theta, and parentSystemID."
+			error: "Request body needs a name, type, orbitalRadius, theta, parentSystemID, and resourceDeposits."
 		});
 	}
 });
@@ -784,13 +811,29 @@ app.post("/bodies/update/:id", (req, res, next) => {
 			req.body.hasOwnProperty("type") &&
 			req.body.hasOwnProperty("orbitalRadius") &&
 			req.body.hasOwnProperty("theta") &&
-			req.body.hasOwnProperty("parentSystemID")
+			req.body.hasOwnProperty("parentSystemID") &&
+			req.body.hasOwnProperty("resourceDeposits")
 		) {
 			mysql.pool.query("UPDATE bodies SET name=?, type=?, orbitalRadius=?, theta=?, systemID=? WHERE bodyID=?", [req.body.name, req.body.type, req.body.orbitalRadius, req.body.theta, req.body.parentSystemID, bodyId], (error, result, fields) => {
 				if (error) {
 					res.status(500).send(error);
 				} else {
-					res.status(200).send("Body successfully updated");
+					var resourceDeposits = req.body.resourceDeposits;
+					var depositCallback = (depositIndex) => {
+						if (depositIndex == resourceDeposits.length) {
+							res.status(200).send("Body successfully added");
+						} else {
+							var resourceDeposit = resourceDeposits[depositIndex];
+							mysql.pool.query("INSERT INTO resource_deposits(resourceID, bodyID, quantity) VALUES (?,?,?) ON DUPLICATE KEY UPDATE quantity=?", [resourceDeposit.resourceID, bodyId, resourceDeposit.quantity, resourceDeposit.quantity], (error, result, fields) => {
+								if (error) {
+									res.status(500).send(error);
+								} else {
+									depositCallback(depositIndex + 1);
+								}
+							});
+						}
+					};
+					depositCallback(0);
 				}
 			});
 		} else {
@@ -916,6 +959,31 @@ app.post("/resource-deposits/add", (req, res, next) => {
 	} else {
 		res.status(400).send({
 			error: "Request body needs a body, resource, and quantity."
+		});
+	}
+});
+
+app.post("/resource-deposits/delete", (req, res, next) => {
+	if (req.hasOwnProperty("body") && req.body.hasOwnProperty("resourceID") && req.body.hasOwnProperty("bodyID"))
+	{
+		var resourceId = req.body.resourceID;
+		var bodyId = req.body.bodyID;
+		if (resourceId >= 0 && bodyId >= 0) {
+			mysql.pool.query("DELETE FROM resource_deposits WHERE resourceID=? AND bodyID=?", [resourceId, bodyId], (error, results, fields) => {
+				if (error) {
+					res.status(500).send(error);
+				} else {
+					res.status(200).send("Resource deposit successfully deleted");
+				}
+			});
+		} else {
+			res.status(400).send({
+				error: "Bad resource or body id."
+			});
+		}
+	} else {
+		res.status(400).send({
+			error: "Request body needs a resource id and a body id."
 		});
 	}
 });
