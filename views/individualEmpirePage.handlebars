@@ -1,4 +1,5 @@
 <main>
+	<script src="/templates/empire_resource_stock_item.js" defer></script>
 	<script>
 		function returnToListPage() {
 			window.history.back();
@@ -20,6 +21,17 @@
 				secondaryColor: creationForm["empire-secondary-color"].value.toUpperCase(),
 				isFallenEmpire: creationForm["empire-is-fallen"].checked
 			};
+
+			empireContext.resourceStocks = [];
+			var resourceStocks = document.getElementsByClassName("resource-stock-quantity");
+			for (var i = 0; i < resourceStocks.length; i++) {
+				var resourceStock = resourceStocks[i];
+				empireContext.resourceStocks.push({
+					resourceID: resourceStock.parentElement.parentElement.firstElementChild.lastElementChild.dataset.id,
+					quantity: resourceStock.value
+				});
+			}
+
 {{#switch type}}
 	{{#case "create"}}
 			postToServer("/empires/add", empireContext);
@@ -31,11 +43,37 @@
 			returnToListPage();
 		}
 
+		function createNewResourceStock() {
+			var resourceStockList = document.getElementById("resource-stock-list");
+			var resourceStockHTML = Handlebars.templates.empireResourceStockItem({
+				type: "{{type}}",
+{{#unlessEquals type "create"}}
+				empireID: {{empire.empireID}},
+{{/unlessEquals}}
+				create: true
+			});
+			resourceStockList.insertAdjacentHTML("beforeend", resourceStockHTML);
+			var newStock = resourceStockList.lastElementChild;
+			registerNewSearchBar("resource-search-bar", "resource-search-list");
+		}
+
 		window.addEventListener("DOMContentLoaded", function() {
 			document.getElementById("cancel-button").addEventListener("click", editCancel);
 
 			var accept_button = document.getElementById("accept-button");
 			if (accept_button) accept_button.addEventListener("click", editAccept);
+
+{{#unlessEquals type "view"}}
+			var resourceSearchList = JSON.parse(decodeURIComponent("{{{encoded_resource_search_list}}}"));
+			setupSearchList(resourceSearchList, [], "resource-search-list", "resourceID", "name", false, (searchBar) => {
+				var parent = searchBar.parentElement;
+				var resourceName = document.createElement("span");
+				resourceName.dataset.id = searchBar.dataset.id;
+				resourceName.innerHTML = searchBar.value;
+				searchBar.remove();
+				parent.appendChild(resourceName);
+			});
+{{/unlessEquals}}
 		});
 	</script>
 	<div class="page-container">
@@ -94,6 +132,24 @@
 				</tr>
 			</table>
 		</form>
+		<h3>Resource Stocks</h3>
+		{{#unlessEquals type "view"}}
+		<button type="button" onclick="createNewResourceStock()">Create New Resource Stock</button>
+		{{/unlessEquals}}
+		<table id="resource-stock-table">
+			<thead>
+				<tr>
+					<th>Resource</th>
+					<th>Quantity</th>
+				</tr>
+			</thead>
+			<tbody id="resource-stock-list">
+				{{#each empire_resource_stocks}}
+					{{> empireResourceStockItem empireID=../empire.empireID readonly=(isEqual type "view") }}
+				{{/each}}
+			</tbody>
+		</table>
+		<div id="resource-search-list" class="search-list hidden" tabindex="-1"></div>
 		<div>
 			{{#unlessEquals type "view"}}
 			<button id="accept-button">

@@ -51,7 +51,7 @@ app.get("/empires", (req, res, next) => {
 		if(err) {
 			res.status(500).send(err);
 		} else {
-			context.empires = rows;;
+			context.empires = rows;
 			res.status(200).render(pageName, context);
 		}
 	});
@@ -69,7 +69,9 @@ app.get("/empires/create", (req, res, next) => {
 		"isFallenEmpire": false
 	};
 
-	res.status(200).render(pageName, context);
+	addResourceSearchList(context, res, (context, res) => {
+		res.status(200).render(pageName, context);
+	});
 });
 
 function viewEditEmpireData(type, req, res, next) {
@@ -89,7 +91,17 @@ function viewEditEmpireData(type, req, res, next) {
 				res.status(500).send("Too many rows returned");
 			} else {
 				context.empire = rows[0];
-				res.status(200).render(pageName, context);
+
+				mysql.pool.query("SELECT resources.resourceID, resources.name, rd.quantity FROM (SELECT * FROM resource_stocks WHERE resource_stocks.empireID = ?) AS rd INNER JOIN resources ON rd.resourceID = resources.resourceID", [empireId], (error, rows, fields) => {
+					if (error) {
+						res.status(500).send(error);
+					} else {
+						context.empire_resource_stocks = rows;
+						addResourceSearchList(context, res, (context, res) => {
+							res.status(200).render(pageName, context);
+						});
+					}
+				});
 			}
 		});
 	} else {
@@ -111,13 +123,29 @@ app.post('/empires/add', (req, res, next) => {
 		req.body.hasOwnProperty("aggressiveness") &&
 		req.body.hasOwnProperty("primaryColor") &&
 		req.body.hasOwnProperty("secondaryColor") &&
-		req.body.hasOwnProperty("isFallenEmpire")
+		req.body.hasOwnProperty("isFallenEmpire") &&
+		req.body.hasOwnProperty("resourceStocks")
 	) {
 		mysql.pool.query("INSERT INTO empires(name, aggressiveness, primaryColor, secondaryColor, isFallenEmpire) VALUES (?,?,?,?,?)", [req.body.name, req.body.aggressiveness, req.body.primaryColor, req.body.secondaryColor, req.body.isFallenEmpire], (error, result, fields) => {
 			if (error) {
 				res.status(500).send(error);
 			} else {
-				res.status(200).send("Empire successfully added");
+				var resourceStocks = req.body.resourceStocks;
+				var stockCallback = (stockIndex) => {
+					if (stockIndex == resourceStocks.length) {
+						res.status(200).send("Empire successfully added");
+					} else {
+						var resourceStock = resourceStocks[stockIndex];
+						mysql.pool.query("INSERT INTO resource_stocks(resourceID, empireID, quantity) VALUES (?,?,?) ON DUPLICATE KEY UPDATE quantity=?", [resourceStock.resourceID, result.insertId, resourceStock.quantity, resourceStock.quantity], (error, result, fields) => {
+							if (error) {
+								res.status(500).send(error);
+							} else {
+								stockCallback(stockIndex + 1);
+							}
+						});
+					}
+				}
+				stockCallback(0);
 			}
 		});
 	} else {
@@ -136,13 +164,29 @@ app.post("/empires/update/:id", (req, res, next) => {
 			req.body.hasOwnProperty("aggressiveness") &&
 			req.body.hasOwnProperty("primaryColor") &&
 			req.body.hasOwnProperty("secondaryColor") &&
-			req.body.hasOwnProperty("isFallenEmpire")
+			req.body.hasOwnProperty("isFallenEmpire") &&
+			req.body.hasOwnProperty("resourceStocks")
 		) {
 			mysql.pool.query("UPDATE empires SET name=?, aggressiveness=?, primaryColor=?, secondaryColor=?, isFallenEmpire=? WHERE empireID=?", [req.body.name, req.body.aggressiveness, req.body.primaryColor, req.body.secondaryColor, req.body.isFallenEmpire, empireId], (error, result, fields) => {
 				if (error) {
 					res.status(500).send(error);
 				} else {
-					res.status(200).send("Empire successfully updated");
+					var resourceStocks = req.body.resourceStocks;
+					var stockCallback = (stockIndex) => {
+						if (stockIndex == resourceStocks.length) {
+							res.status(200).send("Empire successfully updated");
+						} else {
+							var resourceStock = resourceStocks[stockIndex];
+							mysql.pool.query("INSERT INTO resource_stocks(resourceID, empireID, quantity) VALUES (?,?,?) ON DUPLICATE KEY UPDATE quantity=?", [resourceStock.resourceID, empireId, resourceStock.quantity, resourceStock.quantity], (error, result, fields) => {
+								if (error) {
+									res.status(500).send(error);
+								} else {
+									stockCallback(stockIndex + 1);
+								}
+							});
+						}
+					}
+					stockCallback(0);
 				}
 			});
 		} else {
@@ -595,6 +639,19 @@ app.post("/resources/delete", (req, res, next) => {
 	}
 });
 
+function addResourceSearchList(context, res, contFunc) {
+	mysql.pool.query("SELECT resourceID, name FROM resources ORDER BY name", (err, rows, fields) => {
+		if (err) {
+			res.status(500).send(err);
+		} else if (rows == null) {
+			res.status(500).send("No rows returned");
+		} else {
+			context.encoded_resource_search_list = encodeURIComponent(JSON.stringify(rows));
+			contFunc(context, res);
+		}
+	});
+}
+
 //
 // BODIES ======================================================================
 // 
@@ -761,7 +818,7 @@ app.get("/resource-stocks", (req, res, next) => {
 		if(err) {
 			res.status(500).send(err);
 		} else {
-			context.resourceStocks = rows;;
+			context.resourceStocks = rows;
 			res.status(200).render(pageName, context);
 		}
 	});
@@ -779,6 +836,31 @@ app.post('/resource-stocks/add', (req, res, next) => {
 	} else {
 		res.status(400).send({
 			error: "Request body needs an empire, resource, and quanitity."
+		});
+	}
+});
+
+app.post("/resource-stocks/delete", (req, res, next) => {
+	if (req.hasOwnProperty("body") && req.body.hasOwnProperty("resourceID") && req.body.hasOwnProperty("empireID"))
+	{
+		var resourceId = req.body.resourceID;
+		var empireId = req.body.empireID;
+		if (resourceId >= 0 && empireId >= 0) {
+			mysql.pool.query("DELETE FROM resource_stocks WHERE resourceID=? AND empireID=?", [resourceId, empireId], (error, results, fields) => {
+				if (error) {
+					res.status(500).send(error);
+				} else {
+					res.status(200).send("Resource stock successfully deleted");
+				}
+			});
+		} else {
+			res.status(400).send({
+				error: "Bad resource or empire id."
+			});
+		}
+	} else {
+		res.status(400).send({
+			error: "Request body needs a resource id and an empire id."
 		});
 	}
 });
