@@ -35,6 +35,13 @@ app.get("/", (req, res, next) => {
 	res.status(200).render(pageName, context);
 });
 
+app.get("/about", (req, res, next) => {
+	var pageName = "aboutPage";
+	var context = createDefaultContext(pageName);
+	context.page_title = "About";
+	res.status(200).render(pageName, context);
+});
+
 //
 // QUERIES =====================================================================
 //
