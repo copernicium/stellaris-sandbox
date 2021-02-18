@@ -889,22 +889,6 @@ app.get("/resource-stocks", (req, res, next) => {
 	});
 });
 
-app.post('/resource-stocks/add', (req, res, next) => {
-	if (req.hasOwnProperty("body") &&
-		req.body.hasOwnProperty("empire") &&
-		req.body.hasOwnProperty("resource") &&
-		req.body.hasOwnProperty("quantity")
-	) {
-		resourceStocks.push(req.body);
-		saveJSON();
-		res.status(200).send("Resource stock successfully added");
-	} else {
-		res.status(400).send({
-			error: "Request body needs an empire, resource, and quanitity."
-		});
-	}
-});
-
 app.post("/resource-stocks/delete", (req, res, next) => {
 	if (req.hasOwnProperty("body") && req.body.hasOwnProperty("resourceID") && req.body.hasOwnProperty("empireID"))
 	{
@@ -945,22 +929,6 @@ app.get("/resource-deposits", (req, res, next) => {
 			res.status(200).render(pageName, context);
 		}
 	});
-});
-
-app.post("/resource-deposits/add", (req, res, next) => {
-	if (req.hasOwnProperty("body") &&
-		req.body.hasOwnProperty("body") &&
-		req.body.hasOwnProperty("resource") &&
-		req.body.hasOwnProperty("quantity")
-	) {
-		resourceDeposits.push(req.body);
-		saveJSON();
-		res.status(200).send("Resource deposit successfully added");
-	} else {
-		res.status(400).send({
-			error: "Request body needs a body, resource, and quantity."
-		});
-	}
 });
 
 app.post("/resource-deposits/delete", (req, res, next) => {
