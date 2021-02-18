@@ -469,7 +469,7 @@ app.post('/hyperlanes/add', (req, res, next) => {
 app.get("/resources", (req, res, next) => {
 	var pageName = "resourcesPage";
 	var context = createDefaultContext(pageName);
-	mysql.pool.query("SELECT * FROM resources", (err, rows, fields) => {
+	mysql.pool.query("SELECT * FROM resources ORDER BY name", (err, rows, fields) => {
 		if(err) {
 			res.status(500).send(err);
 		} else {
@@ -492,62 +492,55 @@ app.get("/resources/create", (req, res, next) => {
 	res.status(200).render(pageName, context);
 });
 
-app.get("/resources/view/:id", (req, res, next) => {
+function viewEditResourceData(type, req, res, next) {
 	var resourceId = parseInt(req.params.id);
 	var idIsInt = (resourceId != NaN) && (String(resourceId) == req.params.id);
 	if (idIsInt && resourceId >= 0) {
 		var pageName = "individualResourcePage";
 		var context = createDefaultContext(pageName);
-		context.type = "view";
+		context.type = type;
 
-		mysql.pool.query("SELECT * FROM resources WHERE resources.resourceID = " + resourceId, (err, rows, fields) => {
+		mysql.pool.query("SELECT * FROM resources WHERE resourceID = ?", resourceId, (err, rows, fields) => {
 			if(err) {
 				res.status(500).send(err);
+			} else if (rows == null) {
+				res.status(500).send("No rows returned");
+			} else if (rows.length > 1) {
+				res.status(500).send("Too many rows returned");
 			} else {
-				if(rows != null && rows.length == 1) {
-					context.resource = rows[0];
-				} else {
-					// TODO error
-				}
-
+				context.resource = rows[0];
 				res.status(200).render(pageName, context);
 			}
 		});
 	} else {
 		next();
 	}
+}
+
+app.get("/resources/view/:id", (req, res, next) => {
+	viewEditResourceData("view", req, res, next);
 });
 
 app.get("/resources/edit/:id", (req, res, next) => {
-	var resourceId = parseInt(req.params.id);
-	var idIsInt = (resourceId != NaN) && (String(resourceId) == req.params.id);
-	if (idIsInt && resourceId >= 0) {
-		var pageName = "individualResourcePage";
-		var context = createDefaultContext(pageName);
-		context.type = "edit";
-
-		var resource = resources[resourceId]; // TODO: Replace with call to database
-		context.resource = resource;
-
-		res.status(200).render(pageName, context);
-	} else {
-		next();
-	}
+	viewEditResourceData("edit", req, res, next);
 });
 
 app.post('/resources/add', (req, res, next) => {
 	if (req.hasOwnProperty("body") &&
 		req.body.hasOwnProperty("name") &&
-		req.body.hasOwnProperty("base_market_value") &&
+		req.body.hasOwnProperty("baseMarketValue") &&
 		req.body.hasOwnProperty("color")
 	) {
-		req.body["id"] = resources.length;
-		resources.push(req.body);
-		saveJSON();
-		res.status(200).send("Resource successfully added");
+		mysql.pool.query("INSERT INTO resources(name, baseMarketValue, color) VALUES (?,?,?)", [req.body.name, req.body.baseMarketValue, req.body.color], (error, result, fields) => {
+			if (error) {
+				res.status(500).send(error);
+			} else {
+				res.status(200).send("Resource successfully added");
+			}
+		});
 	} else {
 		res.status(400).send({
-			error: "Request body needs a name, base_market_value, and color."
+			error: "Request body needs a name, baseMarketValue, and color."
 		});
 	}
 });
@@ -558,12 +551,16 @@ app.post("/resources/update/:id", (req, res, next) => {
 	if (idIsInt && resourceId >= 0) {
 		if (req.hasOwnProperty("body") &&
 			req.body.hasOwnProperty("name") &&
-			req.body.hasOwnProperty("base_market_value") &&
+			req.body.hasOwnProperty("baseMarketValue") &&
 			req.body.hasOwnProperty("color")
 		) {
-			resources[resourceId] = req.body;
-			saveJSON();
-			res.status(200).send("Resource successfully updated");
+			mysql.pool.query("UPDATE resources SET name=?, baseMarketValue=?, color=? WHERE resourceID=?", [req.body.name, req.body.baseMarketValue, req.body.color, resourceId], (error, result, fields) => {
+				if (error) {
+					res.status(500).send(error);
+				} else {
+					res.status(200).send("Resource successfully updated");
+				}
+			});
 		} else {
 			res.status(400).send({
 				error: "Request body needs a name, base market value, and color."
@@ -581,13 +578,13 @@ app.post("/resources/delete", (req, res, next) => {
 	{
 		var resourceId = req.body.id;
 		if (resourceId >= 0) {
-			// TODO: Replace with working with the DB
-			resources.splice(resourceId, 1);
-			for (var i = resourceId; i < resources.length; i++) {
-				resources[i].id -= 1;
-			}
-			saveJSON();
-			res.status(200).send("Resource successfully deleted");
+			mysql.pool.query("DELETE FROM resources WHERE resourceID=?", [resourceId], (error, result, fields) => {
+				if (error) {
+					res.status(500).send(error);
+				} else {
+					res.status(200).send("Resource successfully deleted");
+				}
+			});
 		} else {
 			res.status(400).send({
 				error: "Bad resource ID."

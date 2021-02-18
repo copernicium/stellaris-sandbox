@@ -16,7 +16,7 @@
 {{/unlessEquals}}
 				name: creationForm["resource-name"].value,
 				baseMarketValue: creationForm["resource-base-market-value"].value,
-				color: creationForm["resource-color"].value
+				color: creationForm["resource-color"].value.toUpperCase()
 			};
 {{#switch type}}
 	{{#case "create"}}
