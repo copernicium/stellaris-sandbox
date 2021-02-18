@@ -37,7 +37,7 @@
 				<input type="search" id="system-search-input" class="search-bar" placeholder="Search.."></input>
 			</div>
 			<br>
-			<table id="systems-list" class="entry-list">
+			<table class="entry-list">
 				<thead>
 					<tr>
 						<th>Name</th>
@@ -47,7 +47,7 @@
 						<th></th>
 					</tr>
 				</thead>
-				<tbody>
+				<tbody id="systems-list">
 					{{#each systems}}
 						{{> systemItem}}
 					{{/each}}
