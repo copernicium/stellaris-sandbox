@@ -3,6 +3,6 @@
     <td>{{system2ID}}</td>
     <td>
         <button type="button" id="hyperlane-highlight-button" onclick="highlightHyperlane({{system1ID}}, {{system2ID}});">Highlight</button>
-        <button type="button" id="hyperlane-delete-button" onclick="alert('TODO');">Delete</button>
+        <button type="button" id="hyperlane-delete-button" onclick="createDeleteModal('/hyperlanes/delete/', '{{system1ID}}-{{system2ID}}')">Delete</button>
     </td>
 </tr>

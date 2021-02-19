@@ -48,13 +48,9 @@ function getRandomStarColor() {
 	return "hsl(" + hue + ", " + sat + "%, 88%)";
 }
 
-function setupStarfield() {
+function setupStarfield(canvas) {
 	// Code adapted from: 
 	// http://thenewcode.com/81/Make-A-Starfield-Background-with-HTML5-Canvas
-	var canvas = document.getElementById("starfield");
-	if(canvas == null) {
-		return;
-	}
 	canvas.width = canvas.offsetWidth;
 	canvas.height = canvas.offsetHeight;
 
@@ -73,6 +69,13 @@ function setupStarfield() {
 		context.arc(x, y, radius, 0, 360);
 		context.fillStyle = getRandomStarColor();
 		context.fill();
+	}
+}
+
+function setupStarfields() {
+	var canvases = document.getElementsByClassName("starfield");
+	for(var i = 0; i < canvases.length; i++) {
+		setupStarfield(canvases[i]);
 	}
 }
 
@@ -172,7 +175,7 @@ function createConfirmationModal(confirm_function) {
 
 function createModalBackdrop() {
 	addAtEndOfMain(Handlebars.templates.modalBackdrop());
-	setupStarfield();
+	setupStarfields();
 }
 
 function removeModalBackdrop() {
@@ -206,7 +209,7 @@ function matchColumnLengths() {
 }
 
 window.addEventListener("DOMContentLoaded", function() {
-	setupStarfield();
+	setupStarfields();
 
 	matchColumnLengths();
 });

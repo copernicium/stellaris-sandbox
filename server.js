@@ -297,8 +297,8 @@ app.get("/systems/create", (req, res, next) => {
 	context.type = "create";
 	context.system = {
 		"name": "",
-		"star_count": 1,
-		"orbital_radius": 0.5,
+		"type": "unary",
+		"orbitalRadius": 0.5,
 		"theta": 0
 	};
 	context.system_bodies = [];
@@ -525,6 +525,32 @@ app.post('/hyperlanes/add', (req, res, next) => {
 	} else {
 		res.status(400).send({
 			error: "Request body needs a system1 and system2."
+		});
+	}
+});
+
+app.post("/hyperlanes/delete", (req, res, next) => {
+	if (req.hasOwnProperty("body") && req.body.hasOwnProperty("id"))
+	{
+		var ids = req.body.id.split("-");
+		if (ids.length == 2) {
+			var system1Id = ids[0];
+			var system2Id = ids[1];
+			mysql.pool.query("DELETE FROM hyperlanes WHERE system1ID=" + system1Id + " AND system2ID=" + system2Id, (error, results, fields) => {
+				if (error) {
+					res.status(500).send(error);
+				} else {
+					res.status(200).send("Hyperlane successfully deleted");
+				}
+			});
+		} else {
+			res.status(400).send({
+				error: "Bad hyperlane compound ID \"" + req.body.id + "\"."
+			});
+		}
+	} else {
+		res.status(400).send({
+			error: "Request body needs an id."
 		});
 	}
 });
