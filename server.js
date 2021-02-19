@@ -109,6 +109,7 @@ function viewEditEmpireData(type, req, res, next) {
 						res.status(500).send(err);
 					} else {
 						context.owned_systems = rows;
+						context.encoded_systems = encodeURIComponent(JSON.stringify(context.owned_systems));
 
 						mysql.pool.query("SELECT resources.resourceID, resources.name, rd.quantity FROM (SELECT * FROM resource_stocks WHERE resource_stocks.empireID = ?) AS rd INNER JOIN resources ON rd.resourceID = resources.resourceID", [empireId], (error, rows, fields) => {
 							if (error) {

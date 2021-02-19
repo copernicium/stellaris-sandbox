@@ -74,116 +74,125 @@
 				parent.appendChild(resourceName);
 			});
 {{/unlessEquals}}
+
+			var hyperlanes = [];
+			var systems = JSON.parse(decodeURIComponent("{{{encoded_systems}}}"));
+			drawGalaxyView(hyperlanes, systems);
 		});
 	</script>
-	<div class="page-container">
-		<h2>
-			{{#switch type}}
-				{{#case "view"}} View Empire {{/case}}
-				{{#case "create"}} Create New Empire {{/case}}
-				{{#case "edit"}} Edit Empire {{/case}}
-			{{/switch}}
-		</h2>
-		<form name="empire-form" {{#ifEquals type "view"}}class="immutable"{{/ifEquals}}>
-			<table>
-				<tr>
-					<td>
-						<label>Name:</label>
-					</td>
-					<td>
-						<input type="text" id="empire-name" name="empire-name" value="{{empire.name}}" {{#ifEquals type "view"}}readonly{{/ifEquals}}>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<label>Aggressiveness:</label>
-					</td>
-					<td>
-						<select id="empire-aggressiveness" name="empire-aggressiveness" {{#ifEquals type "view"}}disabled{{/ifEquals}}>
-							<option value="passive" {{#ifEquals empire.aggressiveness "passive"}}selected{{/ifEquals}}>Passive</option>
-							<option value="moderate" {{#ifEquals empire.aggressiveness "moderate"}}selected{{/ifEquals}}>Moderate</option>
-							<option value="aggressive" {{#ifEquals empire.aggressiveness "aggressive"}}selected{{/ifEquals}}>Aggressive</option>
-						</select>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<label>Primary Color:</label>
-					</td>
-					<td>
-						<input type="color" id="empire-primary-color" name="empire-primary-color" value="{{empire.primaryColor}}" {{#ifEquals type "view"}}disabled{{/ifEquals}}>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<label>Secondary Color:</label>
-					</td>
-					<td>
-						<input type="color" id="empire-secondary-color" name="empire-secondary-color"value="{{empire.secondaryColor}}" {{#ifEquals type "view"}}disabled{{/ifEquals}}>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<label>Fallen Empire:</label>
-					</td>
-					<td>
-						<input type="checkbox" id="empire-is-fallen" name="empire-is-fallen" {{#if empire.isFallenEmpire}}checked{{/if}} {{#ifEquals type "view"}}disabled{{/ifEquals}}>
-					</td>
-				</tr>
-			</table>
-		</form>
-		<div>
-			<h3>Resource Stocks</h3>
-			{{#unlessEquals type "view"}}
-			<button type="button" onclick="createNewResourceStock()">Create New Resource Stock</button>
-			{{/unlessEquals}}
-			<table id="resource-stock-table">
-				<thead>
-					<tr>
-						<th>Resource</th>
-						<th>Quantity</th>
-					</tr>
-				</thead>
-				<tbody id="resource-stock-list">
-					{{#each empire_resource_stocks}}
-						{{> empireResourceStockItem empireID=../empire.empireID readonly=(isEqual ../type "view") }}
-					{{/each}}
-				</tbody>
-			</table>
-			<div id="resource-search-list" class="search-list hidden" tabindex="-1"></div>
-		</div>
-		<div>
-			<h3>Owned Systems</h3>
-			<table id="owned-systems-table">
-				<thead>
-					<tr>
-						<th>Name</th>
-						<th></th>
-					</tr>
-				</thead>
-				<tbody id="owned-systems-list">
-					{{#each owned_systems}}
-						{{> empireSystemItem readonly=(isEqual ../type "view") }}
-					{{/each}}
-				</tbody>
-			</table>
-		</div>
-		<div>
-			{{#unlessEquals type "view"}}
-			<button id="accept-button">
+	<div class="page-container has-right-col">
+        <div class="left-col">
+			<h2>
 				{{#switch type}}
-					{{#case "create"}} Create {{/case}}
-					{{#case "edit"}} Save {{/case}}
+					{{#case "view"}} View Empire {{/case}}
+					{{#case "create"}} Create New Empire {{/case}}
+					{{#case "edit"}} Edit Empire {{/case}}
 				{{/switch}}
-			</button>
-			{{/unlessEquals}}
-			<button id="cancel-button">
-				{{#switch type}}
-					{{#case "view"}} Return {{/case}}
-					{{#case "create"}} Cancel {{/case}}
-					{{#case "edit"}} Cancel {{/case}}
-				{{/switch}}
-			</button>
+			</h2>
+			<form name="empire-form" {{#ifEquals type "view"}}class="immutable"{{/ifEquals}}>
+				<table>
+					<tr>
+						<td>
+							<label>Name:</label>
+						</td>
+						<td>
+							<input type="text" id="empire-name" name="empire-name" value="{{empire.name}}" {{#ifEquals type "view"}}readonly{{/ifEquals}}>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label>Aggressiveness:</label>
+						</td>
+						<td>
+							<select id="empire-aggressiveness" name="empire-aggressiveness" {{#ifEquals type "view"}}disabled{{/ifEquals}}>
+								<option value="passive" {{#ifEquals empire.aggressiveness "passive"}}selected{{/ifEquals}}>Passive</option>
+								<option value="moderate" {{#ifEquals empire.aggressiveness "moderate"}}selected{{/ifEquals}}>Moderate</option>
+								<option value="aggressive" {{#ifEquals empire.aggressiveness "aggressive"}}selected{{/ifEquals}}>Aggressive</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label>Primary Color:</label>
+						</td>
+						<td>
+							<input type="color" id="empire-primary-color" name="empire-primary-color" value="{{empire.primaryColor}}" {{#ifEquals type "view"}}disabled{{/ifEquals}}>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label>Secondary Color:</label>
+						</td>
+						<td>
+							<input type="color" id="empire-secondary-color" name="empire-secondary-color"value="{{empire.secondaryColor}}" {{#ifEquals type "view"}}disabled{{/ifEquals}}>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label>Fallen Empire:</label>
+						</td>
+						<td>
+							<input type="checkbox" id="empire-is-fallen" name="empire-is-fallen" {{#if empire.isFallenEmpire}}checked{{/if}} {{#ifEquals type "view"}}disabled{{/ifEquals}}>
+						</td>
+					</tr>
+				</table>
+			</form>
+			<div>
+				<h3>Resource Stocks</h3>
+				{{#unlessEquals type "view"}}
+				<button type="button" onclick="createNewResourceStock()">Create New Resource Stock</button>
+				{{/unlessEquals}}
+				<table id="resource-stock-table">
+					<thead>
+						<tr>
+							<th>Resource</th>
+							<th>Quantity</th>
+						</tr>
+					</thead>
+					<tbody id="resource-stock-list">
+						{{#each empire_resource_stocks}}
+							{{> empireResourceStockItem empireID=../empire.empireID readonly=(isEqual ../type "view") }}
+						{{/each}}
+					</tbody>
+				</table>
+				<div id="resource-search-list" class="search-list hidden" tabindex="-1"></div>
+			</div>
+			<div>
+				<h3>Owned Systems</h3>
+				<table id="owned-systems-table">
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody id="owned-systems-list">
+						{{#each owned_systems}}
+							{{> empireSystemItem readonly=(isEqual ../type "view") }}
+						{{/each}}
+					</tbody>
+				</table>
+			</div>
+			<div>
+				{{#unlessEquals type "view"}}
+				<button id="accept-button">
+					{{#switch type}}
+						{{#case "create"}} Create {{/case}}
+						{{#case "edit"}} Save {{/case}}
+					{{/switch}}
+				</button>
+				{{/unlessEquals}}
+				<button id="cancel-button">
+					{{#switch type}}
+						{{#case "view"}} Return {{/case}}
+						{{#case "create"}} Cancel {{/case}}
+						{{#case "edit"}} Cancel {{/case}}
+					{{/switch}}
+				</button>
+			</div>
+		</div>
+		<div class="right-col">
+			{{> galaxyView}}
 		</div>
 	</div>
 </main>
