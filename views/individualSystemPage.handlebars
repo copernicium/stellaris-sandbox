@@ -109,21 +109,23 @@
 						</td>
 				</table>
 			</form>
-			<h3>Bodies</h3>
-			<table>
-				<thead>
-					<tr>
-						<th>Name</th>
-						<th>Type</th>
-						<th></th>
-					</tr>
-				</thead>
-				<tbody id="body-table">
-					{{#each system_bodies}}
-						{{> systemBodyItem}}
-					{{/each}}
-				</tbody>
-			</table>
+			<div>
+				<h3>Bodies</h3>
+				<table>
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Type</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody id="body-table">
+						{{#each system_bodies}}
+							{{> systemBodyItem}}
+						{{/each}}
+					</tbody>
+				</table>
+			</div>
 			{{#unlessEquals type "view"}}
 			<button id="accept-button">
 				{{#switch type}}

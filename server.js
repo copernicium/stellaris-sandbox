@@ -104,13 +104,21 @@ function viewEditEmpireData(type, req, res, next) {
 			} else {
 				context.empire = rows[0];
 
-				mysql.pool.query("SELECT resources.resourceID, resources.name, rd.quantity FROM (SELECT * FROM resource_stocks WHERE resource_stocks.empireID = ?) AS rd INNER JOIN resources ON rd.resourceID = resources.resourceID", [empireId], (error, rows, fields) => {
-					if (error) {
-						res.status(500).send(error);
+				mysql.pool.query("SELECT * FROM systems WHERE systems.empireID = ?", empireId, (err, rows, fields) => {
+					if(err) {
+						res.status(500).send(err);
 					} else {
-						context.empire_resource_stocks = rows;
-						addResourceSearchList(context, res, (context, res) => {
-							res.status(200).render(pageName, context);
+						context.owned_systems = rows;
+
+						mysql.pool.query("SELECT resources.resourceID, resources.name, rd.quantity FROM (SELECT * FROM resource_stocks WHERE resource_stocks.empireID = ?) AS rd INNER JOIN resources ON rd.resourceID = resources.resourceID", [empireId], (error, rows, fields) => {
+							if (error) {
+								res.status(500).send(error);
+							} else {
+								context.empire_resource_stocks = rows;
+								addResourceSearchList(context, res, (context, res) => {
+									res.status(200).render(pageName, context);
+								});
+							}
 						});
 					}
 				});

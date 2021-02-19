@@ -132,24 +132,42 @@
 				</tr>
 			</table>
 		</form>
-		<h3>Resource Stocks</h3>
-		{{#unlessEquals type "view"}}
-		<button type="button" onclick="createNewResourceStock()">Create New Resource Stock</button>
-		{{/unlessEquals}}
-		<table id="resource-stock-table">
-			<thead>
-				<tr>
-					<th>Resource</th>
-					<th>Quantity</th>
-				</tr>
-			</thead>
-			<tbody id="resource-stock-list">
-				{{#each empire_resource_stocks}}
-					{{> empireResourceStockItem empireID=../empire.empireID readonly=(isEqual ../type "view") }}
-				{{/each}}
-			</tbody>
-		</table>
-		<div id="resource-search-list" class="search-list hidden" tabindex="-1"></div>
+		<div>
+			<h3>Resource Stocks</h3>
+			{{#unlessEquals type "view"}}
+			<button type="button" onclick="createNewResourceStock()">Create New Resource Stock</button>
+			{{/unlessEquals}}
+			<table id="resource-stock-table">
+				<thead>
+					<tr>
+						<th>Resource</th>
+						<th>Quantity</th>
+					</tr>
+				</thead>
+				<tbody id="resource-stock-list">
+					{{#each empire_resource_stocks}}
+						{{> empireResourceStockItem empireID=../empire.empireID readonly=(isEqual ../type "view") }}
+					{{/each}}
+				</tbody>
+			</table>
+			<div id="resource-search-list" class="search-list hidden" tabindex="-1"></div>
+		</div>
+		<div>
+			<h3>Owned Systems</h3>
+			<table id="owned-systems-table">
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody id="owned-systems-list">
+					{{#each owned_systems}}
+						{{> empireSystemItem readonly=(isEqual ../type "view") }}
+					{{/each}}
+				</tbody>
+			</table>
+		</div>
 		<div>
 			{{#unlessEquals type "view"}}
 			<button id="accept-button">
