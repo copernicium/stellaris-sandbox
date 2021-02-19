@@ -1,7 +1,7 @@
 <main>
 	<script>
 		function returnToListPage() {
-			window.history.back();
+			window.location = document.referrer;
 		}
 
 		function editCancel() {
@@ -73,11 +73,12 @@
 							<label>Type:</label>
 						</td>
 						<td>
-							<select id="system-type" name="system-type" {{#ifEquals type "view"}}disabled{{/ifEquals}}>
-								<option value="unary" {{#ifEquals system.type "unary"}}selected{{/ifEquals}}>Unary</option>
-								<option value="binary" {{#ifEquals system.type "binary"}}selected{{/ifEquals}}>Binary</option>
-								<option value="trinary" {{#ifEquals system.type "trinary"}}selected{{/ifEquals}}>Trinary</option>
-							</select>
+							<input type="radio" id="system-type-unary" name="system-type" value="unary" {{#if (isEqual system.type "unary")}}checked{{else}}{{#ifEquals type "view"}}disabled{{/ifEquals}}{{/if}}>
+							<label for="tem-type-una">Unary</label><br>
+							<input type="radio" id="system-type-binary" name="system-type" value="binary" {{#if (isEqual system.type "binary")}}checked{{else}}{{#ifEquals type "view"}}disabled{{/ifEquals}}{{/if}}>
+							<label for="system-type-binary">Binary</label><br>
+							<input type="radio" id="system-type-trinary" name="system-type" value="trinary" {{#if (isEqual system.type "trinary")}}checked{{else}}{{#ifEquals type "view"}}disabled{{/ifEquals}}{{/if}}>
+							<label for="system-type-trinary">Trinary</label><br>
 						</td>
 					</tr>
 					<tr>

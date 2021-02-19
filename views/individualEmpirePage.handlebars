@@ -2,7 +2,7 @@
 	<script src="/templates/empire_resource_stock_item.js" defer></script>
 	<script>
 		function returnToListPage() {
-			window.history.back();
+			window.location = document.referrer;
 		}
 
 		function editCancel() {
@@ -104,11 +104,12 @@
 							<label>Aggressiveness:</label>
 						</td>
 						<td>
-							<select id="empire-aggressiveness" name="empire-aggressiveness" {{#ifEquals type "view"}}disabled{{/ifEquals}}>
-								<option value="passive" {{#ifEquals empire.aggressiveness "passive"}}selected{{/ifEquals}}>Passive</option>
-								<option value="moderate" {{#ifEquals empire.aggressiveness "moderate"}}selected{{/ifEquals}}>Moderate</option>
-								<option value="aggressive" {{#ifEquals empire.aggressiveness "aggressive"}}selected{{/ifEquals}}>Aggressive</option>
-							</select>
+							<input type="radio" id="empire-aggressiveness-passive" name="empire-aggressiveness" value="passive" {{#if (isEqual empire.aggressiveness "passive")}}checked{{else}}{{#ifEquals type "view"}}disabled{{/ifEquals}}{{/if}}>
+							<label for="empire-aggressiveness-passive">Passive</label><br>
+							<input type="radio" id="empire-aggressiveness-moderate" name="empire-aggressiveness" value="moderate" {{#if (isEqual empire.aggressiveness "moderate")}}checked{{else}}{{#ifEquals type "view"}}disabled{{/ifEquals}}{{/if}}>
+							<label for="empire-aggressiveness-moderate">Moderate</label><br>
+							<input type="radio" id="empire-aggressiveness-aggressive" name="empire-aggressiveness" value="aggressive" {{#if (isEqual empire.aggressiveness "aggressive")}}checked{{else}}{{#ifEquals type "view"}}disabled{{/ifEquals}}{{/if}}>
+							<label for="empire-aggressiveness-aggressive">Aggressive</label><br>
 						</td>
 					</tr>
 					<tr>

@@ -2,7 +2,7 @@
 	<script src="/templates/body_resource_deposit_item.js" defer></script>
 	<script>
 		function returnToListPage() {
-			window.history.back();
+			window.location = document.referrer;
 		}
 
 		function editCancel() {
@@ -102,10 +102,10 @@
 						<label>Type:</label>
 					</td>
 					<td>
-						<select id="body-type" name="body-type" {{#ifEquals type "view"}}disabled{{/ifEquals}}>
-							<option value="planet" {{#ifEquals body.type "planet"}}selected{{/ifEquals}}>Planet</option>
-							<option value="asteroid" {{#ifEquals body.type "asteroid"}}selected{{/ifEquals}}>Asteroid</option>
-						</select>
+						<input type="radio" id="body-type-planet" name="body-type" value="planet" {{#if (isEqual body.type "planet")}}checked{{else}}{{#ifEquals type "view"}}disabled{{/ifEquals}}{{/if}}>
+						<label for="body-type-planet">Planet</label><br>
+						<input type="radio" id="body-type-asteroid" name="body-type" value="asteroid" {{#if (isEqual body.type "asteroid")}}checked{{else}}{{#ifEquals type "view"}}disabled{{/ifEquals}}{{/if}}>
+						<label for="body-type-asteroid">Asteroid</label><br>
 					</td>
 				</tr>
 				<tr>
