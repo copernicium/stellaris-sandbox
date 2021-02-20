@@ -520,27 +520,20 @@ app.post('/hyperlanes/add', (req, res, next) => {
 });
 
 app.post("/hyperlanes/delete", (req, res, next) => {
-	if (req.hasOwnProperty("body") && req.body.hasOwnProperty("id"))
+	if (req.hasOwnProperty("body") && req.body.hasOwnProperty("system1ID") && req.body.hasOwnProperty("system2ID"))
 	{
-		var ids = req.body.id.split("-");
-		if (ids.length == 2) {
-			var system1Id = ids[0];
-			var system2Id = ids[1];
-			mysql.pool.query("DELETE FROM hyperlanes WHERE system1ID=" + system1Id + " AND system2ID=" + system2Id, (error, results, fields) => {
-				if (error) {
-					res.status(500).send(error);
-				} else {
-					res.status(200).send("Hyperlane successfully deleted");
-				}
-			});
-		} else {
-			res.status(400).send({
-				error: "Bad hyperlane compound ID \"" + req.body.id + "\"."
-			});
-		}
+		var system1Id = req.body.system1ID;
+		var system2Id = req.body.system2ID;
+		mysql.pool.query("DELETE FROM hyperlanes WHERE system1ID=" + system1Id + " AND system2ID=" + system2Id, (error, results, fields) => {
+			if (error) {
+				res.status(500).send(error);
+			} else {
+				res.status(200).send("Hyperlane successfully deleted");
+			}
+		});
 	} else {
 		res.status(400).send({
-			error: "Request body needs an id."
+			error: "Request body needs a system1ID and a system2ID."
 		});
 	}
 });
