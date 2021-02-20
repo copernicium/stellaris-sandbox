@@ -39,7 +39,7 @@
 
 {{#unlessEquals type "view"}}
 			var empire_search_list = JSON.parse(decodeURIComponent("{{{encoded_empire_search_list}}}"));
-			setupSearchList(empire_search_list, "empire-search-container", "empire-search-bar", "empire-search-list", "empireID", "name", true);
+			setupSearchList(empire_search_list, ["empire-search-bar"], "empire-search-list", "empireID", "name", true, null);
 {{/unlessEquals}}
 
 {{#unlessEquals type "create"}}
