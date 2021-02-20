@@ -483,31 +483,21 @@ app.get("/hyperlanes", (req, res, next) => {
 	var pageName = "hyperlanesPage";
 	var context = createDefaultContext(pageName);
 	context.page_title = "Hyperlanes";
-	mysql.pool.query("SELECT * FROM hyperlanes", (err, rows, fields) => {
+	mysql.pool.query(HYPERLANES_QUERY, (err, rows, fields) => {
 		if(err) {
 			res.status(500).send(err);
+		} else if (rows == null) {
+			res.status(500).send("No rows returned");
 		} else {
-			context.hyperlanes = rows;;
-
-			mysql.pool.query(HYPERLANES_QUERY, (err, rows, fields) => {
+			context.hyperlanes = rows;
+			context.encoded_hyperlane_details = encodeURIComponent(JSON.stringify(rows));
+			mysql.pool.query("SELECT * FROM systems;", (err, rows, fields) => {
 				if(err) {
 					res.status(500).send(err);
 				} else {
-					if(rows != null) {
-						context.encoded_hyperlane_details = encodeURIComponent(JSON.stringify(rows));
-						mysql.pool.query("SELECT * FROM systems;", (err, rows, fields) => {
-							if(err) {
-								res.status(500).send(err);
-							} else {
-								context.encoded_systems = encodeURIComponent(JSON.stringify(rows));
+					context.encoded_systems = encodeURIComponent(JSON.stringify(rows));
 
-								res.status(200).render(pageName, context);
-							}
-						});
-
-					} else {
-						// TODO error
-					}
+					res.status(200).render(pageName, context);
 				}
 			});
 		}
