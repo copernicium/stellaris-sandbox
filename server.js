@@ -104,14 +104,14 @@ function viewEditEmpireData(type, req, res, next) {
 			} else {
 				context.empire = rows[0];
 
-				mysql.pool.query("SELECT * FROM systems WHERE systems.empireID = ?", empireId, (err, rows, fields) => {
+				mysql.pool.query("SELECT * FROM systems WHERE systems.empireID = ? ORDER BY name", empireId, (err, rows, fields) => {
 					if(err) {
 						res.status(500).send(err);
 					} else {
 						context.owned_systems = rows;
 						context.encoded_systems = encodeURIComponent(JSON.stringify(context.owned_systems));
 
-						mysql.pool.query("SELECT resources.resourceID, resources.name, rd.quantity FROM (SELECT * FROM resource_stocks WHERE resource_stocks.empireID = ?) AS rd INNER JOIN resources ON rd.resourceID = resources.resourceID", [empireId], (error, rows, fields) => {
+						mysql.pool.query("SELECT resources.resourceID, resources.name, rd.quantity FROM (SELECT * FROM resource_stocks WHERE resource_stocks.empireID = ?) AS rd INNER JOIN resources ON rd.resourceID = resources.resourceID ORDER BY resources.name", [empireId], (error, rows, fields) => {
 							if (error) {
 								res.status(500).send(error);
 							} else {
@@ -327,7 +327,7 @@ function viewEditSystemData(type, req, res, next) {
 				context.system = rows[0];
 
 				var bodiesCallback = (context) => {
-					mysql.pool.query("SELECT * FROM bodies WHERE bodies.systemID = ?", systemId, (err, rows, fields) => {
+					mysql.pool.query("SELECT * FROM bodies WHERE bodies.systemID = ? ORDER BY name", systemId, (err, rows, fields) => {
 						if(err) {
 							res.status(500).send(err);
 						} else if (rows == null) {
@@ -770,7 +770,7 @@ function viewEditBodyData(type, req, res, next) {
 						res.status(500).send("Too many rows returned");
 					} else {
 						context.parent_system_name = rows[0].name;
-						mysql.pool.query("SELECT resources.resourceID, resources.name, rd.quantity FROM (SELECT * FROM resource_deposits WHERE resource_deposits.bodyID = ?) AS rd INNER JOIN resources ON rd.resourceID = resources.resourceID", [bodyId], (error, rows, fields) => {
+						mysql.pool.query("SELECT resources.resourceID, resources.name, rd.quantity FROM (SELECT * FROM resource_deposits WHERE resource_deposits.bodyID = ?) AS rd INNER JOIN resources ON rd.resourceID = resources.resourceID ORDER BY resources.name", [bodyId], (error, rows, fields) => {
 							if (error) {
 								res.status(500).send(error);
 							} else {
@@ -914,7 +914,7 @@ app.post("/bodies/delete", (req, res, next) => {
 app.get("/resource-stocks", (req, res, next) => {
 	var pageName = "resourceStockPage";
 	var context = createDefaultContext(pageName);
-	mysql.pool.query("SELECT * FROM resource_stocks", (err, rows, fields) => {
+	mysql.pool.query("SELECT resource_stocks.* FROM resource_stocks INNER JOIN resources ON resource_stocks.resourceID = resources.resourceID ORDER BY resources.name", (err, rows, fields) => {
 		if(err) {
 			res.status(500).send(err);
 		} else {
@@ -956,7 +956,7 @@ app.post("/resource-stocks/delete", (req, res, next) => {
 app.get("/resource-deposits", (req, res, next) => {
 	var pageName = "resourceDepositPage";
 	var context = createDefaultContext(pageName);
-	mysql.pool.query("SELECT * FROM resource_deposits", (err, rows, fields) => {
+	mysql.pool.query("SELECT resource_deposits.* FROM resource_deposits INNER JOIN resources ON resource_deposits.resourceID = resources.resourceID ORDER BY resources.name", (err, rows, fields) => {
 		if(err) {
 			res.status(500).send(err);
 		} else {
