@@ -8,7 +8,7 @@
 	/* background-color: rgba(0, 0, 0, 0.85); */
 }
 
-#confirmation-modal {
+#confirmation-modal, #create-modal {
 	display: flex;
 	align-items: center;
 	position: fixed;
@@ -25,6 +25,23 @@
 	min-width: 200px;
 	min-height: 100px;
 	height: auto;
+	margin: 40px auto;
+	padding: 20px;
+	border: 2px solid white;
+	border-radius: 15px;
+	background-color: #36393F;
+	overflow: auto;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+#create-modal-dialog {
+	width: auto;
+	max-width: 300px;
+	min-width: 200px;
+	height: auto;
+	min-height: 100px;
 	margin: 40px auto;
 	padding: 20px;
 	border: 2px solid white;

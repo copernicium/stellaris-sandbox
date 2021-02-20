@@ -2,13 +2,13 @@
 	<script src="/templates/hyperlane_item_template.js" defer></script>
 	<script>
 		function modalHide() {
-			document.getElementById(MODAL_BACKDROP_ID).classList.add("hidden");
-			document.getElementById(MODAL_ID).classList.add("hidden");
+			document.getElementById("modal-backdrop").classList.add("hidden");
+			document.getElementById("create-modal").classList.add("hidden");
 		}
 
 		function modalShow() {
-			document.getElementById(MODAL_BACKDROP_ID).classList.remove("hidden");
-			document.getElementById(MODAL_ID).classList.remove("hidden");
+			document.getElementById("modal-backdrop").classList.remove("hidden");
+			document.getElementById("create-modal").classList.remove("hidden");
 			setupStarfields();
 		}
 
@@ -34,9 +34,9 @@
 		}
 
 		window.addEventListener("DOMContentLoaded", function() {
-			document.getElementById(MODAL_OPEN_BUTTON_ID).addEventListener("click", modalOpen);
-			document.getElementById(MODAL_CANCEL_BUTTON_ID).addEventListener("click", modalCancel);
-			document.getElementById(MODAL_ACCEPT_BUTTON_ID).addEventListener("click", modalAccept);
+			document.getElementById("modal-open-button").addEventListener("click", modalOpen);
+			document.getElementById("modal-cancel-button").addEventListener("click", modalCancel);
+			document.getElementById("modal-accept-button").addEventListener("click", modalAccept);
 
 			var hyperlanes = JSON.parse(decodeURIComponent("{{{encoded_hyperlane_details}}}"));
 			var systems = JSON.parse(decodeURIComponent("{{{encoded_systems}}}"));
@@ -69,8 +69,8 @@
 	<div id="modal-backdrop" class="hidden">
         <canvas id="starfield" class="starfield"></canvas>
     </div>
-	<div id="modal" class="hidden">
-		<div id="modal-dialog">
+	<div id="create-modal" class="hidden">
+		<div id="create-modal-dialog">
             <h2>Create New Hyperlane</h2>
 			<form name="modal-form">
                 <table>
@@ -92,8 +92,10 @@
                     </tr>
                 </table>
 			</form>
-			<button id="modal-accept-button">Create</button>
-			<button id="modal-cancel-button">Cancel</button>
+			<div class="modal-button-container">
+				<button id="modal-accept-button">Create</button>
+				<button id="modal-cancel-button">Cancel</button>
+			</div>
 		</div>
 	</div>
 </main>
