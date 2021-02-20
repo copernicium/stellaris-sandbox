@@ -724,11 +724,33 @@ app.get("/bodies/create", (req, res, next) => {
 		"orbital_radius": 0.5,
 		"theta": 0
 	};
-	addSystemSearchList(context, res, (context, res) => {
-		addResourceSearchList(context, res, (context, res) => {
-			res.status(200).render(pageName, context);
+
+	var addSearchListsCallback = (context, res) => {
+		addSystemSearchList(context, res, (context, res) => {
+			addResourceSearchList(context, res, (context, res) => {
+				res.status(200).render(pageName, context);
+			});
 		});
-	});
+	};
+
+	if (req.query.systemID) {
+		context.body.systemID = req.query.systemID;
+		mysql.pool.query("SELECT name FROM systems WHERE systemID=?", context.body.systemID, (error, rows, fields) => {
+			if (error) {
+				res.status(500).send(error);
+			} else if (rows == null) {
+				res.status(500).send("No rows returned");
+			} else if (rows.length > 1) {
+				res.status(500).send("Too many rows returned");
+			} else {
+				context.parent_system_name = rows[0].name;
+
+				addSearchListsCallback(context, res);
+			}
+		});
+	} else {
+		addSearchListsCallback(context, res);
+	}
 });
 
 function viewEditBodyData(type, req, res, next) {

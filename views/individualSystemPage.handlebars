@@ -112,6 +112,9 @@
 			</form>
 			<div>
 				<h3>Bodies</h3>
+				{{#ifEquals type "edit"}}
+				<button type="button" onclick="window.location.href = '/bodies/create?systemID={{system.systemID}}'">Create New Body</button>
+				{{/ifEquals}}
 				<table>
 					<thead>
 						<tr>
