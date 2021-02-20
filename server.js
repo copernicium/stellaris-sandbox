@@ -497,7 +497,9 @@ app.get("/hyperlanes", (req, res, next) => {
 				} else {
 					context.encoded_systems = encodeURIComponent(JSON.stringify(rows));
 
-					res.status(200).render(pageName, context);
+					addSystemSearchList(context, res, (context, res) => {
+						res.status(200).render(pageName, context);
+					});
 				}
 			});
 		}
@@ -506,15 +508,19 @@ app.get("/hyperlanes", (req, res, next) => {
 
 app.post('/hyperlanes/add', (req, res, next) => {
 	if (req.hasOwnProperty("body") &&
-		req.body.hasOwnProperty("system1") &&
-		req.body.hasOwnProperty("system2")
+		req.body.hasOwnProperty("system1ID") &&
+		req.body.hasOwnProperty("system2ID")
 	) {
-		hyperlanes.push(req.body);
-		saveJSON();
-		res.status(200).send("Hyperlane successfully added");
+		mysql.pool.query("INSERT INTO hyperlanes(system1ID, system2ID) VALUES (?,?)", [req.body.system1ID, req.body.system2ID], (error, results, fields) => {
+			if (error) {
+				res.status(500).send(error);
+			} else {
+				res.status(200).send("Hyperlane successfully added");
+			}
+		});
 	} else {
 		res.status(400).send({
-			error: "Request body needs a system1 and system2."
+			error: "Request body needs a system1ID and system2ID."
 		});
 	}
 });

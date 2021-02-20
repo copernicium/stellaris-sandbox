@@ -21,22 +21,23 @@
 		}
 
 		function modalAccept() {
-			var creationForm = document.forms["modal-form"];
+			var system1Input = document.getElementById("system-1-search-bar");
+			var system2Input = document.getElementById("system-2-search-bar");
 			var hyperlaneContext = {
-				system1ID: creationForm["hyperlane-system1"].value,
-				system2ID: creationForm["hyperlane-system2"].value,
+				system1ID: system1Input.dataset.id,
+				system2ID: system2Input.dataset.id,
 			};
 			postToServer("/hyperlanes/add", hyperlaneContext);
-			var hyperlaneHTML = Handlebars.templates.hyperlaneItem(hyperlaneContext);
-			document.getElementById("hyperlanes-list").insertAdjacentHTML("beforeend", hyperlaneHTML);
-
-			modalHide();
+			window.location.reload();
 		}
 
 		window.addEventListener("DOMContentLoaded", function() {
 			document.getElementById("modal-open-button").addEventListener("click", modalOpen);
 			document.getElementById("modal-cancel-button").addEventListener("click", modalCancel);
 			document.getElementById("modal-accept-button").addEventListener("click", modalAccept);
+
+			var systemSearchList = JSON.parse(decodeURIComponent("{{{encoded_system_search_list}}}"));
+			setupSearchList(systemSearchList, ["system-1-search-bar", "system-2-search-bar"], "system-search-list", "systemID", "name", false, null);
 
 			var hyperlanes = JSON.parse(decodeURIComponent("{{{encoded_hyperlane_details}}}"));
 			var systems = JSON.parse(decodeURIComponent("{{{encoded_systems}}}"));
@@ -72,30 +73,29 @@
 	<div id="create-modal" class="hidden">
 		<div id="create-modal-dialog">
             <h2>Create New Hyperlane</h2>
-			<form name="modal-form">
-                <table>
-                    <tr>
-                        <td>
-                            <label>System 1:</label>
-                        </td>
-                        <td>
-                            <input type="search" id="hyperlane-system1" name="hyperlane-system1">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <label>System 2:</label>
-                        </td>
-                        <td>
-                            <input type="search" id="hyperlane-system2" name="hyperlane-system2">
-                        </td>
-                    </tr>
-                </table>
-			</form>
+			<table>
+				<tr>
+					<td>
+						<label>System 1:</label>
+					</td>
+					<td>
+						<input type="search" id="system-1-search-bar" class="list-search-bar" name="system-2-name">
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label>System 2:</label>
+					</td>
+					<td>
+						<input type="search" id="system-2-search-bar" class="list-search-bar" name="system-2-name">
+					</td>
+				</tr>
+			</table>
 			<div class="modal-button-container">
 				<button id="modal-accept-button">Create</button>
 				<button id="modal-cancel-button">Cancel</button>
 			</div>
 		</div>
 	</div>
+	<div class="search-list hidden" id="system-search-list" tabindex="-1"></div>
 </main>

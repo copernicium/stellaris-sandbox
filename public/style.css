@@ -1,4 +1,4 @@
-#modal-backdrop {
+#modal-backdrop, #create-modal-backdrop {
 	position: fixed;
 	top: 0;
 	bottom: 0;
