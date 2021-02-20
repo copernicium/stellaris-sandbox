@@ -5,7 +5,7 @@
 			var search_query = document.getElementById("system-search-input").value;
 			var parent = document.getElementById("systems-list");
 			parent.innerHTML = "";
-			getFromServer("/systems/search/" + search_query, raw_results => {
+			getFromServer("/systems/search/" + encodeURIComponent(search_query), raw_results => {
 				var results = JSON.parse(raw_results);
 				for(var i = 0; i < results.length; i++) {
 					var systemHTML = Handlebars.templates.systemItem(results[i]);

@@ -428,8 +428,8 @@ app.post("/systems/update/:id", (req, res, next) => {
 });
 
 app.get("/systems/search/:search_query?", (req, res, next) => {
-	var search_query = (req.params == null || req.params.search_query == null) ? "" : req.params.search_query;
-	mysql.pool.query("SELECT * FROM systems WHERE systems.name LIKE \"%" + search_query + "%\" ORDER BY name;", (err, rows, fields) => {
+	var search_query = (req.params == null || req.params.search_query == null) ? "" : decodeURIComponent(req.params.search_query);
+	mysql.pool.query("SELECT * FROM systems WHERE systems.name LIKE ? ORDER BY name;", "%" + search_query + "%", (err, rows, fields) => {
 		if(err) {
 			res.status(500).send(err);
 		} else {
