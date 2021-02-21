@@ -74,16 +74,40 @@ function setupStarfields() {
 }
 
 var currentSearchBar = null;
+var initialValues = {
+	id: null,
+	text: null
+};
 
 function registerNewSearchBar(searchBarId, searchListId) {
 	var searchBar = document.getElementById(searchBarId);
 	var searchList = document.getElementById(searchListId);
 	searchBar.addEventListener("focusin", (event) => {
 		currentSearchBar = event.target;
+		initialValues.id = currentSearchBar.dataset.id;
+		initialValues.text = currentSearchBar.value;
 		currentSearchBar.parentElement.appendChild(searchList);
 		searchList.classList.remove("hidden");
-		searchList.focus();
 	});
+	searchBar.addEventListener("focusout", (event) => {
+		searchList.dispatchEvent(new event.constructor(event.type, event));
+	});
+	searchBar.addEventListener("keyup", (event) => {
+		filterSearchList(searchList, searchBar.value);
+	});
+}
+
+function filterSearchList(searchList, query) {
+	var searchItems = searchList.children;
+	for (var i = 0; i < searchItems.length; i++) {
+		if (searchItems[i].dataset.id != "null") {
+			if (searchItems[i].dataset.text.toLowerCase().includes(query.toLowerCase())) {
+				searchItems[i].classList.remove("hidden");
+			} else {
+				searchItems[i].classList.add("hidden");
+			}
+		}
+	}
 }
 
 function setupSearchList(dataList, searchBarIds, searchListId, idProp, textProp, nullable, chosenCallback, selectionCancelledCallback) {
@@ -102,9 +126,11 @@ function setupSearchList(dataList, searchBarIds, searchListId, idProp, textProp,
 			searchList.classList.add("hidden");
 			currentSearchBar.dataset.id = event.target.dataset.id;
 			currentSearchBar.value = event.target.dataset.text;
-			currentSearchBar.blur();
 			if (chosenCallback != null) {
 				chosenCallback(currentSearchBar);
+			}
+			if (currentSearchBar) {
+				currentSearchBar.blur();
 			}
 		});
 	}
@@ -124,16 +150,31 @@ function setupSearchList(dataList, searchBarIds, searchListId, idProp, textProp,
 		var searchBar = document.getElementById(searchBarIds[i]);
 		searchBar.addEventListener("focusin", (event) => {
 			currentSearchBar = event.target;
+			initialValues.id = currentSearchBar.dataset.id;
+			initialValues.text = currentSearchBar.value;
 			currentSearchBar.parentElement.appendChild(searchList);
 			searchList.classList.remove("hidden");
 		});
 		searchBar.addEventListener("focusout", (event) => {
 			searchList.dispatchEvent(new event.constructor(event.type, event));
 		});
+		searchBar.addEventListener("keyup", (event) => {
+			filterSearchList(searchList, searchBar.value);
+		});
 	}
 	searchList.addEventListener("focusout", () => {
 		searchList.classList.add("hidden");
-		if (selectionCancelledCallback != null && !currentSearchBar.selection_occurred) {
+		var searchItems = searchList.children;
+		for (var i = 0; i < searchItems.length; i++) {
+			searchItems[i].classList.remove("hidden");
+		}
+		var selectionOccurred = currentSearchBar.selection_occurred;
+		currentSearchBar.selection_occurred = false;
+		if (!selectionOccurred) {
+			currentSearchBar.dataset.id = initialValues.id;
+			currentSearchBar.value = initialValues.text;
+		}
+		if (selectionCancelledCallback != null && !selectionOccurred) {
 			selectionCancelledCallback(searchList, currentSearchBar);
 		}
 		currentSearchBar = null;
