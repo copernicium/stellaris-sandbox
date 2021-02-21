@@ -37,7 +37,7 @@
 			document.getElementById("modal-accept-button").addEventListener("click", modalAccept);
 
 			var systemSearchList = JSON.parse(decodeURIComponent("{{{encoded_system_search_list}}}"));
-			setupSearchList(systemSearchList, ["system-1-search-bar", "system-2-search-bar"], "system-search-list", "systemID", "name", false, null);
+			setupSearchList(systemSearchList, ["system-1-search-bar", "system-2-search-bar"], "system-search-list", "systemID", "name", false, null, null);
 
 			var hyperlanes = JSON.parse(decodeURIComponent("{{{encoded_hyperlane_details}}}"));
 			var systems = JSON.parse(decodeURIComponent("{{{encoded_systems}}}"));

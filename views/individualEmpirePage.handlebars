@@ -72,6 +72,10 @@
 				resourceName.innerHTML = searchBar.value;
 				searchBar.remove();
 				parent.appendChild(resourceName);
+			}, (searchList, searchBar) => {
+				var searchListContainer = document.getElementById("resource-search-list-container");
+				searchListContainer.appendChild(searchList);
+				searchBar.parentElement.parentElement.remove();
 			});
 {{/unlessEquals}}
 
@@ -156,6 +160,8 @@
 						{{/each}}
 					</tbody>
 				</table>
+			</div>
+			<div id="resource-search-list-container">
 				<div id="resource-search-list" class="search-list hidden" tabindex="-1"></div>
 			</div>
 			<div>

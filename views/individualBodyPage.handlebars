@@ -65,7 +65,7 @@
 
 {{#unlessEquals type "view"}}
 			var systemSearchList = JSON.parse(decodeURIComponent("{{{encoded_system_search_list}}}"));
-			setupSearchList(systemSearchList, ["system-search-bar"], "system-search-list", "systemID", "name", false, null);
+			setupSearchList(systemSearchList, ["system-search-bar"], "system-search-list", "systemID", "name", false, null, null);
 
 			var resourceSearchList = JSON.parse(decodeURIComponent("{{{encoded_resource_search_list}}}"));
 			setupSearchList(resourceSearchList, [], "resource-search-list", "resourceID", "name", false, (searchBar) => {
@@ -75,6 +75,10 @@
 				resourceName.innerHTML = searchBar.value;
 				searchBar.remove();
 				parent.appendChild(resourceName);
+			}, (searchList, searchBar) => {
+				var searchListContainer = document.getElementById("resource-search-list-container");
+				searchListContainer.appendChild(searchList);
+				searchBar.parentElement.parentElement.remove();
 			});
 {{/unlessEquals}}
 		});
@@ -152,7 +156,9 @@
 				{{/each}}
 			</tbody>
 		</table>
-		<div id="resource-search-list" class="search-list hidden" tabindex="-1"></div>
+		<div id="resource-search-list-container">
+			<div id="resource-search-list" class="search-list hidden" tabindex="-1"></div>
+		</div>
 		<div>
 			{{#unlessEquals type "view"}}
 			<button id="accept-button">

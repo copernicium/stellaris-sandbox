@@ -86,7 +86,7 @@ function registerNewSearchBar(searchBarId, searchListId) {
 	});
 }
 
-function setupSearchList(dataList, searchBarIds, searchListId, idProp, textProp, nullable, chosenCallback) {
+function setupSearchList(dataList, searchBarIds, searchListId, idProp, textProp, nullable, chosenCallback, selectionCancelledCallback) {
 	var searchList = document.getElementById(searchListId);
 
 	function addSearchItem(datum) {
@@ -98,9 +98,14 @@ function setupSearchList(dataList, searchBarIds, searchListId, idProp, textProp,
 		searchList.insertAdjacentHTML("beforeend", searchItemHTML);
 		var searchItem = searchList.lastElementChild;
 		searchItem.addEventListener("click", (event) => {
+			currentSearchBar.selection_occurred = true;
 			searchList.classList.add("hidden");
 			currentSearchBar.dataset.id = event.target.dataset.id;
 			currentSearchBar.value = event.target.dataset.text;
+			currentSearchBar.blur();
+			if (chosenCallback != null) {
+				chosenCallback(currentSearchBar);
+			}
 		});
 	}
 
@@ -121,20 +126,21 @@ function setupSearchList(dataList, searchBarIds, searchListId, idProp, textProp,
 			currentSearchBar = event.target;
 			currentSearchBar.parentElement.appendChild(searchList);
 			searchList.classList.remove("hidden");
-			searchList.focus();
 		});
-		searchBar.addEventListener("keyup", () => {
-			// TODO
+		searchBar.addEventListener("focusout", (event) => {
+			searchList.dispatchEvent(new event.constructor(event.type, event));
 		});
 	}
 	searchList.addEventListener("focusout", () => {
 		searchList.classList.add("hidden");
-		if (chosenCallback != null) {
-			chosenCallback(currentSearchBar);
+		if (selectionCancelledCallback != null && !currentSearchBar.selection_occurred) {
+			selectionCancelledCallback(searchList, currentSearchBar);
 		}
 		currentSearchBar = null;
 	});
-	
+	searchList.addEventListener("mousedown", (event) => {
+		event.preventDefault();
+	});
 }
 
 var confirmation_modal_confirm_function = undefined;
