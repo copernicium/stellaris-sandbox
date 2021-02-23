@@ -1,6 +1,6 @@
 <tr>
     <td>{{name}}</td>
-    <td>{{baseMarketValue}}</td>
+    <td>{{#if (isEqual baseMarketValue NULL)}}N/A{{else}}{{baseMarketValue}}{{/if}}</td>
     <td>
         <div class="flex-row">
             <div class="color-swab" style="background-color: {{color}};"></div>
