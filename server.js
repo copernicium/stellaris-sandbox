@@ -111,7 +111,7 @@ function viewEditEmpireData(type, req, res, next) {
 						context.owned_systems = rows;
 						context.encoded_systems = encodeURIComponent(JSON.stringify(context.owned_systems));
 
-						mysql.pool.query("SELECT resources.resourceID, resources.name, rd.quantity FROM (SELECT * FROM resource_stocks WHERE resource_stocks.empireID = ?) AS rd INNER JOIN resources ON rd.resourceID = resources.resourceID ORDER BY resources.name", [empireId], (error, rows, fields) => {
+						mysql.pool.query("SELECT resources.resourceID, resources.name, resources.color, rd.quantity FROM (SELECT * FROM resource_stocks WHERE resource_stocks.empireID = ?) AS rd INNER JOIN resources ON rd.resourceID = resources.resourceID ORDER BY resources.name", [empireId], (error, rows, fields) => {
 							if (error) {
 								res.status(500).send(error);
 							} else {
@@ -683,7 +683,7 @@ app.post("/resources/delete", (req, res, next) => {
 });
 
 function addResourceSearchList(context, res, contFunc) {
-	mysql.pool.query("SELECT resourceID, name FROM resources ORDER BY name", (err, rows, fields) => {
+	mysql.pool.query("SELECT resourceID, name, color FROM resources ORDER BY name", (err, rows, fields) => {
 		if (err) {
 			res.status(500).send(err);
 		} else if (rows == null) {
@@ -781,7 +781,7 @@ function viewEditBodyData(type, req, res, next) {
 						res.status(500).send("Too many rows returned");
 					} else {
 						context.parent_system_name = rows[0].name;
-						mysql.pool.query("SELECT resources.resourceID, resources.name, rd.quantity FROM (SELECT * FROM resource_deposits WHERE resource_deposits.bodyID = ?) AS rd INNER JOIN resources ON rd.resourceID = resources.resourceID ORDER BY resources.name", [bodyId], (error, rows, fields) => {
+						mysql.pool.query("SELECT resources.resourceID, resources.name, resources.color, rd.quantity FROM (SELECT * FROM resource_deposits WHERE resource_deposits.bodyID = ?) AS rd INNER JOIN resources ON rd.resourceID = resources.resourceID ORDER BY resources.name", [bodyId], (error, rows, fields) => {
 							if (error) {
 								res.status(500).send(error);
 							} else {

@@ -66,12 +66,27 @@
 {{#unlessEquals type "view"}}
 			var resourceSearchList = JSON.parse(decodeURIComponent("{{{encoded_resource_search_list}}}"));
 			setupSearchList(resourceSearchList, [], "resource-search-list", "resourceID", "name", false, (searchBar) => {
+				var resource = resourceSearchList.find(e => e.resourceID == searchBar.dataset.id);
+
 				var parent = searchBar.parentElement;
-				var resourceName = document.createElement("span");
+
+				var resourceElement = document.createElement("div");
+				resourceElement.classList.add("flex-row");
+
+				var resourceColorSwab = document.createElement("div");
+				resourceColorSwab.classList.add("color-swab");
+				resourceColorSwab.style.backgroundColor = resource.color;
+				resourceElement.appendChild(resourceColorSwab);
+
+
+				var resourceName = document.createElement("div");
 				resourceName.dataset.id = searchBar.dataset.id;
 				resourceName.innerHTML = searchBar.value;
+				resourceElement.appendChild(resourceName);
+
+				parent.appendChild(resourceElement);
+
 				searchBar.remove();
-				parent.appendChild(resourceName);
 			}, (searchList, searchBar) => {
 				var searchListContainer = document.getElementById("resource-search-list-container");
 				searchListContainer.appendChild(searchList);
@@ -79,9 +94,11 @@
 			});
 {{/unlessEquals}}
 
-			var hyperlanes = [];
-			var systems = JSON.parse(decodeURIComponent("{{{encoded_systems}}}"));
-			drawGalaxyView(hyperlanes, systems);
+			{{#unlessEquals type "create"}}
+				var hyperlanes = [];
+				var systems = JSON.parse(decodeURIComponent("{{{encoded_systems}}}"));
+				drawGalaxyView(hyperlanes, systems);
+			{{/unlessEquals}}
 		});
 	</script>
 	<div class="page-container has-right-col">
@@ -199,7 +216,9 @@
 			</div>
 		</div>
 		<div class="right-col">
-			{{> galaxyView}}
+			{{#unlessEquals type "create"}}
+				{{> galaxyView}}
+			{{/unlessEquals}}
 		</div>
 	</div>
 </main>

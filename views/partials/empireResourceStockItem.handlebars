@@ -3,7 +3,10 @@
 		{{#if create}}
 			<input type="text" class="resource-stock-name list-search-bar resource-search-bar" id="resource-search-bar" data-id="{{resourceID}}" value="{{name}}" {{#if readonly}}readonly{{/if}}>
 		{{else}}
-			<span data-id="{{resourceID}}">{{name}}</span>
+			<div class="flex-row">
+				<div class="color-swab" style="background-color: {{color}};"></div>
+				<div data-id="{{resourceID}}">{{name}}</div>
+			</div>
 		{{/if}}
 	</td>
 	<td><input type="number" class="resource-stock-quantity" min="1" value="{{quantity}}" {{#if readonly}}readonly{{/if}}></td>

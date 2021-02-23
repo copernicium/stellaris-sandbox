@@ -147,7 +147,9 @@
 			</button>
 		</div>
 		<div class="right-col">
-			{{> systemView}}
+			{{#unlessEquals type "create"}}
+				{{> systemView}}
+			{{/unlessEquals}}
 		</div>
 	</div>
 </main>
