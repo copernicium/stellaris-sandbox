@@ -13,7 +13,7 @@
             <div>{{secondaryColor}}</div>
         </div>
     </td>
-    <td>{{isFallenEmpire}}</td>
+    <td>{{#if isFallenEmpire}}Yes{{else}}No{{/if}}</td>
     <td>
 		<a href="/empires/view/{{empireID}}"><button type="button" id="empire-view-button">View</button></a>
         <a href="/empires/edit/{{empireID}}"><button type="button" id="empire-edit-button">Edit</button></a>
