@@ -34,13 +34,12 @@
 
 {{#switch type}}
 	{{#case "create"}}
-			postToServer("/bodies/add", bodyContext);
+			postToServer("/bodies/add", bodyContext, () => returnToListPage());
 	{{/case}}
 	{{#case "edit"}}
-			postToServer("/bodies/update/{{body.bodyID}}", bodyContext);
+			postToServer("/bodies/update/{{body.bodyID}}", bodyContext, () => returnToListPage());
 	{{/case}}
 {{/switch}}
-			returnToListPage();
 		}
 
 		function createNewResourceDeposit() {

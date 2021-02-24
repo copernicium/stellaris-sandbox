@@ -13,7 +13,7 @@ function getFromServer(url, callback) {
 	request.send(null);
 }
 
-function postToServer(url, context) {
+function postToServer(url, context, successCallback) {
 	var request = new XMLHttpRequest();
 	request.open("POST", url);
 
@@ -21,9 +21,11 @@ function postToServer(url, context) {
 
 	request.addEventListener("load", function (event) {
 		if (event.target.status === 200) {
-			// TODO
+			if (successCallback) {
+				successCallback();
+			}
 		} else {
-			alert("Error: " + event.target.response);
+			createErrorModal("Error: " + event.target.response);
 		}
 	});
 
@@ -184,6 +186,18 @@ function setupSearchList(dataList, searchBarIds, searchListId, idProp, textProp,
 	});
 }
 
+function createErrorModal(error_text) {
+	createModalBackdrop();
+	addAtEndOfMain(Handlebars.templates.errorModal({
+		error_text: error_text
+	}));
+}
+
+function removeErrorModal() {
+	document.getElementById("error-modal").remove();
+	removeModalBackdrop();
+}
+
 var confirmation_modal_confirm_function = undefined;
 
 function createDeleteModal(delete_url, id) {
@@ -192,8 +206,7 @@ function createDeleteModal(delete_url, id) {
 
 function createDeleteModalWithCallback(delete_url, delete_context, callback) {
 	createConfirmationModal(() => {
-		postToServer(delete_url, delete_context);
-		callback();
+		postToServer(delete_url, delete_context, callback);
 	});
 }
 

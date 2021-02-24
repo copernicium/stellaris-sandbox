@@ -8,7 +8,7 @@
 	/* background-color: rgba(0, 0, 0, 0.85); */
 }
 
-#confirmation-modal, #create-modal {
+#confirmation-modal, #create-modal, #error-modal {
 	display: flex;
 	align-items: center;
 	position: fixed;
@@ -19,7 +19,7 @@
 	z-index: 1010;
 }
 
-#confirmation-modal-dialog {
+#confirmation-modal-dialog, #error-modal-dialog {
 	width: auto;
 	max-width: 400px;
 	min-width: 200px;
@@ -34,6 +34,10 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+}
+
+#error-modal-dialog {
+	max-width: 800px !important;
 }
 
 #create-modal-dialog {
