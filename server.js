@@ -479,6 +479,30 @@ app.post("/systems/delete", (req, res, next) => {
 	}
 });
 
+app.post("/systems/remove-ownership", (req, res, next) => {
+	if (req.hasOwnProperty("body") && req.body.hasOwnProperty("systemID"))
+	{
+		var systemID = req.body.systemID;
+		if (systemID >= 0) {
+			mysql.pool.query("UPDATE systems SET empireID=NULL WHERE systemID=?", systemID, (error, results, fields) => {
+				if (error) {
+					res.status(500).send(error);
+				} else {
+					res.status(200).send("System ownership successfully removed.");
+				}
+			});
+		} else {
+			res.status(400).send({
+				error: "Bad system ID."
+			});
+		}
+	} else {
+		res.status(400).send({
+			error: "Request body needs an id."
+		});
+	}
+});
+
 function addSystemSearchList(context, res, contFunc) {
 	mysql.pool.query("SELECT systemID, name FROM systems ORDER BY name", (err, rows, fields) => {
 		if (err) {

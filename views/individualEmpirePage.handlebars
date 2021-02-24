@@ -56,6 +56,15 @@
 			registerNewSearchBar("resource-search-bar", "resource-search-list");
 		}
 
+{{#unlessEquals type "create"}}
+		function removeSystemOwnership(systemID) {
+			var removalContext = {
+				systemID: systemID
+			};
+			postToServer("/systems/remove-ownership", removalContext, () => window.location.reload());
+		}
+{{/unlessEquals}}
+
 		window.addEventListener("DOMContentLoaded", function() {
 			document.getElementById("cancel-button").addEventListener("click", editCancel);
 
