@@ -257,6 +257,9 @@ function generateSQL(nSystems) {
 	const RING_DISTANCE = 0.05;
 	const SYSTEM_DISTANCE = 0.1;
 
+	const MIN_THETA = 0;
+	const MAX_THETA = 360;
+
 	const MIN_ORBITAL_RADIUS = 0.25;
 	const MAX_ORBITAL_RADIUS = 1.0;
 
@@ -275,6 +278,10 @@ function generateSQL(nSystems) {
 
 			radius = radius + (randomFromInterval(-1, 1) * RING_DISTANCE * MAX_RADIUS_VARIANCE_PERCENT);
 			theta = theta + (randomFromInterval(-1, 1) * theta_step * MAX_THETA_VARIANCE_PERCENT);
+
+			radius = Math.max(Math.min(radius, MAX_ORBITAL_RADIUS), MIN_ORBITAL_RADIUS)
+			theta = Math.max(Math.min(theta, MAX_THETA), MIN_THETA);
+
 			if(radius >= MIN_ORBITAL_RADIUS && radius <= MAX_ORBITAL_RADIUS) {
 				systems.push(generateSystem(radius, theta));
 			}

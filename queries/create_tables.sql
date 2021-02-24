@@ -20,7 +20,9 @@ CREATE TABLE systems (
 	empireID int DEFAULT NULL,
 	CONSTRAINT PRIMARY KEY (systemID),
 	CONSTRAINT FOREIGN KEY (empireID) REFERENCES empires(empireID),
-	CONSTRAINT CHECK (type IN ("unary", "binary", "trinary"))
+	CONSTRAINT CHECK (type IN ("unary", "binary", "trinary")),
+	CONSTRAINT CHECK (orbitalRadius >= 0.25 AND orbitalRadius <= 1),
+	CONSTRAINT CHECK (theta >= 0 AND theta <= 360)
 );
 
 CREATE TABLE bodies (
@@ -32,7 +34,9 @@ CREATE TABLE bodies (
 	systemID int NOT NULL,
 	CONSTRAINT PRIMARY KEY (bodyID),
 	CONSTRAINT FOREIGN KEY (systemID) REFERENCES systems(systemID),
-	CONSTRAINT CHECK (type IN ("planet", "asteroid"))
+	CONSTRAINT CHECK (type IN ("planet", "asteroid")),
+	CONSTRAINT CHECK (orbitalRadius >= 0.1 AND orbitalRadius <= 1),
+	CONSTRAINT CHECK (theta >= 0 AND theta <= 360)
 );
 
 CREATE TABLE resources (
