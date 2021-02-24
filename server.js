@@ -231,7 +231,10 @@ app.post("/empires/delete", (req, res, next) => {
 				if (error) {
 					switch(error.code) {
 						case "ER_ROW_IS_REFERENCED_2":
-							res.status(500).send("You cannot delete an empire that owns systems. Delete the owned systems or change their ownership and try again.");
+							if (error.sqlMessage.includes("systems"))
+								res.status(500).send("You cannot delete an empire that owns systems. Delete the owned systems or change their ownership and try again.");
+							else
+								res.status(500).send("You cannot delete an empire that has resource stocks. Delete its resource stocks and try again.");
 							break;
 						default:
 							res.status(500).send(error);
@@ -915,7 +918,14 @@ app.post("/bodies/delete", (req, res, next) => {
 		if (bodyId >= 0) {
 			mysql.pool.query("DELETE FROM bodies WHERE bodyID=?", [bodyId], (error, results, fields) => {
 				if (error) {
-					res.status(500).send(error);
+					switch(error.code) {
+						case "ER_ROW_IS_REFERENCED_2":
+							res.status(500).send("You cannot delete a body that has resource deposits. Delete its resource deposits and try again.");
+							break;
+						default:
+							res.status(500).send(error);
+							break;
+					}
 				} else {
 					res.status(200).send("Body successfully deleted");
 				}
