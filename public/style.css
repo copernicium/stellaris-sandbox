@@ -92,6 +92,11 @@ button {
 	cursor: pointer;
 }
 
+button:disabled {
+	color: #333;
+	cursor: default;
+}
+
 * {
 	color: #FFF;
 }
@@ -308,6 +313,6 @@ form.immutable input {
 	font-weight: 400;
 }
 
-.hidden {
+.hidden, .hidden-used {
 	display: none !important;
 }

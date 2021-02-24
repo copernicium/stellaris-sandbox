@@ -68,6 +68,32 @@
 			registerNewSearchBar("resource-search-bar", "resource-search-list");
 		}
 
+{{#unlessEquals type "view"}}
+		function setResourceAvailability(resourceID, available) {
+			var resourceSearchItems = document.getElementById("resource-search-list").children;
+			for (var i = 0; i < resourceSearchItems.length; i++) {
+				if (resourceSearchItems[i].dataset.id == resourceID) {
+					if (available) {
+						resourceSearchItems[i].classList.remove("hidden-used");
+					} else {
+						resourceSearchItems[i].classList.add("hidden-used");
+					}
+					break;
+				}
+			}
+
+			var allUnavailable = true;
+			for (var i = 0; i < resourceSearchItems.length; i++) {
+				if (!resourceSearchItems[i].classList.contains("hidden-used")) {
+					allUnavailable = false;
+					break;
+				}
+			}
+
+			document.getElementById("create-resource-deposit-button").disabled = allUnavailable;
+		}
+{{/unlessEquals}}
+
 		window.addEventListener("DOMContentLoaded", function() {
 			document.getElementById("cancel-button").addEventListener("click", editCancel);
 
@@ -98,6 +124,8 @@
 				resourceName.innerHTML = searchBar.value;
 				resourceElement.appendChild(resourceName);
 
+				setResourceAvailability(searchBar.dataset.id, false);
+
 				parent.appendChild(resourceElement);
 
 				searchBar.remove();
@@ -106,6 +134,11 @@
 				searchListContainer.appendChild(searchList);
 				searchBar.parentElement.parentElement.remove();
 			});
+
+			var resourceDepositIDs = JSON.parse(decodeURIComponent("{{{encoded_body_resource_deposit_ids}}}"));
+			for (var i = 0; i < resourceDepositIDs.length; i++) {
+				setResourceAvailability(resourceDepositIDs[i], false);
+			}
 {{/unlessEquals}}
 		});
 	</script>
@@ -167,7 +200,7 @@
 		</form>
 		<h3>Resource Deposits</h3>
 		{{#unlessEquals type "view"}}
-		<button type="button" onclick="createNewResourceDeposit()">Create New Resource Deposit</button>
+		<button type="button" id="create-resource-deposit-button" onclick="createNewResourceDeposit()">Create New Resource Deposit</button>
 		{{/unlessEquals}}
 		<table id="resource-deposit-table">
 			<thead>

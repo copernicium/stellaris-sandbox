@@ -116,6 +116,13 @@ function viewEditEmpireData(type, req, res, next) {
 								res.status(500).send(error);
 							} else {
 								context.empire_resource_stocks = rows;
+
+								var resource_stock_ids = [];
+								for (var i = 0; i < rows.length; i++) {
+									resource_stock_ids.push(rows[i].resourceID);
+								}
+								context.encoded_empire_resource_stock_ids = encodeURIComponent(JSON.stringify(resource_stock_ids));
+
 								addResourceSearchList(context, res, (context, res) => {
 									res.status(200).render(pageName, context);
 								});
@@ -834,6 +841,13 @@ function viewEditBodyData(type, req, res, next) {
 								res.status(500).send(error);
 							} else {
 								context.body_resource_deposits = rows;
+
+								var resource_deposit_ids = [];
+								for (var i = 0; i < rows.length; i++) {
+									resource_deposit_ids.push(rows[i].resourceID);
+								}
+								context.encoded_body_resource_deposit_ids = encodeURIComponent(JSON.stringify(resource_deposit_ids));
+
 								addSystemSearchList(context, res, (context, res) => {
 									addResourceSearchList(context, res, (context, res) => {
 										res.status(200).render(pageName, context);

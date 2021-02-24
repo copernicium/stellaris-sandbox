@@ -74,6 +74,32 @@
 		}
 {{/unlessEquals}}
 
+{{#unlessEquals type "view"}}
+		function setResourceAvailability(resourceID, available) {
+			var resourceSearchItems = document.getElementById("resource-search-list").children;
+			for (var i = 0; i < resourceSearchItems.length; i++) {
+				if (resourceSearchItems[i].dataset.id == resourceID) {
+					if (available) {
+						resourceSearchItems[i].classList.remove("hidden-used");
+					} else {
+						resourceSearchItems[i].classList.add("hidden-used");
+					}
+					break;
+				}
+			}
+
+			var allUnavailable = true;
+			for (var i = 0; i < resourceSearchItems.length; i++) {
+				if (!resourceSearchItems[i].classList.contains("hidden-used")) {
+					allUnavailable = false;
+					break;
+				}
+			}
+
+			document.getElementById("create-resource-stock-button").disabled = allUnavailable;
+		}
+{{/unlessEquals}}
+
 		window.addEventListener("DOMContentLoaded", function() {
 			document.getElementById("cancel-button").addEventListener("click", editCancel);
 
@@ -101,6 +127,8 @@
 				resourceName.innerHTML = searchBar.value;
 				resourceElement.appendChild(resourceName);
 
+				setResourceAvailability(searchBar.dataset.id, false);
+
 				parent.appendChild(resourceElement);
 
 				searchBar.remove();
@@ -109,6 +137,11 @@
 				searchListContainer.appendChild(searchList);
 				searchBar.parentElement.parentElement.remove();
 			});
+
+			var resourceStockIDs = JSON.parse(decodeURIComponent("{{{encoded_empire_resource_stock_ids}}}"));
+			for (var i = 0; i < resourceStockIDs.length; i++) {
+				setResourceAvailability(resourceStockIDs[i], false);
+			}
 {{/unlessEquals}}
 
 			{{#unlessEquals type "create"}}
@@ -179,7 +212,7 @@
 			<div>
 				<h3>Resource Stocks</h3>
 				{{#unlessEquals type "view"}}
-				<button type="button" onclick="createNewResourceStock()">Create New Resource Stock</button>
+				<button type="button" id="create-resource-stock-button" onclick="createNewResourceStock()">Create New Resource Stock</button>
 				{{/unlessEquals}}
 				<table id="resource-stock-table">
 					<thead>
