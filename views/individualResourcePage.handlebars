@@ -14,6 +14,9 @@
 			var fields_errors = {
 				"resource-name": "Resource name cannot be blank."
 			};
+			if (creationForm["resource-base-market-value-is-applicable"].checked) {
+				fields_errors["resource-base-market-value"] = "Base market value cannot be blank."
+			}
 			if (errorIfBlank(creationForm, fields_errors)) {
 				return;
 			}
@@ -38,7 +41,6 @@
 
 		function handleBaseMarketValueApplicable(checked) {
 			var base_market_value_input = document.getElementById("resource-base-market-value");
-			console.log(checked);
 			if (checked) {
 				base_market_value_input.classList.remove("hidden");
 			} else {
