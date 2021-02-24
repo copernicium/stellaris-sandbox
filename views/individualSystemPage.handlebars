@@ -22,13 +22,12 @@
 			};
 {{#switch type}}
 	{{#case "create"}}
-			postToServer("/systems/add", systemContext);
+			postToServer("/systems/add", systemContext, () => returnToListPage());
 	{{/case}}
 	{{#case "edit"}}
-			postToServer("/systems/update/{{system.systemID}}", systemContext);
+			postToServer("/systems/update/{{system.systemID}}", systemContext, () => returnToListPage());
 	{{/case}}
 {{/switch}}
-			returnToListPage();
 		}
 
 		window.addEventListener("DOMContentLoaded", function() {

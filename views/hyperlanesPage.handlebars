@@ -27,8 +27,7 @@
 				system1ID: system1Input.dataset.id,
 				system2ID: system2Input.dataset.id,
 			};
-			postToServer("/hyperlanes/add", hyperlaneContext);
-			window.location.reload();
+			postToServer("/hyperlanes/add", hyperlaneContext, () => window.location.reload());
 		}
 
 		window.addEventListener("DOMContentLoaded", function() {

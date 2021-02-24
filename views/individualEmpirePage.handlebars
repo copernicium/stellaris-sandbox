@@ -34,13 +34,12 @@
 
 {{#switch type}}
 	{{#case "create"}}
-			postToServer("/empires/add", empireContext);
+			postToServer("/empires/add", empireContext, () => returnToListPage());
 	{{/case}}
 	{{#case "edit"}}
-			postToServer("/empires/update/{{empire.empireID}}", empireContext);
+			postToServer("/empires/update/{{empire.empireID}}", empireContext, () => returnToListPage());
 	{{/case}}
 {{/switch}}
-			returnToListPage();
 		}
 
 		function createNewResourceStock() {

@@ -20,13 +20,12 @@
 			};
 {{#switch type}}
 	{{#case "create"}}
-			postToServer("/resources/add", resourceContext);
+			postToServer("/resources/add", resourceContext, () => returnToListPage());
 	{{/case}}
 	{{#case "edit"}}
-			postToServer("/resources/update/{{resource.resourceID}}", resourceContext);
+			postToServer("/resources/update/{{resource.resourceID}}", resourceContext, () => returnToListPage());
 	{{/case}}
 {{/switch}}
-			returnToListPage();
 		}
 
 		window.addEventListener("DOMContentLoaded", function() {
