@@ -1,18 +1,18 @@
 <tr>
 	<td>
+		<div class="flex-row">
 		{{#if create}}
 			<input type="text" class="resource-stock-name list-search-bar resource-search-bar" id="resource-search-bar" data-id="{{resourceID}}" value="{{name}}" {{#if readonly}}readonly{{/if}}>
 		{{else}}
-			<div class="flex-row">
-				<div class="color-swab" style="background-color: {{color}};"></div>
-				<div data-id="{{resourceID}}">{{name}}</div>
-			</div>
+			<div class="color-swab" style="background-color: {{color}};"></div>
+			<div data-id="{{resourceID}}">{{name}}</div>
 		{{/if}}
+		</div>
 	</td>
 	<td><input type="number" class="resource-stock-quantity" min="1" value="{{quantity}}" {{#if readonly}}readonly{{/if}}></td>
 	<td>
 		{{#unless readonly}}
-		<button type="button" onclick="createDeleteModalWithCallback('/resource-stocks/delete/', {resourceID: this.parentElement.parentElement.firstElementChild.lastElementChild.dataset.id, empireID: {{empireID}} }, () => {this.parentElement.parentElement.remove()})">Delete</button>
+		<button type="button" onclick="createDeleteModalWithCallback('/resource-stocks/delete/', {resourceID: this.parentElement.parentElement.firstElementChild.lastElementChild.lastElementChild.dataset.id, empireID: {{empireID}} }, () => {this.parentElement.parentElement.remove()})">Delete</button>
 		{{/unless}}
 	</td>
 </tr>
