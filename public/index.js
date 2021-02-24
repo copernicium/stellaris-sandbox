@@ -52,7 +52,6 @@ function setupStarfieldContext(context, offsetWidth, offsetHeight, set_backgroun
 	var num_stars = DENSITY * offsetWidth * offsetHeight;
 
 	if (set_background) {
-		console.log("here");
 		context.fillStyle = "rgba(0, 0, 0, 0.85)";
 		context.fillRect(0, 0, offsetWidth, offsetHeight);
 	}
