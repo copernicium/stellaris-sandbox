@@ -23,7 +23,7 @@
 				resourceID: {{resource.resourceID}},
 {{/unlessEquals}}
 				name: creationForm["resource-name"].value,
-				baseMarketValue: creationForm["resource-base-market-value"].value,
+				baseMarketValue: creationForm["resource-base-market-value-is-applicable"].checked ? creationForm["resource-base-market-value"].value : null,
 				color: creationForm["resource-color"].value.toUpperCase()
 			};
 {{#switch type}}
@@ -34,6 +34,16 @@
 			postToServer("/resources/update/{{resource.resourceID}}", resourceContext, () => returnToListPage());
 	{{/case}}
 {{/switch}}
+		}
+
+		function handleBaseMarketValueApplicable(checked) {
+			var base_market_value_input = document.getElementById("resource-base-market-value");
+			console.log(checked);
+			if (checked) {
+				base_market_value_input.classList.remove("hidden");
+			} else {
+				base_market_value_input.classList.add("hidden");
+			}
 		}
 
 		window.addEventListener("DOMContentLoaded", function() {
@@ -66,7 +76,9 @@
 						<label>Base Market Value:</label>
 					</td>
 					<td>
-						<input type="number" id="resource-base-market-value" name="resource-base-market-value" min="0" value="{{resource.baseMarketValue}}" step="0.01" {{#ifEquals type "view"}}readonly{{/ifEquals}}>
+						<input type="checkbox" id="resource-base-market-value-is-applicable" name="resource-base-market-value-is-applicable" onclick="handleBaseMarketValueApplicable(this.checked);" {{#unlessEquals resource.baseMarketValue NULL}}checked{{/unlessEquals}} {{#ifEquals type "view"}}disabled{{/ifEquals}}>
+						<label for="resource-base-market-value-is-applicable">Applicable</label><br><br>
+						<input type="number" id="resource-base-market-value" name="resource-base-market-value" min="0" value="{{resource.baseMarketValue}}" step="0.01" {{#ifEquals type "view"}}readonly{{/ifEquals}} {{#ifEquals resource.baseMarketValue NULL}}class="hidden"{{/ifEquals}}>
 					</td>
 				</tr>
 				<tr>
