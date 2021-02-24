@@ -554,7 +554,14 @@ app.post('/hyperlanes/add', (req, res, next) => {
 	) {
 		mysql.pool.query("INSERT INTO hyperlanes(system1ID, system2ID) VALUES (?,?)", [req.body.system1ID, req.body.system2ID], (error, results, fields) => {
 			if (error) {
-				res.status(500).send(error);
+				switch(error.code) {
+					case "ER_DUP_ENTRY":
+						res.status(500).send("This hyperlane already exists.");
+						break;
+					default:
+						res.status(500).send(error);
+						break;
+				}
 			} else {
 				res.status(200).send("Hyperlane successfully added");
 			}
