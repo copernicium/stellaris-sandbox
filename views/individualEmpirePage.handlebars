@@ -35,6 +35,12 @@
 			var resourceStocks = document.getElementsByClassName("resource-stock-quantity");
 			for (var i = 0; i < resourceStocks.length; i++) {
 				var resourceStock = resourceStocks[i];
+
+				if (resourceStock.value.trim().length == 0) {
+					createErrorModal("Resource stock quantities cannot be blank.");
+					return;
+				}
+
 				empireContext.resourceStocks.push({
 					resourceID: resourceStock.parentElement.parentElement.firstElementChild.lastElementChild.lastElementChild.dataset.id,
 					quantity: resourceStock.value

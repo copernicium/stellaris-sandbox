@@ -38,6 +38,12 @@
 			var resourceDeposits = document.getElementsByClassName("resource-deposit-quantity");
 			for (var i = 0; i < resourceDeposits.length; i++) {
 				var resourceDeposit = resourceDeposits[i];
+
+				if (resourceDeposit.value.trim().length == 0) {
+					createErrorModal("Resource deposit quantities cannot be blank.");
+					return;
+				}
+
 				bodyContext.resourceDeposits.push({
 					resourceID: resourceDeposit.parentElement.parentElement.firstElementChild.lastElementChild.lastElementChild.dataset.id,
 					quantity: resourceDeposit.value
