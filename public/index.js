@@ -161,7 +161,7 @@ function setupSearchList(dataList, searchBarIds, searchListId, idProp, textProp,
 			searchList.dispatchEvent(new event.constructor(event.type, event));
 		});
 		searchBar.addEventListener("keyup", (event) => {
-			filterSearchList(searchList, searchBar.value);
+			filterSearchList(searchList, event.target.value);
 		});
 	}
 	searchList.addEventListener("focusout", () => {
