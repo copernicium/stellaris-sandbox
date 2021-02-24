@@ -23,6 +23,12 @@
 		function modalAccept() {
 			var system1Input = document.getElementById("system-1-search-bar");
 			var system2Input = document.getElementById("system-2-search-bar");
+
+			if (!system1Input.dataset.id || !system2Input.dataset.id) {
+				createErrorModal("You must select a system for each side of the hyperlane.");
+				return;
+			}
+
 			var hyperlaneContext = {
 				system1ID: system1Input.dataset.id,
 				system2ID: system2Input.dataset.id,

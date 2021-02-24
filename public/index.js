@@ -262,6 +262,16 @@ function matchColumnLengths() {
 	}
 }
 
+function errorIfBlank(form, fields_errors) {
+	for (const [field, error] of Object.entries(fields_errors)) {
+		if (form[field].value.trim().length == 0) {
+			createErrorModal(error);
+			return true;
+		}
+	}
+	return false;
+}
+
 window.addEventListener("DOMContentLoaded", function() {
 	setupStarfields();
 

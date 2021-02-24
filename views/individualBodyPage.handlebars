@@ -11,6 +11,18 @@
 
 		function editAccept() {
 			var creationForm = document.forms["body-form"];
+
+			var fields_errors = {
+				"body-name": "Body name cannot be blank.",
+				"body-type": "You must choose a body type.",
+				"body-orbital-radius": "Body orbital radius cannot be blank.",
+				"body-theta": "Body theta cannot be blank.",
+				"parent-system-name": "You must choose a parent system."
+			};
+			if (errorIfBlank(creationForm, fields_errors)) {
+				return;
+			}
+
 			var bodyContext = {
 {{#unlessEquals type "create"}}
 				bodyID: {{body.bodyID}} + "",

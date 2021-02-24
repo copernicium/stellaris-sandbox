@@ -10,6 +10,18 @@
 
 		function editAccept() {
 			var creationForm = document.forms["system-form"];
+
+			var fields_errors = {
+				"system-name": "System name cannot be blank.",
+				"system-type": "You must choose a system type.",
+				"system-orbital-radius": "System orbital radius cannot be blank.",
+				"system-theta": "System theta cannot be blank.",
+				"owning-empire-name": "Owning empire cannot be blank."
+			};
+			if (errorIfBlank(creationForm, fields_errors)) {
+				return;
+			}
+
 			var systemContext = {
 {{#unlessEquals type "create"}}
 				systemID: {{system.systemID}},
