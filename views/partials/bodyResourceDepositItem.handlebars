@@ -12,7 +12,7 @@
 	<td><input type="number" class="resource-deposit-quantity" min="1" value="{{quantity}}" {{#if readonly}}readonly{{/if}}></td>
 	<td>
 		{{#unless readonly}}
-		<button type="button" onclick="createDeleteModalWithCallback('/resource-deposits/delete/', {resourceID: this.parentElement.parentElement.firstElementChild.lastElementChild.lastElementChild.dataset.id, bodyID: {{bodyID}} }, () => {this.parentElement.parentElement.remove(); setResourceAvailability(this.parentElement.parentElement.firstElementChild.lastElementChild.lastElementChild.dataset.id, true)})">Delete</button>
+		<button type="button" onclick="createDeleteModalWithCallback('/resource-deposits/delete/', {resourceID: this.parentElement.parentElement.firstElementChild.lastElementChild.lastElementChild.dataset.id, bodyID: {{bodyID}} }, () => {setResourceAvailability(this.parentElement.parentElement.firstElementChild.lastElementChild.lastElementChild.dataset.id, true); moveResourceSearchList(); this.parentElement.parentElement.remove()}, {{create}})">Delete</button>
 		{{/unless}}
 	</td>
 </tr>

@@ -210,12 +210,16 @@ function removeErrorModal() {
 var confirmation_modal_confirm_function = undefined;
 
 function createDeleteModal(delete_url, id) {
-	createDeleteModalWithCallback(delete_url, {id: id}, () => { window.location.reload() });
+	createDeleteModalWithCallback(delete_url, {id: id}, () => { window.location.reload() }, false);
 }
 
-function createDeleteModalWithCallback(delete_url, delete_context, callback) {
+function createDeleteModalWithCallback(delete_url, delete_context, callback, frontend_only) {
 	createConfirmationModal(() => {
-		postToServer(delete_url, delete_context, callback);
+		if (frontend_only) {
+			callback();
+		} else {
+			postToServer(delete_url, delete_context, callback);
+		}
 	});
 }
 

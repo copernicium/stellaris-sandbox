@@ -98,6 +98,12 @@
 
 			document.getElementById("create-resource-deposit-button").disabled = allUnavailable;
 		}
+
+		function moveResourceSearchList() {
+			var searchList = document.getElementById("resource-search-list");
+			var searchListContainer = document.getElementById("resource-search-list-container");
+			searchListContainer.appendChild(searchList);
+		}
 {{/unlessEquals}}
 
 		window.addEventListener("DOMContentLoaded", function() {
@@ -116,28 +122,22 @@
 
 				var parent = searchBar.parentElement;
 
-				var resourceElement = document.createElement("div");
-				resourceElement.classList.add("flex-row");
-
 				var resourceColorSwab = document.createElement("div");
 				resourceColorSwab.classList.add("color-swab");
 				resourceColorSwab.style.backgroundColor = resource.color;
-				resourceElement.appendChild(resourceColorSwab);
-
 
 				var resourceName = document.createElement("div");
 				resourceName.dataset.id = searchBar.dataset.id;
 				resourceName.innerHTML = searchBar.value;
-				resourceElement.appendChild(resourceName);
 
 				setResourceAvailability(searchBar.dataset.id, false);
 
-				parent.appendChild(resourceElement);
+				parent.appendChild(resourceColorSwab);
+				parent.appendChild(resourceName);
 
 				searchBar.remove();
 			}, (searchList, searchBar) => {
-				var searchListContainer = document.getElementById("resource-search-list-container");
-				searchListContainer.appendChild(searchList);
+				moveResourceSearchList();
 				searchBar.parentElement.parentElement.remove();
 			});
 
