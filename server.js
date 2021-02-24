@@ -922,19 +922,6 @@ app.post("/bodies/delete", (req, res, next) => {
 // RESOURCE STOCKS =============================================================
 //
 
-app.get("/resource-stocks", (req, res, next) => {
-	var pageName = "resourceStockPage";
-	var context = createDefaultContext(pageName);
-	mysql.pool.query("SELECT resource_stocks.* FROM resource_stocks INNER JOIN resources ON resource_stocks.resourceID = resources.resourceID ORDER BY resources.name", (err, rows, fields) => {
-		if(err) {
-			res.status(500).send(err);
-		} else {
-			context.resourceStocks = rows;
-			res.status(200).render(pageName, context);
-		}
-	});
-});
-
 app.post("/resource-stocks/delete", (req, res, next) => {
 	if (req.hasOwnProperty("body") && req.body.hasOwnProperty("resourceID") && req.body.hasOwnProperty("empireID"))
 	{
@@ -963,19 +950,6 @@ app.post("/resource-stocks/delete", (req, res, next) => {
 //
 // RESOURCE DEPOSITS ===========================================================
 //
-
-app.get("/resource-deposits", (req, res, next) => {
-	var pageName = "resourceDepositPage";
-	var context = createDefaultContext(pageName);
-	mysql.pool.query("SELECT resource_deposits.* FROM resource_deposits INNER JOIN resources ON resource_deposits.resourceID = resources.resourceID ORDER BY resources.name", (err, rows, fields) => {
-		if(err) {
-			res.status(500).send(err);
-		} else {
-			context.resourceDeposits = rows;;
-			res.status(200).render(pageName, context);
-		}
-	});
-});
 
 app.post("/resource-deposits/delete", (req, res, next) => {
 	if (req.hasOwnProperty("body") && req.body.hasOwnProperty("resourceID") && req.body.hasOwnProperty("bodyID"))
