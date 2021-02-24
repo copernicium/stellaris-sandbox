@@ -132,6 +132,7 @@ async function drawSystemView(system, system_bodies) {
 	// Draw black background behind everything
 	context.fillStyle = "rgb(0, 0, 0)";
 	context.fillRect(0, 0, canvas.width, canvas.height);
+	setupStarfieldContext(context, canvas.offsetWidth, canvas.offsetHeight, false);
 
 	var max_radius = 0.9 * 0.5 * Math.min(canvas.offsetWidth, canvas.offsetHeight);
 
@@ -216,8 +217,10 @@ async function drawGalaxyView(hyperlanes, systems) {
 
 	var context = canvas.getContext("2d");
 
+	// Draw background
 	context.fillStyle = "rgb(0, 0, 0)";
 	context.fillRect(0, 0, canvas.width, canvas.height);
+	setupStarfieldContext(context, canvas.offsetWidth, canvas.offsetHeight, false);
 
 	var min_radius = 0.55 * 0.5 * Math.min(canvas.offsetWidth, canvas.offsetHeight);
 	var max_radius = 0.9 * 0.5 * Math.min(canvas.offsetWidth, canvas.offsetHeight);
@@ -225,14 +228,14 @@ async function drawGalaxyView(hyperlanes, systems) {
 	var center_x = canvas.offsetWidth / 2;
 	var center_y = canvas.offsetHeight / 2;
 
-	var system_data = [];
-
-	var system_size = 2;
-
 	// Draw galactic center
 	var galactic_center_width = min_radius * 2;
 	var image = await addImageProcess("/galactic_center.png");
 	context.drawImage(image, center_x - galactic_center_width / 2, center_y - galactic_center_width / 2, galactic_center_width, galactic_center_width);
+
+	var system_data = [];
+
+	var system_size = 2;
 
 	// Draw systems
 	for(var i = 0; i < systems.length; i++) {

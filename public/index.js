@@ -44,28 +44,37 @@ function getRandomStarColor() {
 	return "hsl(" + hue + ", " + sat + "%, 88%)";
 }
 
-function setupStarfield(canvas) {
-	// Code adapted from: 
+function setupStarfieldContext(context, offsetWidth, offsetHeight, set_background = true) {
+	// Code adapted from:
 	// http://thenewcode.com/81/Make-A-Starfield-Background-with-HTML5-Canvas
-	canvas.width = canvas.offsetWidth;
-	canvas.height = canvas.offsetHeight;
 
-	var num_stars = 0.002 * canvas.offsetWidth * canvas.offsetHeight;
-	var context = canvas.getContext("2d");
+	const DENSITY = 0.002;
+	var num_stars = DENSITY * offsetWidth * offsetHeight;
 
-	context.fillStyle = "rgba(0, 0, 0, 0.85)";
-	context.fillRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
+	if (set_background) {
+		console.log("here");
+		context.fillStyle = "rgba(0, 0, 0, 0.85)";
+		context.fillRect(0, 0, offsetWidth, offsetHeight);
+	}
 
-	
 	for (var i = 0; i < num_stars; i++) {
-		var x = Math.random() * canvas.offsetWidth;
-		var y = Math.random() * canvas.offsetHeight;
+		var x = Math.random() * offsetWidth;
+		var y = Math.random() * offsetHeight;
 		var radius = Math.random() * 1.2;
 		context.beginPath();
 		context.arc(x, y, radius, 0, 360);
 		context.fillStyle = getRandomStarColor();
 		context.fill();
 	}
+}
+
+function setupStarfield(canvas, set_background = true) {
+	canvas.width = canvas.offsetWidth;
+	canvas.height = canvas.offsetHeight;
+
+	var context = canvas.getContext("2d");
+
+	setupStarfieldContext(context, canvas.offsetWidth, canvas.offsetHeight, set_background);
 }
 
 function setupStarfields() {
