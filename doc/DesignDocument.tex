@@ -49,7 +49,7 @@
 \begin{document}
 
 \begin{titlepage}
-    \vspace*{15em}{\centering\Huge Stellaris Sandbox: \\ DML and DDL Queries\par}
+    \vspace*{15em}{\centering\Huge Stellaris Sandbox: \\ Implement CREATE + READ operations\par}
     \vspace{1em}
     \centering \Large Matthew S. Macovsky \\
     \vspace{0.5em}
@@ -94,7 +94,7 @@ In Stellaris, there is only one galaxy, so Stellaris Sandbox will only allow des
         \item systemID: int, auto\_increment, unique, not NULL, PK
         \item name: varchar(255), not NULL
         \item type: varchar(16), not NULL, one of \{“unary”, “binary”, “trinary”\}
-        \item orbitalRadius: float, not NULL, between 0.1 and 1.0
+        \item orbitalRadius: float, not NULL, between 0.25 and 1.0
         \item theta: float, not NULL, between 0 and 360. The theta and orbitalRadius attributes together indicate the positions of Systems in the galaxy using polar coordinates.
         \item empireID: int, FK
         \item Relationship: M:M between Systems, implemented in a separate table with system1 and system2 as FKs. This relationship consists of the hyperlane connections between systems. Matthew Macovsky and Logan Traffas will work together on this relationship in the database. 
@@ -197,6 +197,11 @@ None.
 \begin{itemize}
     \item Replaced the Systems int starCount attribute with a varchar(16) type attribute that can be one of \{“unary”, “binary”, “trinary”\}. Because of the few options available, it makes more sense and is more immersive to use these names rather than a number.
     \item Changed color attributes to be varchar(7) instead of varchar(6) so that they could include the \# symbol in the hex code color (ex: \#FFFFFF)
+\end{itemize}
+
+\subsection{Step 5}
+\begin{itemize}
+    \item Change minimum system orbitalRadius to 0.25 in the outline.
 \end{itemize}
 
 \newpage
@@ -406,6 +411,182 @@ Matthew and Logan, it looks like you have a good start on your project. You have
 “Just make sure you don't forget to represent your Hyperlanes, ResourceStock and ResourceDeposits on the web app. I did not see anywhere they were represented.”
 \hparagraph{Fix/Response}
 \fix{Create the missing relationship management pages for Hyperlanes, ResourceStock, and ResourceDeposits.}
+
+\newpage
+
+\subsection{Draft Review (Step 4)}
+
+\subsubsection{Review 1}
+\hparagraph{Contents}
+\textbf{Data Manipulation Queries:}
+\begin{itemize}
+    \item \textbf{Are the queries syntactically correct? Disregard the part where input will be substituted as shown in the sample\_data\_manipulation\_queries.sql}
+    \begin{itemize}
+        \item Upon inspection of the data manipulation query file the queries do look syntactically correct.
+    \end{itemize}
+    \item \textbf{Are there queries providing all functionalities as required by the CS340 Project Guide ? What query is missing ? What needs to be fixed?}
+    \begin{itemize}
+        \item Yes the queries do provide all required functionalities and reflect CRUD. I can’t see anything that needs to be fixed.
+    \end{itemize}
+    \item \textbf{Do the queries cover the relationships as required by the CS340 Project Guide?}
+    \begin{itemize}
+        \item The queries do appear to cover the four required relationships for final implementation which include at least 1 many to many relationship.
+    \end{itemize}
+\end{itemize}
+\textbf{DDQ File:}
+\begin{itemize}
+    \item \textbf{Is the SQL file syntactically correct? This can be easily verified by importing/copy-pasting it in phpmyadmin. (Do not forget to take backup of your own database before you do this!)}
+    \begin{itemize}
+        \item The SQL file is syntactically correct. Uploading the file took some time to process maybe due to the file size. However upon refreshing the bodies, empires, hyperlanes, resources, resource\_deposits, resource\_stocks, and systems appeared to upload with all their relevant data. However, upon submitting the file again I had the following static error:
+        
+        \texttt{3 errors were found during analysis.
+            \\ \\
+            1. A symbol name was expected! A reserved keyword can not be used as a column name without backquotes. (near "CHECK" at position 283) \\
+            2. Unexpected beginning of statement. (near "primaryColor" at position 290) \\
+            3. Unrecognized statement type. (near "RLIKE" at position 303) \\
+            \#1050 - Table 'empires' already exists}
+    \end{itemize}
+    \item \textbf{Are the data types appropriate considering the description of the attribute in the database outline?}
+    \begin{itemize}
+        \item Yes, the data types are appropriate considering the database outline’s description of the table attributes.
+    \end{itemize}
+    \item \textbf{Are the foreign keys correctly defined when compared to the Schema?}
+    \begin{itemize}
+        \item The foreign keys do appear to be correctly defined when referning the database outline schema in the pdf submission against the info on my database form the sql file.
+    \end{itemize}
+    \item \textbf{Are relationship tables present when compared to the ERD/Schema?}
+    \begin{itemize}
+        \item Yes the relationship tables are present when compared to the ERD/Schema such as the resource\_deposits, resource\_stocks, and hyperlanes.
+    \end{itemize}
+\end{itemize}
+\hiparagraph{Fixes/Responses}
+\begin{itemize}
+    \item \response{We haven't experienced any errors running our data definition file, and it doesn't seem like any of the other reviewers did either, so we're not sure what happened for this reviewer. We suspect it has to do with loading the queries twice as we don't delete any of the tables in our data definition file.}
+\end{itemize}
+
+\newpage
+\subsubsection{Review 2}
+\hparagraph{Contents}
+\textbf{DMQ}
+\begin{itemize}
+    \item \textbf{Are the queries syntactically correct?}
+    \begin{itemize}
+        \item Yes, most are straightforward, and I double checked that the hyperlane SELECT functions as intended. Good work.
+    \end{itemize}
+    \item \textbf{Are there queries providing all functionalities as required by the CS340 Project Guide ? What query is missing ? What needs to be fixed?}
+    \begin{itemize}
+        \item I believe you are missing an UPDATE query which will null out a 1:M relationship (2nd to last bullet point in Specifications under Project Guide). In your project, this could be achieved by editing your UPDATE query within the Individual Systems View to allow it to set empireID. A certain button on the website could call this UPDATE to set empireID to null, meaning the empire lost control of the system or something. Otherwise, everything looks great.
+    \end{itemize}
+    \item \textbf{Do the queries cover the relationships as required by the CS340 Project Guide?}
+    \begin{itemize}
+        \item Yes, other than the null UPDATE above.
+    \end{itemize}
+\end{itemize}
+\textbf{DDQ}
+\begin{itemize}
+    \item \textbf{Is the SQL file syntactically correct? This can be easily verified by importing/copy-pasting it in phpmyadmin. (Do not forget to take backup of your own database before you do this!)}
+    \begin{itemize}
+        \item It took a while o upload but everything checks out.
+    \end{itemize}
+    \item \textbf{Are the data types appropriate considering the description of the attribute in the database outline?}
+    \begin{itemize}
+        \item You were pretty particular about setting validation constraints on all your attributes. I did notice that your theta and orbital radius are not limited to the ranges you specified in the outline. 
+    \end{itemize}
+    \item \textbf{Are the foreign keys correctly defined when compared to the Schema?}
+    \begin{itemize}
+        \item Yes, they're all present
+    \end{itemize}
+    \item \textbf{Are relationship tables present when compared to the ERD/Schema?}
+    \begin{itemize}
+        \item Yes, all three are present.
+    \end{itemize}
+\end{itemize}
+Really clean implementation so far, keep it up.
+\hiparagraph{Fixes/Responses}
+\begin{itemize}
+    \item \response{It is possible to do this already - there is a "None" option in the dropdown for a system's owning empire.}
+    \item \fix{Add range constraints to theta and orbital radius in the data definition file to match the outline.}
+\end{itemize}
+
+\newpage
+\subsubsection{Review 3}
+\hparagraph{Contents}
+\textbf{DMQ}
+\begin{itemize}
+    \item \textbf{Are the queries syntactically correct?}
+    \begin{itemize}
+        \item Yep, the queries appear to be syntactically correct according to the file.
+    \end{itemize}
+    \item \textbf{Are there queries providing all functionalities as required by the CS340 Project Guide ? What query is missing ? What needs to be fixed?}
+    \begin{itemize}
+        \item It appears as though all queries cover the required functionalities. The comment above mentions a missing UPDATE for 1:M relationship but I think this is taken care of in the UPDATE queries defined for the empire view.
+    \end{itemize}
+    \item \textbf{Do the queries cover the relationships as required by the CS340 Project Guide?}
+    \begin{itemize}
+        \item Yep! The required relationships are covered. 
+    \end{itemize}
+\end{itemize}
+\textbf{DDQ}
+\begin{itemize}
+    \item \textbf{Is the SQL file syntactically correct? This can be easily verified by importing/copy-pasting it in phpmyadmin. (Do not forget to take backup of your own database before you do this!)}
+    \begin{itemize}
+        \item Yes, everything was imported correctly after a minute or so. 
+    \end{itemize}
+    \item \textbf{Are the data types appropriate considering the description of the attribute in the database outline?}
+    \begin{itemize}
+        \item Yes, data types seem appropriate.
+    \end{itemize}
+    \item \textbf{Are the foreign keys correctly defined when compared to the Schema?}
+    \begin{itemize}
+        \item All foreign keys are correctly defined.
+    \end{itemize}
+    \item \textbf{Are relationship tables present when compared to the ERD/Schema?}
+    \begin{itemize}
+        \item All relationships are present. 
+    \end{itemize}
+\end{itemize}
+\hparagraph{Fixes/Responses}
+None.
+
+\newpage
+\subsubsection{Review 4}
+\hparagraph{Contents}
+\textbf{Data Manipulation Queries:}
+\begin{itemize}
+    \item \textbf{Are the queries syntactically correct? Disregard the part where input will be substituted as shown in the sample\_data\_manipulation\_queries.sql}
+    \begin{itemize}
+        \item They are correct
+    \end{itemize}
+    \item \textbf{Are there queries providing all functionalities as required by the CS340 Project Guide ? What query is missing ? What needs to be fixed?}
+    \begin{itemize}
+        \item I don't see anything missing
+    \end{itemize}
+    \item \textbf{Do the queries cover the relationships as required by the CS340 Project Guide?}
+    \begin{itemize}
+        \item They do
+    \end{itemize}
+\end{itemize}
+\textbf{DDQ File:}
+\begin{itemize}
+    \item \textbf{Is the SQL file syntactically correct? This can be easily verified by importing/copy-pasting it in phpmyadmin. (Do not forget to take backup of your own database before you do this!)}
+    \begin{itemize}
+        \item The SQL file is syntactically correct and no errors were found while uploading.
+    \end{itemize}
+    \item \textbf{Are the data types appropriate considering the description of the attribute in the database outline?}
+    \begin{itemize}
+        \item Yes, they are appropriate
+    \end{itemize}
+    \item \textbf{Are the foreign keys correctly defined when compared to the Schema?}
+    \begin{itemize}
+        \item Yes, the foreign keys are correct
+    \end{itemize}
+    \item \textbf{Are relationship tables present when compared to the ERD/Schema?}
+    \begin{itemize}
+        \item Yes they are all present
+    \end{itemize}
+\end{itemize}
+\hparagraph{Fixes/Responses}
+None.
 
 \end{appendices}
 
