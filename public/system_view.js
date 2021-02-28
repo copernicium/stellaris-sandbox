@@ -198,7 +198,7 @@ async function drawSystemView(system, system_bodies) {
 
 var galaxy_data = null;
 
-async function drawGalaxyView(hyperlanes, systems) {
+async function drawGalaxyView(hyperlanes, systems, highlight_color = null) {
 	if(hyperlanes == null){
 		console.error("hyperlanes is null");
 		return;
@@ -241,9 +241,16 @@ async function drawGalaxyView(hyperlanes, systems) {
 	for(var i = 0; i < systems.length; i++) {
 		var pos = polarToCartesian(max_radius, center_x, center_y, systems[i].orbitalRadius,  systems[i].theta);
 
+		if (highlight_color != null) {
+			context.beginPath();
+			context.arc(pos.x, pos.y, system_size * 1.2, 0, 360);
+			context.fillStyle = "#FFF";
+			context.fill();
+		}
+
 		context.beginPath();
 		context.arc(pos.x, pos.y, system_size, 0, 360);
-		context.fillStyle = getRandomStarColor();
+		context.fillStyle = highlight_color != null ? highlight_color : getRandomStarColor();
 		context.fill();
 
 		system_data.push({
@@ -257,6 +264,8 @@ async function drawGalaxyView(hyperlanes, systems) {
 
 	var hyperlane_data = [];
 
+	const LINE_WIDTH = 1;
+
 	// Draw hyperlanes
 	for(var i = 0; i < hyperlanes.length; i++) {
 		var pos1 = polarToCartesian(max_radius, center_x, center_y, hyperlanes[i].system1OrbitalRadius,  hyperlanes[i].system1Theta);
@@ -267,9 +276,18 @@ async function drawGalaxyView(hyperlanes, systems) {
 		var end_x = pos2.x
 		var end_y = pos2.y;
 
+		if (highlight_color != null) {
+			context.beginPath();
+			context.lineWidth = LINE_WIDTH * 2;
+			context.strokeStyle = "rgba(255, 255, 255, 0.5)";
+			context.moveTo(start_x, start_y);
+			context.lineTo(end_x, end_y);
+			context.stroke();
+		}
+
 		context.beginPath();
-		context.lineWidth = 1;
-		context.strokeStyle = "rgba(255, 255, 255, 0.5)";
+		context.lineWidth = LINE_WIDTH;
+		context.strokeStyle = highlight_color != null ? highlight_color : "rgba(255, 255, 255, 0.5)";
 		context.moveTo(start_x, start_y);
 		context.lineTo(end_x, end_y);
 		context.stroke();
