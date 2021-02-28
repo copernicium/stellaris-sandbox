@@ -198,7 +198,23 @@ async function drawSystemView(system, system_bodies) {
 
 var galaxy_data = null;
 
-async function drawGalaxyView(hyperlanes, systems, highlight_color = null) {
+function makeRegionHighlightContext(systems, highlight_color) {
+	return {
+		systems: systems,
+		highlight_color: highlight_color
+	};
+}
+
+function getRegionHighlightColor(systemID, region_highlights) {
+	for (var i = 0; i < region_highlights.length; i++) {
+		if (region_highlights[i].systems.find(e => e.systemID == systemID) != null) {
+			return region_highlights[i].highlight_color;
+		}
+	}
+	return null;
+}
+
+async function drawGalaxyView(hyperlanes, systems, region_highlights = []) {
 	if(hyperlanes == null){
 		console.error("hyperlanes is null");
 		return;
@@ -241,6 +257,8 @@ async function drawGalaxyView(hyperlanes, systems, highlight_color = null) {
 	for(var i = 0; i < systems.length; i++) {
 		var pos = polarToCartesian(max_radius, center_x, center_y, systems[i].orbitalRadius,  systems[i].theta);
 
+		var highlight_color = getRegionHighlightColor(systems[i].systemID, region_highlights);
+
 		if (highlight_color != null) {
 			context.beginPath();
 			context.arc(pos.x, pos.y, system_size * 1.2, 0, 360);
@@ -275,6 +293,13 @@ async function drawGalaxyView(hyperlanes, systems, highlight_color = null) {
 		var pos2 = polarToCartesian(max_radius, center_x, center_y, hyperlanes[i].system2OrbitalRadius,  hyperlanes[i].system2Theta);
 		var end_x = pos2.x
 		var end_y = pos2.y;
+
+		var highlight_color = getRegionHighlightColor(hyperlanes[i].system1ID, region_highlights);
+		var check_highlight_color = getRegionHighlightColor(hyperlanes[i].system2ID, region_highlights);
+
+		if (highlight_color != check_highlight_color) {
+			highlight_color = null;
+		}
 
 		if (highlight_color != null) {
 			context.beginPath();
@@ -347,7 +372,6 @@ function highlightSystem(systemID){
 
 			var system = galaxy_data.system_data.find(e => e.id == systemID);
 			if(system != null) {
-				console.log("HERE");
 				context.beginPath();
 				context.arc(system.x, system.y, system.radius * 1.5, 0, 360);
 				context.fillStyle = HIGHLIGHT_COLOR;

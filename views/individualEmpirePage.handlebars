@@ -153,7 +153,8 @@
 			{{#unlessEquals type "create"}}
 				var hyperlanes = JSON.parse(decodeURIComponent("{{{encoded_hyperlane_details}}}"));
 				var systems = JSON.parse(decodeURIComponent("{{{encoded_systems}}}"));
-				drawGalaxyView(hyperlanes, systems, "{{{empire.primaryColor}}}");
+				var highlightContext = makeRegionHighlightContext(systems, "{{{empire.primaryColor}}}");
+				drawGalaxyView(hyperlanes, systems, [highlightContext]);
 			{{/unlessEquals}}
 		});
 	</script>

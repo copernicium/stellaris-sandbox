@@ -1,32 +1,75 @@
 <main>
-    <h3>
-        <a href="/empires">Empires</a>
-    </h3>
-    <p>
-        This page is used for viewing Empires and creating new ones.
-    </p>
-    <h3>
-        <a href="/systems">Systems</a>
-    </h3>
-    <p>
-        This page is used for viewing Systems and creating new ones.
-    </p>
-    <h3>
-        <a href="/resources">Resources</a>
-    </h3>
-    <p>
-        This page is used for viewing Resources and creating new ones.
-    </p>
-    <h3>
-        <a href="/bodies">Bodies</a>
-    </h3>
-    <p>
-        This page is used for viewing Bodies and creating new ones.
-    </p>
-    <h3>
-        <a href="/hyperlanes">Hyperlanes</a>
-    </h3>
-    <p>
-        This page is used for viewing Hyperlanes and creating new ones.
-    </p>
+    <script>
+        window.addEventListener("DOMContentLoaded", function() {
+            var hyperlanes = JSON.parse(decodeURIComponent("{{{encoded_hyperlane_details}}}"));
+            var systems = JSON.parse(decodeURIComponent("{{{encoded_systems}}}"));
+            var empires = JSON.parse(decodeURIComponent("{{{encoded_empires}}}"));
+
+            // Create array that pairs empires with systems array to be populated with owned systems later
+            var empireRegions = [];
+            for (var i = 0; i < empires.length; i++) {
+                empireRegions.push({
+                    empire: empires[i],
+                    systems: []
+                });
+            }
+
+            // Sort systems by empire ownership
+            for (var i = 0; i < systems.length; i++) {
+                if (systems[i].empireID != null) {
+                    var empireRegion = empireRegions.find(e => e.empire.empireID == systems[i].empireID);
+                    if (empireRegion != null) {
+                        empireRegion.systems.push(systems[i]);
+                    }
+                }
+            }
+
+            // Prepare highlight context for galaxy view
+            var highlightContext = [];
+            for (var i = 0; i < empireRegions.length; i++) {
+                highlightContext.push(makeRegionHighlightContext(empireRegions[i].systems, empireRegions[i].empire.primaryColor));
+            }
+
+            drawGalaxyView(hyperlanes, systems, highlightContext);
+		});
+	</script>
+	<div class="page-container has-right-col">
+        <div class="left-col">
+            <h3>
+                <a href="/empires">Empires</a>
+            </h3>
+            <p>
+                This page is used for viewing Empires and creating new ones.
+            </p>
+            <h3>
+                <a href="/systems">Systems</a>
+            </h3>
+            <p>
+                This page is used for viewing Systems and creating new ones.
+            </p>
+            <h3>
+                <a href="/resources">Resources</a>
+            </h3>
+            <p>
+                This page is used for viewing Resources and creating new ones.
+            </p>
+            <h3>
+                <a href="/bodies">Bodies</a>
+            </h3>
+            <p>
+                This page is used for viewing Bodies and creating new ones.
+            </p>
+            <h3>
+                <a href="/hyperlanes">Hyperlanes</a>
+            </h3>
+            <p>
+                This page is used for viewing Hyperlanes and creating new ones.
+            </p>
+        </div>
+		<div class="right-col">
+			{{#unlessEquals type "create"}}
+				{{> galaxyView}}
+			{{/unlessEquals}}
+		</div>
+    </div>
 </main>

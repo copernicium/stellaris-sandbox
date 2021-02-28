@@ -32,7 +32,38 @@ app.get("/", (req, res, next) => {
 	var pageName = "homePage";
 	var context = createDefaultContext(pageName);
 	context.page_title = "Stellaris Sandbox";
-	res.status(200).render(pageName, context);
+
+	mysql.pool.query("SELECT empireID, primaryColor, secondaryColor FROM empires", (err, rows, fields) => {
+		if(err) {
+			res.status(500).send(err);
+		} else if (rows == null) {
+			res.status(500).send("No rows returned");
+		} else {
+			context.encoded_empires = encodeURIComponent(JSON.stringify(rows));
+
+			mysql.pool.query(HYPERLANES_QUERY, (err, rows, fields) => {
+				if(err) {
+					res.status(500).send(err);
+				} else if (rows == null) {
+					res.status(500).send("No rows returned");
+				} else {
+					context.hyperlanes = rows;
+					context.encoded_hyperlane_details = encodeURIComponent(JSON.stringify(rows));
+					mysql.pool.query("SELECT * FROM systems;", (err, rows, fields) => {
+						if(err) {
+							res.status(500).send(err);
+						} else {
+							context.encoded_systems = encodeURIComponent(JSON.stringify(rows));
+
+							addSystemSearchList(context, res, (context, res) => {
+								res.status(200).render(pageName, context);
+							});
+						}
+					});
+				}
+			});
+		}
+	});
 });
 
 app.get("/about", (req, res, next) => {
