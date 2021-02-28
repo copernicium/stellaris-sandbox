@@ -46,8 +46,13 @@ app.get("/about", (req, res, next) => {
 // QUERIES =====================================================================
 //
 
-const HYPERLANES_QUERY = "SELECT s1.system1ID, s1.system2ID, s1.name AS system1Name, s2.name AS system2Name, s1.orbitalRadius AS system1OrbitalRadius, s1.theta AS system1Theta, s2.orbitalRadius AS system2OrbitalRadius, s2.theta AS system2Theta FROM (SELECT hyperlanes.system1ID, hyperlanes.system2ID, systems.name, systems.orbitalRadius, systems.theta FROM hyperlanes INNER JOIN systems ON hyperlanes.system1ID = systems.systemID) AS s1 INNER JOIN (SELECT hyperlanes.system1ID, hyperlanes.system2ID, systems.name, systems.orbitalRadius, systems.theta FROM hyperlanes INNER JOIN systems ON hyperlanes.system2ID = systems.systemID) AS s2 ON s1.system1ID = s2.system1ID AND s1.system2ID = s2.system2ID;";
-
+const HYPERLANES_QUERY = "SELECT s1.system1ID, s1.system2ID, \
+s1.name AS system1Name, s1.orbitalRadius AS system1OrbitalRadius, s1.theta AS system1Theta, s1.empireID AS system1EmpireID,\
+s2.name AS system2Name, s2.orbitalRadius AS system2OrbitalRadius, s2.theta AS system2Theta, s2.empireID AS system2EmpireID FROM \
+(SELECT hyperlanes.system1ID, hyperlanes.system2ID, systems.name, systems.orbitalRadius, systems.theta, systems.empireID FROM hyperlanes \
+INNER JOIN systems ON hyperlanes.system1ID = systems.systemID) AS s1 \
+INNER JOIN (SELECT hyperlanes.system1ID, hyperlanes.system2ID, systems.name, systems.orbitalRadius, systems.theta, systems.empireID FROM hyperlanes \
+INNER JOIN systems ON hyperlanes.system2ID = systems.systemID) AS s2 ON s1.system1ID = s2.system1ID AND s1.system2ID = s2.system2ID";
 
 //
 // EMPIRES =====================================================================
@@ -111,20 +116,31 @@ function viewEditEmpireData(type, req, res, next) {
 						context.owned_systems = rows;
 						context.encoded_systems = encodeURIComponent(JSON.stringify(context.owned_systems));
 
-						mysql.pool.query("SELECT resources.resourceID, resources.name, resources.color, rd.quantity FROM (SELECT * FROM resource_stocks WHERE resource_stocks.empireID = ?) AS rd INNER JOIN resources ON rd.resourceID = resources.resourceID ORDER BY resources.name", [empireId], (error, rows, fields) => {
-							if (error) {
-								res.status(500).send(error);
+						mysql.pool.query("SELECT * FROM (" + HYPERLANES_QUERY + ") AS h WHERE h.system1EmpireID = ? AND h.system2EmpireID = ?", [empireId, empireId], (err, rows, fields) => {
+							if(err) {
+								res.status(500).send(err);
+							} else if (rows == null) {
+								res.status(500).send("No rows returned");
 							} else {
-								context.empire_resource_stocks = rows;
+								context.hyperlanes = rows;
+								context.encoded_hyperlane_details = encodeURIComponent(JSON.stringify(rows));
 
-								var resource_stock_ids = [];
-								for (var i = 0; i < rows.length; i++) {
-									resource_stock_ids.push(rows[i].resourceID);
-								}
-								context.encoded_empire_resource_stock_ids = encodeURIComponent(JSON.stringify(resource_stock_ids));
+								mysql.pool.query("SELECT resources.resourceID, resources.name, resources.color, rd.quantity FROM (SELECT * FROM resource_stocks WHERE resource_stocks.empireID = ?) AS rd INNER JOIN resources ON rd.resourceID = resources.resourceID ORDER BY resources.name", [empireId], (error, rows, fields) => {
+									if (error) {
+										res.status(500).send(error);
+									} else {
+										context.empire_resource_stocks = rows;
 
-								addResourceSearchList(context, res, (context, res) => {
-									res.status(200).render(pageName, context);
+										var resource_stock_ids = [];
+										for (var i = 0; i < rows.length; i++) {
+											resource_stock_ids.push(rows[i].resourceID);
+										}
+										context.encoded_empire_resource_stock_ids = encodeURIComponent(JSON.stringify(resource_stock_ids));
+
+										addResourceSearchList(context, res, (context, res) => {
+											res.status(200).render(pageName, context);
+										});
+									}
 								});
 							}
 						});

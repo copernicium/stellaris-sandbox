@@ -151,7 +151,7 @@
 {{/unlessEquals}}
 
 			{{#unlessEquals type "create"}}
-				var hyperlanes = [];
+				var hyperlanes = JSON.parse(decodeURIComponent("{{{encoded_hyperlane_details}}}"));
 				var systems = JSON.parse(decodeURIComponent("{{{encoded_systems}}}"));
 				drawGalaxyView(hyperlanes, systems);
 			{{/unlessEquals}}
