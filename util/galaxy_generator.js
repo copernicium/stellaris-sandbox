@@ -173,6 +173,49 @@ function getSystemsWithinRadius(system, systems, radius){
 	return result;
 }
 
+function growEmpire(empire_name, systems, empire_hyperlanes, edge_systems = null, owned_systems = null) {
+	// Setup owned_systems if null
+	owned_systems = (owned_systems == null) ? [] : owned_systems;
+
+	// Setup edge_systems if null
+	if (edge_systems == null) {
+		var system = randFrom(systems);
+
+		edge_systems = [system];
+
+		owned_systems.push(system);
+		system.empireName = empire_name;
+	}
+
+	var new_edge_systems = [];
+
+	// For each edge system, add all its connections
+	for (var i = 0; i < edge_systems.length; i++) {
+		var starting_system = edge_systems[i];
+
+		var connections = empire_hyperlanes.filter(e => (e.system1Name == starting_system.name && !owned_systems.includes(e.system2Name)));
+
+		if (connections != null) {
+			for (var j = 0; j < connections.length; j++) {
+				// Stop growing empire when it owns enough systems
+				if (owned_systems.length > (systems.length * SYSTEM_OWNERSHIP_PERCENT)) {
+					return;
+				}
+
+				// This could end up reassigning a system, but this will just add a small amount of randomness to the number of systems each empire owns
+				var system = systems.find(e => e.name == connections[j].system2Name);
+				owned_systems.push(system);
+				new_edge_systems.push(system);
+				system.empireName = empire_name;
+			}
+		}
+	}
+
+	if (new_edge_systems.length > 0) {
+		growEmpire(empire_name, systems, empire_hyperlanes, new_edge_systems, owned_systems);
+	}
+}
+
 function generateResourceDepositSQL(deposit, bodyName, SQLCollection) {
 	SQLCollection.resourceDepositSQL += `\t((SELECT bodyID FROM bodies WHERE bodies.name="${bodyName}"), (SELECT resourceID FROM resources WHERE resources.name="${deposit.name}"), ${deposit.quantity}),\n`;
 }
@@ -308,19 +351,6 @@ function generateSQL(nSystems) {
         }
     }
 
-	// Assign systems to empires
-	for (var i = 0; i < empireData.length; i++) {
-		for (var j = 0; j < (nSystems * SYSTEM_OWNERSHIP_PERCENT); j++) {
-			// This could end up reassigning a system, but this will just add a small amount of randomness to the number of systems each empire owns
-			randFrom(systems).empireName = empireData[i].name;
-		}
-	}
-
-	// Generate system SQL
-	for (var i = 0; i < nSystems; i++) {
-		generateSystemSQL(systems[i], SQLCollection);
-	}
-
 	// Generate resource SQL
 	for (var i = 0; i < resourceData.length; i++) {
 		generateResourceSQL(resourceData[i], SQLCollection);
@@ -346,7 +376,7 @@ function generateSQL(nSystems) {
 					var hyperlane = {
 						system1Name: systems[i].name,
 						system2Name: connection_candidates[j].name
-					}
+					};
 					if(hyperlanes.find(e => ((e.system1Name == hyperlane.system1Name) && (e.system2Name == hyperlane.system2Name)) ||
 						((e.system1Name == hyperlane.system2Name) && (e.system2Name == hyperlane.system1Name))) == undefined) {
 
@@ -357,6 +387,28 @@ function generateSQL(nSystems) {
 				}
 			}
 		}
+	}
+
+	// Assign systems to empires
+
+	// Create an array of hyperlanes that contain both forward and backward hyperlanes
+	// This will make it easier to grow empires' owned systems
+	var empire_hyperlanes = [];
+	for (var i = 0; i < hyperlanes.length; i++) {
+		empire_hyperlanes.push(hyperlanes[i]);
+		empire_hyperlanes.push({
+			system1Name: hyperlanes[i].system2Name,
+			system2Name: hyperlanes[i].system1Name
+		});
+	}
+
+	for (var i = 0; i < empireData.length; i++) {
+		growEmpire(empireData[i].name, systems, empire_hyperlanes);
+	}
+
+	// Generate system SQL
+	for (var i = 0; i < nSystems; i++) {
+		generateSystemSQL(systems[i], SQLCollection);
 	}
 
 	// End the INSERT queries
