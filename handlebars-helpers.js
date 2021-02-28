@@ -16,6 +16,15 @@ module.exports = {
 	},
 	isEqual: function(value1, value2) {
 		return value1 == value2;
+	},
+	toLowerCase: function(str) {
+		return str.toLowerCase();
+	},
+	toUpperCase: function(str) {
+		return str.toUpperCase();
+	},
+	capitalize: function(str) {
+		return str.charAt(0).toUpperCase() + str.slice(1);
 	}
 }
 
