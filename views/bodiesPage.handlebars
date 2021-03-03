@@ -1,4 +1,13 @@
 <main>
+	<script src="/templates/body_item_template.js" defer></script>
+	<script>
+		window.addEventListener("DOMContentLoaded", function() {
+			var searchInput = document.getElementById("body-search-input");
+			if (searchInput) {
+				searchInput.addEventListener("input", () => runEntitySearch("body-search-input", "bodies-list", "/bodies/search/", Handlebars.templates.bodyItem));
+			}
+		});
+	</script>
 	<div class="page-container">
 		<div>
 			<a href="/bodies/create">
@@ -6,7 +15,11 @@
 			</a>
 		</div>
 		<br>
-		<table id="bodies-list" class="entry-list">
+		<div>
+			<input type="search" id="body-search-input" class="search-bar" placeholder="Search.."></input>
+		</div>
+		<br>
+		<table class="entry-list">
 			<thead>
 				<tr>
 					<th>Name</th>
@@ -16,7 +29,7 @@
 					<th></th>
 				</tr>
 			</thead>
-			<tbody>
+			<tbody id="bodies-list">
 				{{#each bodies}}
 					{{> bodyItem}}
 				{{/each}}

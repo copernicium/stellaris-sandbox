@@ -1011,6 +1011,10 @@ app.post("/bodies/update/:id", (req, res, next) => {
 	}
 });
 
+app.get("/bodies/search/:search_query?", (req, res, next) => {
+	processTableSearch("bodies", req, res, next);
+});
+
 app.post("/bodies/delete", (req, res, next) => {
 	if (req.hasOwnProperty("body") && req.body.hasOwnProperty("id"))
 	{
