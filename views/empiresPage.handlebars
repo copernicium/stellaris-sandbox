@@ -1,9 +1,22 @@
 <main>
+	<script src="/templates/empire_item_template.js" defer></script>
+	<script>
+		window.addEventListener("DOMContentLoaded", function() {
+			var searchInput = document.getElementById("empire-search-input");
+			if (searchInput) {
+				searchInput.addEventListener("input", () => runEntitySearch("empire-search-input", "empires-list", "/empires/search/", Handlebars.templates.empireItem));
+			}
+		});
+	</script>
 	<div class="page-container">
 		<div>
 			<a href="/empires/create">
 				<button type="button">Create New Empire</button>
 			</a>
+		</div>
+		<br>
+		<div>
+			<input type="search" id="empire-search-input" class="search-bar" placeholder="Search.."></input>
 		</div>
 		<br>
 		<table class="entry-list">

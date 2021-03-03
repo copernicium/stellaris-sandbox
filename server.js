@@ -73,6 +73,17 @@ app.get("/about", (req, res, next) => {
 	res.status(200).render(pageName, context);
 });
 
+function processTableSearch(tableName, req, res, next){
+	var search_query = (req.params == null || req.params.search_query == null) ? "" : decodeURIComponent(req.params.search_query);
+	mysql.pool.query("SELECT * FROM " + tableName + " WHERE " + tableName + ".name LIKE ? ORDER BY name;", "%" + search_query + "%", (err, rows, fields) => {
+		if(err) {
+			res.status(500).send(err);
+		} else {
+			res.status(200).send(rows);
+		}
+	});
+}
+
 //
 // QUERIES =====================================================================
 //
@@ -274,6 +285,10 @@ app.post("/empires/update/:id", (req, res, next) => {
 			error: "Bad empire ID."
 		});
 	}
+});
+
+app.get("/empires/search/:search_query?", (req, res, next) => {
+	processTableSearch("empires", req, res, next);
 });
 
 app.post("/empires/delete", (req, res, next) => {
@@ -492,14 +507,7 @@ app.post("/systems/update/:id", (req, res, next) => {
 });
 
 app.get("/systems/search/:search_query?", (req, res, next) => {
-	var search_query = (req.params == null || req.params.search_query == null) ? "" : decodeURIComponent(req.params.search_query);
-	mysql.pool.query("SELECT * FROM systems WHERE systems.name LIKE ? ORDER BY name;", "%" + search_query + "%", (err, rows, fields) => {
-		if(err) {
-			res.status(500).send(err);
-		} else {
-			res.status(200).send(rows);
-		}
-	});
+	processTableSearch("systems", req, res, next);
 });
 
 app.post("/systems/delete", (req, res, next) => {

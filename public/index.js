@@ -284,6 +284,19 @@ function errorIfBlank(form, fields_errors) {
 	return false;
 }
 
+function runEntitySearch(search_input_id, result_list_id, search_url, itemTemplateFunc) {
+	var search_query = document.getElementById(search_input_id).value;
+	var parent = document.getElementById(result_list_id);
+	getFromServer(search_url + encodeURIComponent(search_query), raw_results => {
+		var results = JSON.parse(raw_results);
+		parent.innerHTML = "";
+		for(var i = 0; i < results.length; i++) {
+			var systemHTML = itemTemplateFunc(results[i]);
+			parent.insertAdjacentHTML("beforeend", systemHTML);
+		}
+	});
+}
+
 window.addEventListener("DOMContentLoaded", function() {
 	setupStarfields();
 
