@@ -290,6 +290,12 @@ function runEntitySearch(search_input_id, result_list_id, search_url, itemTempla
 	getFromServer(search_url + encodeURIComponent(search_query), raw_results => {
 		var results = JSON.parse(raw_results);
 		parent.innerHTML = "";
+		if (results.length == 0) {
+			var noResultsMessage = document.createElement("div");
+			noResultsMessage.classList.add("no-search-results-message");
+			noResultsMessage.innerHTML = "No results found";
+			parent.appendChild(noResultsMessage);
+		}
 		for(var i = 0; i < results.length; i++) {
 			var systemHTML = itemTemplateFunc(results[i]);
 			parent.insertAdjacentHTML("beforeend", systemHTML);

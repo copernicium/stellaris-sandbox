@@ -296,6 +296,10 @@ form.immutable input {
 	padding-top: 15px;
 }
 
+.no-search-results-message {
+	padding: 10px;
+}
+
 .error-container {
 	margin-top: 50px;
 	text-align: center;
