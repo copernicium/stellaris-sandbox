@@ -632,7 +632,7 @@ app.post("/hyperlanes/delete", (req, res, next) => {
 	{
 		var system1Id = req.body.system1ID;
 		var system2Id = req.body.system2ID;
-		mysql.pool.query("DELETE FROM hyperlanes WHERE system1ID=" + system1Id + " AND system2ID=" + system2Id, (error, results, fields) => {
+		mysql.pool.query("DELETE FROM hyperlanes WHERE system1ID = ? AND system2ID = ?", [system1Id, system2Id], (error, results, fields) => {
 			if (error) {
 				res.status(500).send(error);
 			} else {
