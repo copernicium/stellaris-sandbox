@@ -768,6 +768,10 @@ app.post("/resources/update/:id", (req, res, next) => {
 	}
 });
 
+app.get("/resources/search/:search_query?", (req, res, next) => {
+	processTableSearch("resources", req, res, next);
+});
+
 app.post("/resources/delete", (req, res, next) => {
 	if (req.hasOwnProperty("body") && req.body.hasOwnProperty("id"))
 	{

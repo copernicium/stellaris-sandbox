@@ -1,4 +1,13 @@
 <main>
+	<script src="/templates/resource_item_template.js" defer></script>
+	<script>
+		window.addEventListener("DOMContentLoaded", function() {
+			var searchInput = document.getElementById("resource-search-input");
+			if (searchInput) {
+				searchInput.addEventListener("input", () => runEntitySearch("resource-search-input", "resources-list", "/resources/search/", Handlebars.templates.resourceItem));
+			}
+		});
+	</script>
 	<div class="page-container">
 		<div>
 			<a href="/resources/create">
@@ -6,7 +15,11 @@
 			</a>
 		</div>
 		<br>
-		<table id="resources-list" class="entry-list">
+		<div>
+			<input type="search" id="resource-search-input" class="search-bar" placeholder="Search.."></input>
+		</div>
+		<br>
+		<table class="entry-list">
 			<thead>
 				<tr>
 					<th>Name</th>
@@ -15,7 +28,7 @@
 					<th></th>
 				</tr>
 			</thead>
-			<tbody>
+			<tbody id="resources-list">
 				{{#each resources}}
 					{{> resourceItem}}
 				{{/each}}
