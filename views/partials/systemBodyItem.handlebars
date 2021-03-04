@@ -2,6 +2,7 @@
 	<td>{{name}}</td>
 	<td>{{type}}</td>
 	<td>
+        <button type="button" id="body-highlight-button" onclick="highlightBody({{bodyID}});">Highlight</button>
 		<a href="/bodies/view/{{bodyID}}"><button type="button">View</button></a>
 		<a href="/bodies/edit/{{bodyID}}"><button type="button">Edit</button></a>
 		<button type="button" onclick="createDeleteModal('/bodies/delete/', {{bodyID}})">Delete</button>

@@ -1,6 +1,7 @@
 <tr>
 	<td>{{name}}</td>
 	<td>
+        <button type="button" id="system-highlight-button" onclick="highlightSystem({{systemID}});">Highlight</button>
 		<a href="/systems/view/{{systemID}}"><button type="button">View</button></a>
 		<a href="/systems/edit/{{systemID}}"><button type="button">Edit</button></a>
 		<button type="button" onclick="createConfirmationModal(() => removeSystemOwnership({{systemID}}))">Remove Ownership</button>

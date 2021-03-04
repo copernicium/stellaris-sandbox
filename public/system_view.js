@@ -109,6 +109,8 @@ function getRandomBodyColor() {
 	return colors[getRandom(0, colors.length - 1)];
 }
 
+var system_data = null;
+
 // Draw the system view
 async function drawSystemView(system, system_bodies) {
 	if(system == null){
@@ -192,6 +194,13 @@ async function drawSystemView(system, system_bodies) {
 	}
 
 	var saved_canvas = context.getImageData(0, 0, canvas.width, canvas.height);
+	system_data = {
+		body_data: body_data,
+		saved_canvas: saved_canvas,
+		context: context,
+		highlighted: null
+	};
+
 	canvas.addEventListener('mousemove', e => canvasHandleMouseMove(e, body_data, context, saved_canvas));
 	canvas.addEventListener('mousedown', e => canvasHandleMouseDown(e, body_data, "/bodies/view/"));
 }
@@ -249,7 +258,7 @@ async function drawGalaxyView(hyperlanes, systems, region_highlights = []) {
 	var image = await addImageProcess("/galactic_center.png");
 	context.drawImage(image, center_x - galactic_center_width / 2, center_y - galactic_center_width / 2, galactic_center_width, galactic_center_width);
 
-	var system_data = [];
+	var systems_data = [];
 
 	var system_size = 2;
 
@@ -271,7 +280,7 @@ async function drawGalaxyView(hyperlanes, systems, region_highlights = []) {
 		context.fillStyle = highlight_color != null ? highlight_color : getRandomStarColor();
 		context.fill();
 
-		system_data.push({
+		systems_data.push({
 			x: pos.x,
 			y: pos.y,
 			radius: system_size,
@@ -327,14 +336,14 @@ async function drawGalaxyView(hyperlanes, systems, region_highlights = []) {
 	}
 	var saved_canvas = context.getImageData(0, 0, canvas.width, canvas.height);
 	galaxy_data = {
-		system_data: system_data,
+		systems_data: systems_data,
 		hyperlane_data: hyperlane_data,
 		saved_canvas: saved_canvas,
 		context: context,
 		highlighted: null
 	};
-	canvas.addEventListener('mousemove', e => canvasHandleMouseMove(e, system_data, context, saved_canvas));
-	canvas.addEventListener('mousedown', e => canvasHandleMouseDown(e, system_data, "/systems/view/"));
+	canvas.addEventListener('mousemove', e => canvasHandleMouseMove(e, systems_data, context, saved_canvas));
+	canvas.addEventListener('mousedown', e => canvasHandleMouseDown(e, systems_data, "/systems/view/"));
 }
 
 function highlightHyperlane(system1ID, system2ID){
@@ -361,6 +370,7 @@ function highlightHyperlane(system1ID, system2ID){
 		}
 	}
 }
+
 function highlightSystem(systemID){
 	if(galaxy_data != null){
 		saved_canvas = galaxy_data.saved_canvas;
@@ -370,7 +380,7 @@ function highlightSystem(systemID){
 		var new_highlighted = systemID;
 		if(galaxy_data.highlighted != new_highlighted) {
 
-			var system = galaxy_data.system_data.find(e => e.id == systemID);
+			var system = galaxy_data.systems_data.find(e => e.id == systemID);
 			if(system != null) {
 				context.beginPath();
 				context.arc(system.x, system.y, system.radius * 1.5, 0, 360);
@@ -381,6 +391,30 @@ function highlightSystem(systemID){
 			galaxy_data.highlighted = new_highlighted;
 		} else {
 			galaxy_data.highlighted = null;
+		}
+	}
+}
+
+function highlightBody(bodyID){
+	if (system_data != null){
+		saved_canvas = system_data.saved_canvas;
+		context = system_data.context;
+		context.putImageData(saved_canvas, 0, 0);
+
+		var new_highlighted = bodyID;
+		if(system_data.highlighted != new_highlighted) {
+
+			var body = system_data.body_data.find(e => e.id == bodyID);
+			if(body != null) {
+				context.beginPath();
+				context.arc(body.x, body.y, body.radius, 0, 360);
+				context.fillStyle = HIGHLIGHT_COLOR;
+				context.fill();
+				drawBodyName(context, body);
+			}
+			system_data.highlighted = new_highlighted;
+		} else {
+			system_data.highlighted = null;
 		}
 	}
 }
