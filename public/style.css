@@ -276,6 +276,10 @@ form.immutable input {
 	flex-shrink: 0;
 }
 
+#resources-unavailable-text {
+	font-size: 14px;
+}
+
 .caption-container {
 	display: flex;
 	flex-direction: column;	

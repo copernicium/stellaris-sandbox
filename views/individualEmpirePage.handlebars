@@ -103,6 +103,11 @@
 			}
 
 			document.getElementById("create-resource-stock-button").disabled = allUnavailable;
+			if (allUnavailable) {
+				document.getElementById("resources-unavailable-text").classList.remove("hidden");
+			} else {
+				document.getElementById("resources-unavailable-text").classList.add("hidden");
+			}
 		}
 
 		function moveResourceSearchList() {
@@ -219,7 +224,10 @@
 			<div>
 				<h3>Resource Stocks</h3>
 				{{#unlessEquals type "view"}}
-				<button type="button" id="create-resource-stock-button" onclick="createNewResourceStock()">Create New Resource Stock</button>
+				<div>
+					<button type="button" id="create-resource-stock-button" onclick="createNewResourceStock()">Create New Resource Stock</button>
+					<span id="resources-unavailable-text">A resource stock exists for each resource, so no new ones can be created.</span>
+				</div>
 				{{/unlessEquals}}
 				<table id="resource-stock-table">
 					<thead>

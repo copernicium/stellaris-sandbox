@@ -97,6 +97,11 @@
 			}
 
 			document.getElementById("create-resource-deposit-button").disabled = allUnavailable;
+			if (allUnavailable) {
+				document.getElementById("resources-unavailable-text").classList.remove("hidden");
+			} else {
+				document.getElementById("resources-unavailable-text").classList.add("hidden");
+			}
 		}
 
 		function moveResourceSearchList() {
@@ -206,7 +211,10 @@
 		</form>
 		<h3>Resource Deposits</h3>
 		{{#unlessEquals type "view"}}
-		<button type="button" id="create-resource-deposit-button" onclick="createNewResourceDeposit()">Create New Resource Deposit</button>
+		<div>
+			<button type="button" id="create-resource-deposit-button" onclick="createNewResourceDeposit()">Create New Resource Deposit</button>
+			<span id="resources-unavailable-text">A resource deposit exists for each resource, so no new ones can be created.</span>
+		</div>
 		{{/unlessEquals}}
 		<table id="resource-deposit-table">
 			<thead>
