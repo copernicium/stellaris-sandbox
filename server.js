@@ -635,6 +635,18 @@ app.post('/hyperlanes/add', (req, res, next) => {
 	}
 });
 
+app.get("/hyperlanes/search/:search_query?", (req, res, next) => {
+	var search_query = (req.params == null || req.params.search_query == null) ? "" : decodeURIComponent(req.params.search_query);
+	search_query = "%" + search_query + "%";
+	mysql.pool.query("SELECT * FROM (" + HYPERLANES_QUERY + ") AS h WHERE h.system1Name LIKE ? OR h.system2Name LIKE ?", [search_query, search_query], (err, rows, fields) => {
+		if(err) {
+			res.status(500).send(err);
+		} else {
+			res.status(200).send(rows);
+		}
+	});
+});
+
 app.post("/hyperlanes/delete", (req, res, next) => {
 	if (req.hasOwnProperty("body") && req.body.hasOwnProperty("system1ID") && req.body.hasOwnProperty("system2ID"))
 	{

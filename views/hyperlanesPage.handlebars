@@ -47,6 +47,11 @@
 			var hyperlanes = JSON.parse(decodeURIComponent("{{{encoded_hyperlane_details}}}"));
 			var systems = JSON.parse(decodeURIComponent("{{{encoded_systems}}}"));
 			drawGalaxyView(hyperlanes, systems);
+
+			var searchInput = document.getElementById("hyperlane-search-input");
+			if (searchInput) {
+				searchInput.addEventListener("input", () => runEntitySearch("hyperlane-search-input", "hyperlanes-list", "/hyperlanes/search/", Handlebars.templates.hyperlaneItem));
+			}
 		});
 	</script>
 	<div class="page-container has-right-col">
@@ -55,6 +60,10 @@
                 <div>
                     <button type="button" id="modal-open-button">Create New Hyperlane</button>
                 </div>
+				<br>
+				<div>
+					<input type="search" id="hyperlane-search-input" class="search-bar" placeholder="Search.."></input>
+				</div>
                 <br>
                 <table id="hyperlanes-list">
                     <tr>
