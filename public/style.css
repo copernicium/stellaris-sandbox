@@ -101,10 +101,15 @@ button:disabled {
 	color: #FFF;
 }
 
+html {
+	height: 100%;
+}
+
 body {
 	font-family: Helvetica, sans-serif;
 	margin: 0;
 	background-color: #36393F;
+	height: 100%;
 }
 
 a {
@@ -158,8 +163,14 @@ a:hover {
 	box-shadow: inset 0 -3px #BBB;
 }
 
+body {
+	display: flex;
+	flex-direction: column;
+}
+
 main {
 	margin: 20px;
+	flex-grow: 1;
 }
 
 input, textarea, select, option {
@@ -217,6 +228,7 @@ th, td {
 }
 
 .page-container {
+	flex-grow: 1;
 	display: flex;
 	flex-direction: column;
 	align-items: start;
@@ -235,10 +247,27 @@ th, td {
 	max-height: 800px;
 }
 
+#galaxy-view.big-view {
+	height: 100%;
+	flex-grow: 1;
+	width: auto;
+	max-width: none;
+	max-height: none;
+}
+
+.canvas-container.big-view {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	padding-top: 0px;
+	flex-grow: 1;
+}
+
 .has-right-col {
 	display: flex;
 	flex-direction: row;
 }
+
 
 .has-right-col .left-col {
 	flex-grow: 1;
@@ -248,19 +277,116 @@ th, td {
 	flex-grow: 0;
 }
 
-.left, .right {
-	width: 50%;
-}
-
-.left {
-	display: flex;
-	flex-direction: row-reverse;
-}
-
-.right {
+.has-right-slider {
+	overflow-x: hidden;
 	display: flex;
 	flex-direction: row;
-	flex: 1;
+	flex-grow: 1;
+	align-items: stretch;
+	width: 200vw;
+}
+
+main.has-foldables {
+	margin: 0px;
+	overflow-x: hidden;
+	display: flex;
+	flex-direction: column;
+}
+
+.quadrant {
+	flex: 1 0 0%;
+	margin: 20px;
+	border: 2px solid black;
+	border-radius: 8px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	background-position: center;
+	background-size: auto 100%;
+	box-shadow: black 0px 3px 5px;
+	transition: box-shadow 100ms;
+}
+
+.quadrant:hover {
+	box-shadow: none;
+}
+
+.quadrant-text {
+	margin-top: 200px;
+	font-size: 40px;
+	color: white;
+	text-shadow: black 0px 1px 10px;
+	font-family: Orbitron, sans-serif;
+}
+
+.empires-quadrant {
+	background-image: url("/banners/empires_banner.jpg");
+}
+
+.systems-quadrant {
+	background-image: url("/banners/systems_banner.jpg");
+}
+
+.resources-quadrant {
+	background-image: url("/banners/resources_banner.jpg");
+}
+
+.bodies-quadrant {
+	background-image: url("/banners/bodies_banner.png");
+}
+
+.hyperlanes-quadrant {
+	background-image: url("/banners/hyperlanes_banner.png");
+}
+
+.slider-bar {
+	width: 3vw;
+	cursor: pointer;
+	z-index: 1;
+	background-color: #202225;
+	transition-duration: 600ms;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.slider-bar.left {
+	transform: translate(-97vw);
+}
+
+.slider-arrow {
+	font-size: 100px;
+	transition-duration: 600ms;
+}
+
+.slider-bar.left > .slider-arrow {
+	transform: scale(-1, 1);
+}
+
+.slide-inner {
+	margin: 20px;
+	flex-grow: 1;
+	display: flex;
+}
+
+.left-slider, .right-slider {
+	transition-duration: 600ms;
+	width: 97vw;
+	display: flex;
+
+
+.left-slider.closed {
+	transform: translate(-97vw);
+}
+
+.left-slider.opened {
+}
+
+.right-slider.closed {
+}
+
+.right-slider.opened {
+	transform: translate(-97vw);
 }
 
 form.immutable input {

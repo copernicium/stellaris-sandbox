@@ -1,5 +1,27 @@
-<main>
+<main class="has-foldables">
     <script>
+		function setSlide(slide, open) {
+			slide.classList.add(open ? "opened" : "closed");
+			slide.classList.remove(open ? "closed" : "opened");
+		}
+
+		var onLeftSlide = true;
+		function changeSlide() {
+			onLeftSlide = !onLeftSlide;
+			var leftSlide = document.getElementById("left-slide");
+			var rightSlide = document.getElementById("right-slide");
+			var sliderBar = document.getElementById("slider-bar");
+			if (onLeftSlide) {
+				setSlide(leftSlide, true);
+				setSlide(rightSlide, false);
+				sliderBar.classList.remove("left");
+			} else {
+				setSlide(rightSlide, true);
+				setSlide(leftSlide, false);
+				sliderBar.classList.add("left");
+			}
+		}
+
         window.addEventListener("DOMContentLoaded", function() {
             var hyperlanes = JSON.parse(decodeURIComponent("{{{encoded_hyperlane_details}}}"));
             var systems = JSON.parse(decodeURIComponent("{{{encoded_systems}}}"));
@@ -33,43 +55,33 @@
             drawGalaxyView(hyperlanes, systems, highlightContext);
 		});
 	</script>
-	<div class="page-container has-right-col">
-        <div class="left-col">
-            <h3>
-                <a href="/empires">Empires</a>
-            </h3>
-            <p>
-                This page is used for viewing Empires and creating new ones.
-            </p>
-            <h3>
-                <a href="/systems">Systems</a>
-            </h3>
-            <p>
-                This page is used for viewing Systems and creating new ones.
-            </p>
-            <h3>
-                <a href="/resources">Resources</a>
-            </h3>
-            <p>
-                This page is used for viewing Resources and creating new ones.
-            </p>
-            <h3>
-                <a href="/bodies">Bodies</a>
-            </h3>
-            <p>
-                This page is used for viewing Bodies and creating new ones.
-            </p>
-            <h3>
-                <a href="/hyperlanes">Hyperlanes</a>
-            </h3>
-            <p>
-                This page is used for viewing Hyperlanes and creating new ones.
-            </p>
+	<div class="page-container has-right-slider">
+        <div id="left-slide" class="left-slider opened">
+			<div id="pages-slide" class="slide-inner">
+				<a href="/empires" class="quadrant empires-quadrant">
+					<div class="quadrant-text">Empires</div>
+				</a>
+				<a href="/systems" class="quadrant systems-quadrant">
+					<div class="quadrant-text">Systems</div>
+				</a>
+				<a href="/resources" class="quadrant resources-quadrant">
+					<div class="quadrant-text">Resources</div>
+				</a>
+				<a href="/bodies" class="quadrant bodies-quadrant">
+					<div class="quadrant-text">Bodies</div>
+				</a>
+				<a href="/hyperlanes" class="quadrant hyperlanes-quadrant">
+					<div class="quadrant-text">Hyperlanes</div>
+				</a>
+			</div>
         </div>
-		<div class="right-col">
-			{{#unlessEquals type "create"}}
-				{{> galaxyView}}
-			{{/unlessEquals}}
+		<div id="slider-bar" class="slider-bar" onclick="changeSlide()">
+			<span class="slider-arrow">&#8250;</span>
+		</div>
+		<div id="right-slide" class="right-slider closed">
+			<div id="galaxy-slide" class="slide-inner">
+				{{> galaxyView extraClass="big-view"}}
+			</div>
 		</div>
     </div>
 </main>
