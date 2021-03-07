@@ -79,7 +79,11 @@ function processTableSearch(tableName, req, res, next){
 		if(err) {
 			res.status(500).send(err);
 		} else {
-			res.status(200).send(rows);
+			var result = {
+				search_query: search_query,
+				results: rows
+			};
+			res.status(200).send(result);
 		}
 	});
 }
