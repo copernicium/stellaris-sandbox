@@ -373,7 +373,7 @@ main.has-foldables {
 	transition-duration: 600ms;
 	width: 97vw;
 	display: flex;
-
+}
 
 .left-slider.closed {
 	transform: translate(-97vw);
