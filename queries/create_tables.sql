@@ -29,12 +29,14 @@ CREATE TABLE bodies (
 	bodyID int NOT NULL auto_increment,
 	name varchar(255) NOT NULL,
 	type varchar(16) NOT NULL,
+	planetType varchar(16) DEFAULT NULL,
 	orbitalRadius float NOT NULL,
 	theta float NOT NULL,
 	systemID int NOT NULL,
 	CONSTRAINT PRIMARY KEY (bodyID),
 	CONSTRAINT FOREIGN KEY (systemID) REFERENCES systems(systemID),
 	CONSTRAINT CHECK (type IN ("planet", "asteroid")),
+	CONSTRAINT CHECK (planetType IN ("arid", "desert", "savanna", "alpine", "arctic", "tundra", "continental", "ocean", "tropical")),
 	CONSTRAINT CHECK (orbitalRadius >= 0.1 AND orbitalRadius <= 1),
 	CONSTRAINT CHECK (theta >= 0 AND theta <= 360)
 );

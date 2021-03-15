@@ -57,6 +57,8 @@ const MAX_THETA = 360;
 const SYSTEM_OWNERSHIP_PERCENT = 0.05; // Percent of total systems an empire will own
 
 const ASTEROID_PROBABILITY = 0.1;
+const PLANET_TYPES = ["arid", "desert", "savanna", "alpine", "arctic", "tundra", "continental", "ocean", "tropical"];
+
 
 function roundToTwoPlaces(n) {
 	return Math.round(n * 100) / 100;
@@ -103,10 +105,12 @@ function generateBody(systemName, count) {
 	var rand = Math.random();
 	if (rand < ASTEROID_PROBABILITY) {
 		body.type = "asteroid";
+		body.planetType = null;
 // Assuming will never end up with two asteroids of the same name
 		body.name = systemName + " " + randFrom(asteroidPrefixes) + randFrom(asteroidPostfixes);
 	} else {
 		body.type = "planet";
+		body.planetType = randFrom(PLANET_TYPES);
 		body.name = systemName + " " + toRoman(count + 1);
 	}
 
@@ -229,7 +233,8 @@ function generateResourceSQL(resource, SQLCollection) {
 }
 
 function generateBodySQL(body, systemName, SQLCollection) {
-	SQLCollection.bodySQL += `\t("${body.name}", "${body.type}", ${body.theta}, ${body.orbitalRadius}, (SELECT systemID FROM systems WHERE systems.name="${systemName}")),\n`
+	var planetType = body.planetType == null ? null : `"${body.planetType}"`;
+	SQLCollection.bodySQL += `\t("${body.name}", "${body.type}", ${planetType}, ${body.theta}, ${body.orbitalRadius}, (SELECT systemID FROM systems WHERE systems.name="${systemName}")),\n`
 	for (var i = 0; i < body.deposits.length; i++) {
 		generateResourceDepositSQL(body.deposits[i], body.name, SQLCollection);
 	}
@@ -260,7 +265,7 @@ function generateHyperlaneSQL(hyperlane, SQLCollection) {
 function startInserts(SQLCollection) {
 	SQLCollection.empireSQL += "INSERT INTO empires (name, aggressiveness, primaryColor, secondaryColor, isFallenEmpire) VALUES\n";
 	SQLCollection.systemSQL += "INSERT INTO systems (name, type, theta, orbitalRadius, empireID) VALUES\n";
-	SQLCollection.bodySQL += "INSERT INTO bodies (name, type, theta, orbitalRadius, systemID) VALUES\n";
+	SQLCollection.bodySQL += "INSERT INTO bodies (name, type, planetType, theta, orbitalRadius, systemID) VALUES\n";
 	SQLCollection.resourceSQL += "INSERT INTO resources (name, baseMarketValue, color) VALUES\n";
 	SQLCollection.hyperlaneSQL += "INSERT INTO hyperlanes (system1ID, system2ID) VALUES\n";
 	SQLCollection.resourceStockSQL += "INSERT INTO resource_stocks (empireID, resourceID, quantity) VALUES\n";
@@ -420,13 +425,15 @@ function generateSQL(nSystems) {
 }
 
 function main() {
+	/*
 	const parser = new ArgumentParser({
 		description: "Generate the SQL for a random galaxy for Stellaris Sandbox"
 	})
 	parser.add_argument("nSystems", { type: "int", help: "Number of systems to generate in the galaxy" });
 	args = parser.parse_args();
-
 	generateSQL(args.nSystems);
+	*/
+	generateSQL(0);
 }
 
 main();
