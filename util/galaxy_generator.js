@@ -19,6 +19,7 @@ const asteroidPrefixes = require("./stellaris_data/asteroid_prefixes.json");
 const asteroidPostfixes = require("./stellaris_data/asteroid_postfixes.json");
 
 const systemTypes = ["unary", "binary", "trinary"];
+const STAR_TYPES = ["class b", "class a", "class f", "class g", "class k", "class m", "class m red giant", "class t brown dwarf"];
 
 const resourceData = [
 	{ name: "Energy Credits", baseMarketValue: 1, color: "#EDE021", min: 1, max: 4 },
@@ -58,7 +59,6 @@ const SYSTEM_OWNERSHIP_PERCENT = 0.05; // Percent of total systems an empire wil
 
 const ASTEROID_PROBABILITY = 0.1;
 const PLANET_TYPES = ["arid", "desert", "savannah", "alpine", "arctic", "tundra", "continental", "ocean", "tropical"];
-
 
 function roundToTwoPlaces(n) {
 	return Math.round(n * 100) / 100;
@@ -129,11 +129,31 @@ function generateSystem(orbitalRadius, theta) {
 	var system = {
 		name: takeFrom(systemNames), // To ensure no two systems have the same name
 		type: randFrom(systemTypes),
+		star1Type: null,
+		star2Type: null,
+		star3Type: null,
 		theta: theta,
 		orbitalRadius: orbitalRadius,
 		bodies: [],
 		empireName: null
 	};
+
+	switch (system.type){
+		case "unary":
+			system.star1Type = randFrom(STAR_TYPES);
+			break;
+		case "binary":
+			system.star1Type = randFrom(STAR_TYPES);
+			system.star2Type = randFrom(STAR_TYPES);
+			break;
+		case "trinary":
+			system.star1Type = randFrom(STAR_TYPES);
+			system.star2Type = randFrom(STAR_TYPES);
+			system.star3Type = randFrom(STAR_TYPES);
+			break;
+		default:
+			console.error("Unknown system type: " + system.type);
+	}
 
 	var nBodies = Math.floor(Math.random() * MAX_BODIES);
 	for (var i = 0; i < nBodies; i++) {
@@ -245,7 +265,10 @@ function generateSystemSQL(system, SQLCollection) {
 	if (system.empireName != null) {
 		empireId = `(SELECT empireID FROM empires WHERE empires.name="${system.empireName}")`;
 	}
-	SQLCollection.systemSQL += `\t("${system.name}", "${system.type}", ${system.theta}, ${system.orbitalRadius}, ${empireId}),\n`;
+	var star1Type = (system.star1Type == null) ? null : `"${system.star1Type}"`;
+	var star2Type = (system.star2Type == null) ? null : `"${system.star2Type}"`;
+	var star3Type = (system.star3Type == null) ? null : `"${system.star3Type}"`;
+	SQLCollection.systemSQL += `\t("${system.name}", "${system.type}", ${star1Type}, ${star2Type}, ${star3Type}, ${system.theta}, ${system.orbitalRadius}, ${empireId}),\n`;
 	for (var i = 0; i < system.bodies.length; i++) {
 		generateBodySQL(system.bodies[i], system.name, SQLCollection);
 	}
@@ -264,7 +287,7 @@ function generateHyperlaneSQL(hyperlane, SQLCollection) {
 
 function startInserts(SQLCollection) {
 	SQLCollection.empireSQL += "INSERT INTO empires (name, aggressiveness, primaryColor, secondaryColor, isFallenEmpire) VALUES\n";
-	SQLCollection.systemSQL += "INSERT INTO systems (name, type, theta, orbitalRadius, empireID) VALUES\n";
+	SQLCollection.systemSQL += "INSERT INTO systems (name, type, star1Type, star2Type, star3Type, theta, orbitalRadius, empireID) VALUES\n";
 	SQLCollection.bodySQL += "INSERT INTO bodies (name, type, planetType, theta, orbitalRadius, systemID) VALUES\n";
 	SQLCollection.resourceSQL += "INSERT INTO resources (name, baseMarketValue, color) VALUES\n";
 	SQLCollection.hyperlaneSQL += "INSERT INTO hyperlanes (system1ID, system2ID) VALUES\n";

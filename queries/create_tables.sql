@@ -15,12 +15,18 @@ CREATE TABLE systems (
 	systemID int NOT NULL auto_increment,
 	name varchar(255) NOT NULL,
 	type varchar(16) NOT NULL,
+	star1Type varchar(24) DEFAULT NULL,
+	star2Type varchar(24) DEFAULT NULL,
+	star3Type varchar(24) DEFAULT NULL,
 	orbitalRadius float NOT NULL,
 	theta float NOT NULL,
 	empireID int DEFAULT NULL,
 	CONSTRAINT PRIMARY KEY (systemID),
 	CONSTRAINT FOREIGN KEY (empireID) REFERENCES empires(empireID),
 	CONSTRAINT CHECK (type IN ("unary", "binary", "trinary")),
+	CONSTRAINT CHECK (star1Type IN ("class b", "class a", "class f", "class g", "class k", "class m", "class m red giant", "class t brown dwarf")),
+	CONSTRAINT CHECK (star2Type IN ("class b", "class a", "class f", "class g", "class k", "class m", "class m red giant", "class t brown dwarf")),
+	CONSTRAINT CHECK (star3Type IN ("class b", "class a", "class f", "class g", "class k", "class m", "class m red giant", "class t brown dwarf")),
 	CONSTRAINT CHECK (orbitalRadius >= 0.25 AND orbitalRadius <= 1),
 	CONSTRAINT CHECK (theta >= 0 AND theta <= 360)
 );
