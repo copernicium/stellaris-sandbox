@@ -97,6 +97,11 @@ button:disabled {
 	cursor: default;
 }
 
+.search-bar {
+	min-width: 250px;
+	width: 300px;
+}
+
 * {
 	color: #FFF;
 }
