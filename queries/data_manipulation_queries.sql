@@ -25,8 +25,8 @@ DELETE FROM systems WHERE systemID = ":systemID";
 -- Individual system view
 SELECT * FROM systems WHERE systemID = ":systemID";
 SELECT bodyID, name, type FROM bodies WHERE systemID = ":systemID";
-INSERT INTO systems (name, type, theta, orbitalRadius, empireID) VALUES (":systemName", ":systemType", ":systemTheta", ":systemOrbitalRadius", ":empireID");
-UPDATE systems SET name=":systemName", type=":systemType", theta=":systemTheta", orbitalRadius=":systemOrbitalRadius" WHERE systemID = ":systemID";
+INSERT INTO systems (name, type, theta, star1Type, star2Type, star3Type, orbitalRadius, empireID) VALUES (":systemName", ":systemType", ":systemStar1Type", ":systemStar2Type", ":systemStar3Type", ":systemTheta", ":systemOrbitalRadius", ":empireID");
+UPDATE systems SET name=":systemName", type=":systemType", star1Type=":systemStar1Type", star2Type=":systemStar2Type", star3Type=":systemStar3Type", theta=":systemTheta", orbitalRadius=":systemOrbitalRadius" WHERE systemID = ":systemID";
 
 -- System search (system page)
 SELECT * FROM systems WHERE systems.name LIKE "%:searchQuery%";
@@ -41,9 +41,9 @@ DELETE FROM bodies WHERE bodyID = ":bodyID";
 -- Individual body view
 SELECT * FROM bodies WHERE bodyID = ":bodyID";
 SELECT resources.resourceID, resources.name, rd.quantity FROM (SELECT * FROM resource_deposits WHERE resource_deposits.bodyID = ":bodyID") AS rd INNER JOIN resources ON rd.resourceID = resources.resourceID;
-INSERT INTO bodies (name, type, theta, orbitalRadius, systemID) VALUES (":bodyName", ":bodyType", ":bodyTheta", ":bodyOrbitalRadius", ":systemID");
+INSERT INTO bodies (name, type, planetType, theta, orbitalRadius, systemID) VALUES (":bodyName", ":bodyType", ":bodyPlanetType", ":bodyTheta", ":bodyOrbitalRadius", ":systemID");
 INSERT INTO resource_deposits (bodyID, resourceID, quantity) VALUES (":bodyID", ":resourceID", ":quantity");
-UPDATE bodies SET name=":bodyName", type=":bodyType", theta=":bodyTheta", orbitalRadius=":bodyOrbitalRadius" WHERE bodyID = ":bodyID";
+UPDATE bodies SET name=":bodyName", type=":bodyType", planetType=":bodyPlanetType", theta=":bodyTheta", orbitalRadius=":bodyOrbitalRadius" WHERE bodyID = ":bodyID";
 UPDATE resource_deposits SET quantity=":quantity" WHERE bodyID = ":bodyID" AND resourceID = ":resourceID";
 DELETE FROM resource_deposits WHERE resourceID = ":resourceID" AND bodyID = ":bodyID";
 
