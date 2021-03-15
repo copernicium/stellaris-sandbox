@@ -176,7 +176,7 @@ async function drawSystemView(system, system_bodies) {
 		context.arc(center_x, center_y, pos.radius, 0, 360);
 		// context.setLineDash([20, 15]);
 		context.lineWidth = 1;
-		context.strokeStyle = system_bodies.type == "asteroid" ? asteroidColor : orbitColors[system_bodies[i].planetType];
+		context.strokeStyle = system_bodies[i].type == "asteroid" ? asteroidColor : orbitColors[system_bodies[i].planetType];
 		context.stroke();
 	}
 
