@@ -9,6 +9,8 @@ Using Stellaris Sandbox, users can create between 200 and 1000 Systems within th
 
 In Stellaris, there is only one galaxy, so Stellaris Sandbox will only allow design of a single galaxy at a time. Since users will be expected to create galaxies with a large number of Systems, Stellaris Sandbox will provide templates and other tools to automatically generate features which can then be edited by the user.
 
+[Read more...](./doc/DesignDocument.pdf "Design Document")
+
 ## Deployment
 
 1. Set up the server by cloning this repositroy, running `npm install` within it, and running `npm build` to build the Express Handlebars templates. 
