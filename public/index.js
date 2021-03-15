@@ -33,6 +33,10 @@ function postToServer(url, context, successCallback) {
 	request.send(requestBody);
 }
 
+function randFrom(list) {
+	return list[Math.floor(Math.random() * list.length)];
+}
+
 function getRandom(min, max) {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }

@@ -32,6 +32,25 @@
 				theta: creationForm["system-theta"].value,
 				owningEmpireID: creationForm["owning-empire-name"].dataset.id
 			};
+
+{{#unlessEquals type "view"}}
+			// Set star types
+			systemContext.star1Type = (systemContext.star1Type == null) ? randFrom(STAR_TYPES) : systemContext.star1Type;
+			if (systemContext.type == "unary") {
+				systemContext.star2Type = null;
+				systemContext.star3Type = null;
+			}
+			else {
+				systemContext.star2Type = (systemContext.star2Type == null) ? randFrom(STAR_TYPES) : systemContext.star2Type;
+				if (systemContext.type == "binary") {
+					systemContext.star3Type = null;
+				}
+				else {
+					systemContext.star3Type = (systemContext.star3Type == null) ? randFrom(STAR_TYPES) : systemContext.star3Type;
+				}
+			}
+{{/unlessEquals}}
+
 {{#switch type}}
 	{{#case "create"}}
 			postToServer("/systems/add", systemContext, () => returnToListPage());

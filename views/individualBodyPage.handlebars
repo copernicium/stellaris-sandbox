@@ -50,9 +50,13 @@
 				});
 			}
 
+{{#unlessEquals type "view"}}
+			// Set planet type
+			bodyContext.planetType = (bodyContext.type == "planet") ? ((bodyContext.planetType == null) ? randFrom(PLANET_TYPES) : bodyContext.planetType) : null;
+{{/unlessEquals}}
+
 {{#switch type}}
 	{{#case "create"}}
-			bodyContext.planetType = (bodyContext.type == "planet") ? PLANET_TYPES[0] : null;
 			postToServer("/bodies/add", bodyContext, () => returnToListPage());
 	{{/case}}
 	{{#case "edit"}}

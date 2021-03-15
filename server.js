@@ -462,11 +462,14 @@ app.post('/systems/add', (req, res, next) => {
 	if (req.hasOwnProperty("body") &&
 		req.body.hasOwnProperty("name") &&
 		req.body.hasOwnProperty("type") &&
+		req.body.hasOwnProperty("star1Type") &&
+		req.body.hasOwnProperty("star2Type") &&
+		req.body.hasOwnProperty("star3Type") &&
 		req.body.hasOwnProperty("orbitalRadius") &&
 		req.body.hasOwnProperty("theta") &&
 		req.body.hasOwnProperty("owningEmpireID")
 	) {
-		mysql.pool.query("INSERT INTO systems(name, type, orbitalRadius, theta, empireID) VALUES (?,?,?,?,?)", [req.body.name, req.body.type, req.body.orbitalRadius, req.body.theta, convertNullableString(req.body.owningEmpireID)], (error, result, fields) => {
+		mysql.pool.query("INSERT INTO systems(name, type, star1Type, star2Type, star3Type, orbitalRadius, theta, empireID) VALUES (?,?,?,?,?,?,?,?)", [req.body.name, req.body.type, req.body.star1Type, convertNullableString(req.body.star2Type), convertNullableString(req.body.star3Type), req.body.orbitalRadius, req.body.theta, convertNullableString(req.body.owningEmpireID)], (error, result, fields) => {
 			if (error) {
 				res.status(500).send(error);
 			} else {
@@ -487,11 +490,14 @@ app.post("/systems/update/:id", (req, res, next) => {
 		if (req.hasOwnProperty("body") &&
 			req.body.hasOwnProperty("name") &&
 			req.body.hasOwnProperty("type") &&
+			req.body.hasOwnProperty("star1Type") &&
+			req.body.hasOwnProperty("star2Type") &&
+			req.body.hasOwnProperty("star3Type") &&
 			req.body.hasOwnProperty("orbitalRadius") &&
 			req.body.hasOwnProperty("theta") &&
 			req.body.hasOwnProperty("owningEmpireID")
 		) {
-			mysql.pool.query("UPDATE systems SET name=?, type=?, orbitalRadius=?, theta=?, empireID=? WHERE systemID=?", [req.body.name, req.body.type, req.body.orbitalRadius, req.body.theta, convertNullableString(req.body.owningEmpireID), systemId], (error, result, fields) => {
+			mysql.pool.query("UPDATE systems SET name=?, type=?, star1Type=?, star2Type=?, star3Type=?, orbitalRadius=?, theta=?, empireID=? WHERE systemID=?", [req.body.name, req.body.type, req.body.star1Type, convertNullableString(req.body.star2Type), convertNullableString(req.body.star3Type), req.body.orbitalRadius, req.body.theta, convertNullableString(req.body.owningEmpireID), systemId], (error, result, fields) => {
 				if (error) {
 					res.status(500).send(error);
 				} else {
@@ -997,12 +1003,13 @@ app.post("/bodies/update/:id", (req, res, next) => {
 		if (req.hasOwnProperty("body") &&
 			req.body.hasOwnProperty("name") &&
 			req.body.hasOwnProperty("type") &&
+			req.body.hasOwnProperty("planetType") &&
 			req.body.hasOwnProperty("orbitalRadius") &&
 			req.body.hasOwnProperty("theta") &&
 			req.body.hasOwnProperty("parentSystemID") &&
 			req.body.hasOwnProperty("resourceDeposits")
 		) {
-			mysql.pool.query("UPDATE bodies SET name=?, type=?, orbitalRadius=?, theta=?, systemID=? WHERE bodyID=?", [req.body.name, req.body.type, req.body.orbitalRadius, req.body.theta, req.body.parentSystemID, bodyId], (error, result, fields) => {
+			mysql.pool.query("UPDATE bodies SET name=?, type=?, planetType=?, orbitalRadius=?, theta=?, systemID=? WHERE bodyID=?", [req.body.name, req.body.type, convertNullableString(req.body.planetType), req.body.orbitalRadius, req.body.theta, req.body.parentSystemID, bodyId], (error, result, fields) => {
 				if (error) {
 					res.status(500).send(error);
 				} else {
