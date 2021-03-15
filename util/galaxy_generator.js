@@ -57,7 +57,7 @@ const MAX_THETA = 360;
 const SYSTEM_OWNERSHIP_PERCENT = 0.05; // Percent of total systems an empire will own
 
 const ASTEROID_PROBABILITY = 0.1;
-const PLANET_TYPES = ["arid", "desert", "savanna", "alpine", "arctic", "tundra", "continental", "ocean", "tropical"];
+const PLANET_TYPES = ["arid", "desert", "savannah", "alpine", "arctic", "tundra", "continental", "ocean", "tropical"];
 
 
 function roundToTwoPlaces(n) {

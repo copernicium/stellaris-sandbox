@@ -52,6 +52,7 @@
 
 {{#switch type}}
 	{{#case "create"}}
+			bodyContext.planetType = (bodyContext.type == "planet") ? PLANET_TYPES[0] : null;
 			postToServer("/bodies/add", bodyContext, () => returnToListPage());
 	{{/case}}
 	{{#case "edit"}}
@@ -117,6 +118,8 @@
 			var accept_button = document.getElementById("accept-button");
 			if (accept_button) accept_button.addEventListener("click", editAccept);
 
+			// console.log("{{{body.planetType}}}");
+
 {{#unlessEquals type "view"}}
 			var systemSearchList = JSON.parse(decodeURIComponent("{{{encoded_system_search_list}}}"));
 			setupSearchList(systemSearchList, ["system-search-bar"], "system-search-list", "systemID", "name", false, null, null);
@@ -146,10 +149,12 @@
 				searchBar.parentElement.parentElement.remove();
 			});
 
-			var resourceDepositIDs = JSON.parse(decodeURIComponent("{{{encoded_body_resource_deposit_ids}}}"));
-			for (var i = 0; i < resourceDepositIDs.length; i++) {
-				setResourceAvailability(resourceDepositIDs[i], false);
-			}
+			{{#unlessEquals type "create"}}
+				var resourceDepositIDs = JSON.parse(decodeURIComponent("{{{encoded_body_resource_deposit_ids}}}"));
+				for (var i = 0; i < resourceDepositIDs.length; i++) {
+					setResourceAvailability(resourceDepositIDs[i], false);
+				}
+			{{/unlessEquals}}
 {{/unlessEquals}}
 		});
 	</script>

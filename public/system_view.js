@@ -111,6 +111,9 @@ function getRandomBodyColor() {
 
 var system_data = null;
 
+const PLANET_TYPES = ["arid", "desert", "savannah", "alpine", "arctic", "tundra", "continental", "ocean", "tropical"];
+var planet_type_images = null;
+
 // Draw the system view
 async function drawSystemView(system, system_bodies) {
 	if(system == null){
@@ -126,6 +129,17 @@ async function drawSystemView(system, system_bodies) {
 		console.error("system-view canvas is null");
 		return;
 	}
+
+	if (planet_type_images == null){
+		var planet_type_images = new Map();
+		for (var i = 0; i < PLANET_TYPES.length; i++) {
+			var image = await addImageProcess("/bodies/" + PLANET_TYPES[i] + ".png");
+			planet_type_images.set(PLANET_TYPES[i], image);
+		}
+		var image = await addImageProcess("/bodies/asteroid.png");
+		planet_type_images.set("asteroid", image);
+	}
+
 	canvas.width = canvas.offsetWidth;
 	canvas.height = canvas.offsetHeight;
 
@@ -164,19 +178,33 @@ async function drawSystemView(system, system_bodies) {
 		var pos = polarToCartesian(max_radius, center_x, center_y, system_bodies[i].orbitalRadius, system_bodies[i].theta);
 
 		var size = 0;
-		var color = "";
+		// var color = "";
 		switch(system_bodies[i].type){
 			case "asteroid":
 				size = 5;
-				color = "rgb(180, 180, 180)";
+				// color = "rgb(180, 180, 180)";
 				break;
 			case "planet":
 				size = 10;
-				color = getRandomBodyColor();
+				// color = getRandomBodyColor();
 				break;
 			default:
 				console.error("Unknown planet type: " + system_bodies[i].type);
 		}
+
+		const IMAGE_WIDTH = size * 2; // px
+		const ROTATE_TO_ZERO = 0.5; // rad
+
+		var halfHeight = canvas.height / 2;
+		var halfWidth = canvas.width / 2;
+		var body_angle = Math.atan((pos.y - halfHeight) / halfHeight, (pos.x - halfWidth) / halfWidth);
+		var angle_to_rotate = ROTATE_TO_ZERO - body_angle;
+
+		context.translate(pos.x, pos.y);
+		context.rotate(angle_to_rotate);
+		context.drawImage(planet_type_images.get((system_bodies[i].planetType != null) ? system_bodies[i].planetType : "asteroid"), - IMAGE_WIDTH / 2, - IMAGE_WIDTH /2, IMAGE_WIDTH, IMAGE_WIDTH);
+		context.rotate(-angle_to_rotate);
+		context.translate(-pos.x, -pos.y);
 
 		body_data.push({
 			x: pos.x,
@@ -185,12 +213,6 @@ async function drawSystemView(system, system_bodies) {
 			name: system_bodies[i].name,
 			id: system_bodies[i].bodyID
 		});
-
-		// Draw body
-		context.beginPath();
-		context.arc(pos.x, pos.y, size, 0, 360);
-		context.fillStyle = color;
-		context.fill();
 	}
 
 	var saved_canvas = context.getImageData(0, 0, canvas.width, canvas.height);

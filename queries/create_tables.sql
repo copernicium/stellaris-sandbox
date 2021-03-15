@@ -36,7 +36,7 @@ CREATE TABLE bodies (
 	CONSTRAINT PRIMARY KEY (bodyID),
 	CONSTRAINT FOREIGN KEY (systemID) REFERENCES systems(systemID),
 	CONSTRAINT CHECK (type IN ("planet", "asteroid")),
-	CONSTRAINT CHECK (planetType IN ("arid", "desert", "savanna", "alpine", "arctic", "tundra", "continental", "ocean", "tropical")),
+	CONSTRAINT CHECK (planetType IN ("arid", "desert", "savannah", "alpine", "arctic", "tundra", "continental", "ocean", "tropical")),
 	CONSTRAINT CHECK (orbitalRadius >= 0.1 AND orbitalRadius <= 1),
 	CONSTRAINT CHECK (theta >= 0 AND theta <= 360)
 );

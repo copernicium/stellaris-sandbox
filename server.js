@@ -955,12 +955,13 @@ app.post('/bodies/add', (req, res, next) => {
 	if (req.hasOwnProperty("body") &&
 		req.body.hasOwnProperty("name") &&
 		req.body.hasOwnProperty("type") &&
+		req.body.hasOwnProperty("planetType") &&
 		req.body.hasOwnProperty("orbitalRadius") &&
 		req.body.hasOwnProperty("theta") &&
 		req.body.hasOwnProperty("parentSystemID") &&
 		req.body.hasOwnProperty("resourceDeposits")
 	) {
-		mysql.pool.query("INSERT INTO bodies(name, type, orbitalRadius, theta, systemID) VALUES (?,?,?,?,?)", [req.body.name, req.body.type, req.body.orbitalRadius, req.body.theta, req.body.parentSystemID], (error, result, fields) => {
+		mysql.pool.query("INSERT INTO bodies(name, type, planetType, orbitalRadius, theta, systemID) VALUES (?,?,?,?,?,?)", [req.body.name, req.body.type, req.body.planetType, req.body.orbitalRadius, req.body.theta, req.body.parentSystemID], (error, result, fields) => {
 			if (error) {
 				res.status(500).send(error);
 			} else {
