@@ -251,6 +251,35 @@ function getRegionHighlightColor(systemID, region_highlights) {
 	return null;
 }
 
+var starTypeColors = {
+	"class b": [174, 159, 186],
+	"class a": [150, 175, 198],
+	"class f": [162, 172, 180],
+	"class g": [206, 191, 146],
+	"class k": [163, 127, 95],
+	"class m": [149, 68, 65],
+	"class m red giant": [220, 143, 139],
+	"class t brown dwarf": [133, 108, 124]
+}
+
+function getStarColor(system) {
+	var starTypes = [system.star1Type, system.star2Type, system.star3Type];
+	var nStars = 0;
+	var r = 0, g = 0, b = 0;
+	for (var i = 0; i < starTypes.length; i++) {
+		if (starTypes[i] == null) break;
+		var colors = starTypeColors[starTypes[i]];
+		r += colors[0];
+		g += colors[1];
+		b += colors[2];
+		nStars++;
+	}
+	r /= nStars;
+	g /= nStars;
+	b /= nStars;
+	return `rgb(${r}, ${g}, ${b})`;
+}
+
 async function drawGalaxyView(hyperlanes, systems, region_highlights = []) {
 	if(hyperlanes == null){
 		console.error("hyperlanes is null");
@@ -305,7 +334,7 @@ async function drawGalaxyView(hyperlanes, systems, region_highlights = []) {
 
 		context.beginPath();
 		context.arc(pos.x, pos.y, system_size, 0, 360);
-		context.fillStyle = highlight_color != null ? highlight_color : getRandomStarColor();
+		context.fillStyle = highlight_color != null ? highlight_color : getStarColor(systems[i]);
 		context.fill();
 
 		systems_data.push({
