@@ -158,102 +158,112 @@
 {{/unlessEquals}}
 		});
 	</script>
-	<div class="page-container">
-		<h2>
-			{{#switch type}}
-				{{#case "view"}} View Body {{/case}}
-				{{#case "create"}} Create New Body {{/case}}
-				{{#case "edit"}} Edit Body {{/case}}
-			{{/switch}}
-		</h2>
-		<form name="body-form" {{#ifEquals type "view"}}class="immutable"{{/ifEquals}}>
-			<table>
-				<tr>
-					<td>
-						<label>Name:</label>
-					</td>
-					<td>
-						<input type="text" id="body-name" name="body-name" value="{{body.name}}" {{#ifEquals type "view"}}readonly{{/ifEquals}}>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<label>Type:</label>
-					</td>
-					<td>
-						<input type="radio" id="body-type-planet" name="body-type" value="planet" {{#if (isEqual body.type "planet")}}checked{{else}}{{#ifEquals type "view"}}disabled{{/ifEquals}}{{/if}}>
-						<label for="body-type-planet">Planet</label><br>
-						<input type="radio" id="body-type-asteroid" name="body-type" value="asteroid" {{#if (isEqual body.type "asteroid")}}checked{{else}}{{#ifEquals type "view"}}disabled{{/ifEquals}}{{/if}}>
-						<label for="body-type-asteroid">Asteroid</label><br>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<label>Orbital Radius:</label>
-					</td>
-					<td>
-						<input type="number" id="body-orbital-radius" name="body-orbital-radius" min="0.1" max="1.0" value="{{body.orbitalRadius}}" step="0.01" {{#ifEquals type "view"}}readonly{{/ifEquals}}>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<label>Theta:</label>
-					</td>
-					<td>
-						<input type="number" id="body-theta" name="body-theta" min="0" max="360" value="{{body.theta}}" {{#ifEquals type "view"}}readonly{{/ifEquals}}>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<label>Parent System:</label>
-					</td>
-					<td>
-						<input type="text" id="system-search-bar" class="list-search-bar" name="parent-system-name" data-id="{{body.systemID}}" value="{{parent_system_name}}" {{#ifEquals type "view"}}readonly{{/ifEquals}}>
-						<div class="search-list hidden" id="system-search-list" tabindex="-1"></div>
-						<a href="/systems/view/{{body.systemID}}"><button type="button" id="body-go-to-parent-system-button">Go To</button></a>
-				</tr>
-			</table>
-		</form>
-		<h3>Resource Deposits</h3>
-		{{#unlessEquals type "view"}}
-		<div>
-			<button type="button" id="create-resource-deposit-button" onclick="createNewResourceDeposit()">Create New Resource Deposit</button>
-			<span id="resources-unavailable-text">A resource deposit exists for each resource, so no new ones can be created.</span>
-		</div>
-		{{/unlessEquals}}
-		<table id="resource-deposit-table">
-			<thead>
-				<tr>
-					<th>Resource</th>
-					<th>Quantity</th>
-				</tr>
-			</thead>
-			<tbody id="resource-deposit-list">
-				{{#each body_resource_deposits}}
-					{{> bodyResourceDepositItem bodyID=../body.bodyID readonly=(isEqual ../type "view") }}
-				{{/each}}
-			</tbody>
-		</table>
-		<div id="resource-search-list-container">
-			<div id="resource-search-list" class="search-list hidden" tabindex="-1"></div>
-		</div>
-		<div>
+	<div class="page-container has-right-col">
+		<div class="left-col">
+			<h2>
+				{{#switch type}}
+					{{#case "view"}} View Body {{/case}}
+					{{#case "create"}} Create New Body {{/case}}
+					{{#case "edit"}} Edit Body {{/case}}
+				{{/switch}}
+			</h2>
+			<form name="body-form" {{#ifEquals type "view"}}class="immutable"{{/ifEquals}}>
+				<table>
+					<tr>
+						<td>
+							<label>Name:</label>
+						</td>
+						<td>
+							<input type="text" id="body-name" name="body-name" value="{{body.name}}" {{#ifEquals type "view"}}readonly{{/ifEquals}}>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label>Type:</label>
+						</td>
+						<td>
+							<input type="radio" id="body-type-planet" name="body-type" value="planet" {{#if (isEqual body.type "planet")}}checked{{else}}{{#ifEquals type "view"}}disabled{{/ifEquals}}{{/if}}>
+							<label for="body-type-planet">Planet</label><br>
+							<input type="radio" id="body-type-asteroid" name="body-type" value="asteroid" {{#if (isEqual body.type "asteroid")}}checked{{else}}{{#ifEquals type "view"}}disabled{{/ifEquals}}{{/if}}>
+							<label for="body-type-asteroid">Asteroid</label><br>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label>Orbital Radius:</label>
+						</td>
+						<td>
+							<input type="number" id="body-orbital-radius" name="body-orbital-radius" min="0.1" max="1.0" value="{{body.orbitalRadius}}" step="0.01" {{#ifEquals type "view"}}readonly{{/ifEquals}}>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label>Theta:</label>
+						</td>
+						<td>
+							<input type="number" id="body-theta" name="body-theta" min="0" max="360" value="{{body.theta}}" {{#ifEquals type "view"}}readonly{{/ifEquals}}>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label>Parent System:</label>
+						</td>
+						<td>
+							<input type="text" id="system-search-bar" class="list-search-bar" name="parent-system-name" data-id="{{body.systemID}}" value="{{parent_system_name}}" {{#ifEquals type "view"}}readonly{{/ifEquals}}>
+							<div class="search-list hidden" id="system-search-list" tabindex="-1"></div>
+							<a href="/systems/view/{{body.systemID}}"><button type="button" id="body-go-to-parent-system-button">Go To</button></a>
+					</tr>
+				</table>
+			</form>
+			<h3>Resource Deposits</h3>
 			{{#unlessEquals type "view"}}
-			<button id="accept-button">
-				{{#switch type}}
-					{{#case "create"}} Create {{/case}}
-					{{#case "edit"}} Save {{/case}}
-				{{/switch}}
-			</button>
+			<div>
+				<button type="button" id="create-resource-deposit-button" onclick="createNewResourceDeposit()">Create New Resource Deposit</button>
+				<span id="resources-unavailable-text">A resource deposit exists for each resource, so no new ones can be created.</span>
+			</div>
 			{{/unlessEquals}}
-			<button id="cancel-button">
-				{{#switch type}}
-					{{#case "view"}} Return {{/case}}
-					{{#case "create"}} Cancel {{/case}}
-					{{#case "edit"}} Cancel {{/case}}
+			<table id="resource-deposit-table">
+				<thead>
+					<tr>
+						<th>Resource</th>
+						<th>Quantity</th>
+					</tr>
+				</thead>
+				<tbody id="resource-deposit-list">
+					{{#each body_resource_deposits}}
+						{{> bodyResourceDepositItem bodyID=../body.bodyID readonly=(isEqual ../type "view") }}
+					{{/each}}
+				</tbody>
+			</table>
+			<div id="resource-search-list-container">
+				<div id="resource-search-list" class="search-list hidden" tabindex="-1"></div>
+			</div>
+			<div>
+				{{#unlessEquals type "view"}}
+				<button id="accept-button">
+					{{#switch type}}
+						{{#case "create"}} Create {{/case}}
+						{{#case "edit"}} Save {{/case}}
+					{{/switch}}
+				</button>
+				{{/unlessEquals}}
+				<button id="cancel-button">
+					{{#switch type}}
+						{{#case "view"}} Return {{/case}}
+						{{#case "create"}} Cancel {{/case}}
+						{{#case "edit"}} Cancel {{/case}}
+					{{/switch}}
+				</button>
+			</div>
+		</div>
+		<div class="right-col">
+			{{#unlessEquals type "create"}}
+				{{#switch body.type}}
+					{{#case "asteroid"}}<img id="body-image" src="/bodies/asteroid.png" />{{/case}}
+					{{#case "planet"}}<img id="body-image" src="/bodies/{{body.planetType}}.png" />{{/case}}
 				{{/switch}}
-			</button>
+			{{/unlessEquals}}
 		</div>
 	</div>
-</main>
+	</main>
 

@@ -260,6 +260,17 @@ th, td {
 	max-height: none;
 }
 
+#body-image {
+	min-width: 200px;
+	width: 400px;
+	max-width: 600px;
+	min-height: 200px;
+	height: 400px;
+	max-height: 600px;
+	background-color: black;
+	padding: 40px;
+}
+
 .canvas-container.big-view {
 	display: flex;
 	flex-direction: column;
