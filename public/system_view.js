@@ -103,6 +103,20 @@ function getRandomBodyColor() {
 	return colors[getRandom(0, colors.length - 1)];
 }
 
+var orbitColors = {
+	"arid": "#907C8D",
+	"desert": "#A86940",
+	"savannah": "#59525E",
+	"alpine": "#716C4E",
+	"arctic": "#CFAC9E",
+	"tundra": "#504934",
+	"continental": "#50546E",
+	"ocean": "#38606F",
+	"tropical": "#69737C"
+};
+
+var asteroidColor = "#D18F77";
+
 // Draw the system view
 async function drawSystemView(system, system_bodies) {
 	if(system == null){
@@ -162,7 +176,7 @@ async function drawSystemView(system, system_bodies) {
 		context.arc(center_x, center_y, pos.radius, 0, 360);
 		// context.setLineDash([20, 15]);
 		context.lineWidth = 1;
-		context.strokeStyle = "rgb(71, 129, 139)";
+		context.strokeStyle = system_bodies.type == "asteroid" ? asteroidColor : orbitColors[system_bodies[i].planetType];
 		context.stroke();
 	}
 
