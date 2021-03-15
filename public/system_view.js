@@ -403,6 +403,62 @@ async function drawGalaxyView(hyperlanes, systems, region_highlights = []) {
 	canvas.addEventListener('mousedown', e => canvasHandleMouseDown(e, systems_data, "/systems/view/"));
 }
 
+async function drawBodyView(type, planetType, orbitalRadius, theta) {
+	var canvas = document.getElementById("body-view");
+	if(canvas == null) {
+		console.error("body-view canvas is null");
+		return;
+	}
+
+	if (planet_type_images == null) {
+		planet_type_images = new Map();
+		for (var i = 0; i < PLANET_TYPES.length; i++) {
+			var image = await addImageProcess("/bodies/" + PLANET_TYPES[i] + ".png");
+			planet_type_images.set(PLANET_TYPES[i], image);
+		}
+		var image = await addImageProcess("/bodies/asteroid.png");
+		planet_type_images.set("asteroid", image);
+	}
+
+	canvas.width = canvas.offsetWidth;
+	canvas.height = canvas.offsetHeight;
+
+	var context = canvas.getContext("2d");
+
+	// Draw black background behind everything
+	context.fillStyle = "rgb(0, 0, 0)";
+	context.fillRect(0, 0, canvas.width, canvas.height);
+	setupStarfieldContext(context, canvas.offsetWidth, canvas.offsetHeight, false);
+
+	var center_x = canvas.offsetWidth / 2;
+	var center_y = canvas.offsetHeight / 2;
+	var max_radius = 0.9 * 0.5 * Math.min(canvas.offsetWidth, canvas.offsetHeight);
+	var pos = polarToCartesian(max_radius, center_x, center_y, orbitalRadius, theta);
+
+	var y = ((canvas.offsetHeight - pos.y) - center_y) / center_y;
+	var x = (pos.x - center_x) / center_x;
+	var body_angle = -Math.atan2(y, x);
+
+	var width = canvas.offsetWidth * .66;
+	var image_key = "";
+	switch(type){
+		case "asteroid":
+			width *= .5;
+			image_key = "asteroid";
+			break;
+		case "planet":
+			width *= 1;
+			image_key = planetType;
+			break;
+		default:
+			console.error("Unknown planet type: " + type);
+	}
+
+	context.translate(center_x, center_y);
+	context.rotate(body_angle);
+	context.drawImage(planet_type_images.get((planetType != null) ? planetType : "asteroid"), - width / 2, - width / 2, width, width);
+}
+
 function highlightHyperlane(system1ID, system2ID){
 	if(galaxy_data != null){
 		saved_canvas = galaxy_data.saved_canvas;

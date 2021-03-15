@@ -243,7 +243,7 @@ th, td {
 	display: flex;
 }
 
-#system-view, #galaxy-view {
+#system-view, #galaxy-view, #body-view {
 	min-width: 200px;
 	width: 600px;
 	max-width: 800px;
@@ -258,17 +258,6 @@ th, td {
 	width: auto;
 	max-width: none;
 	max-height: none;
-}
-
-#body-image {
-	min-width: 200px;
-	width: 400px;
-	max-width: 600px;
-	min-height: 200px;
-	height: 400px;
-	max-height: 600px;
-	background-color: black;
-	padding: 40px;
 }
 
 .canvas-container.big-view {

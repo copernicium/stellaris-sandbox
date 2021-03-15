@@ -156,6 +156,10 @@
 				}
 			{{/unlessEquals}}
 {{/unlessEquals}}
+
+{{#unlessEquals type "create"}}
+			drawBodyView("{{body.type}}", "{{body.planetType}}", {{body.orbitalRadius}}, {{body.theta}});
+{{/unlessEquals}}
 		});
 	</script>
 	<div class="page-container has-right-col">
@@ -258,10 +262,12 @@
 		</div>
 		<div class="right-col">
 			{{#unlessEquals type "create"}}
-				{{#switch body.type}}
-					{{#case "asteroid"}}<img id="body-image" src="/bodies/asteroid.png" />{{/case}}
-					{{#case "planet"}}<img id="body-image" src="/bodies/{{body.planetType}}.png" />{{/case}}
-				{{/switch}}
+			<div class="canvas-container">
+				<canvas id="body-view"></canvas>
+				<div class="caption-container">
+					<div class="caption"></div>
+				</div>
+			</div>
 			{{/unlessEquals}}
 		</div>
 	</div>
