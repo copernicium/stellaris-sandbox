@@ -456,7 +456,7 @@ async function drawBodyView(type, planetType, orbitalRadius, theta) {
 
 	context.translate(center_x, center_y);
 	context.rotate(body_angle);
-	context.drawImage(planet_type_images.get((planetType != null) ? planetType : "asteroid"), - width / 2, - width / 2, width, width);
+	context.drawImage(planet_type_images.get((type != "asteroid") ? planetType : "asteroid"), - width / 2, - width / 2, width, width);
 }
 
 function highlightHyperlane(system1ID, system2ID){
