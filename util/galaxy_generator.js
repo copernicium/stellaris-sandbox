@@ -98,7 +98,7 @@ function generateResourceDeposit() {
 function generateBody(systemName, count) {
 	var body = {
 		theta: randTheta(),
-		orbitalRadius: randOrbitalRadius(0.1),
+		orbitalRadius: randOrbitalRadius(0.2),
 		deposits: []
 	}
 
