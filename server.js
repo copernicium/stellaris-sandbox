@@ -911,6 +911,7 @@ function viewEditBodyData(type, req, res, next) {
 				res.status(500).send("Too many rows returned");
 			} else {
 				context.body = rows[0];
+				context.encoded_body = encodeURIComponent(JSON.stringify(context.body));
 
 				mysql.pool.query("SELECT name FROM systems WHERE systemID = ?", context.body.systemID, (err, rows, fields) => {
 					if (err) {

@@ -69,26 +69,34 @@ async function drawSystemCenter(max_radius, center_x, center_y, system, context)
 	const STAR_IMAGE_WIDTH = 50;
 	switch(system.type) {
 		case "unary":
-			context.drawImage(star_type_images.get(system.star1Type), center_x - STAR_IMAGE_WIDTH / 2, center_y - STAR_IMAGE_WIDTH / 2, STAR_IMAGE_WIDTH, STAR_IMAGE_WIDTH);
-			break;
+			{
+				context.drawImage(star_type_images.get(system.star1Type), center_x - STAR_IMAGE_WIDTH / 2, center_y - STAR_IMAGE_WIDTH / 2, STAR_IMAGE_WIDTH, STAR_IMAGE_WIDTH);
+				break;
+			}
 		case "binary":
-			var distance = 0.08;
-			var pos1 = polarToCartesian(max_radius, center_x, center_y, distance, 135);
-			context.drawImage(star_type_images.get(system.star1Type), pos1.x - STAR_IMAGE_WIDTH / 2, pos1.y - STAR_IMAGE_WIDTH / 2, STAR_IMAGE_WIDTH, STAR_IMAGE_WIDTH);
-			var pos2 = polarToCartesian(max_radius, center_x, center_y, distance, 315);
-			context.drawImage(star_type_images.get(system.star2Type), pos2.x - STAR_IMAGE_WIDTH / 2, pos2.y - STAR_IMAGE_WIDTH / 2, STAR_IMAGE_WIDTH, STAR_IMAGE_WIDTH);	
-			break;
+			{
+				const distance = 0.1;
+				var pos1 = polarToCartesian(max_radius, center_x, center_y, distance, 135);
+				context.drawImage(star_type_images.get(system.star1Type), pos1.x - STAR_IMAGE_WIDTH / 2, pos1.y - STAR_IMAGE_WIDTH / 2, STAR_IMAGE_WIDTH, STAR_IMAGE_WIDTH);
+				var pos2 = polarToCartesian(max_radius, center_x, center_y, distance, 315);
+				context.drawImage(star_type_images.get(system.star2Type), pos2.x - STAR_IMAGE_WIDTH / 2, pos2.y - STAR_IMAGE_WIDTH / 2, STAR_IMAGE_WIDTH, STAR_IMAGE_WIDTH);	
+				break;
+			}
 		case "trinary":
-			var distance = 0.1;
-			var pos1 = polarToCartesian(max_radius, center_x, center_y, distance, 0);
-			context.drawImage(star_type_images.get(system.star1Type), pos1.x - STAR_IMAGE_WIDTH / 2, pos1.y - STAR_IMAGE_WIDTH / 2, STAR_IMAGE_WIDTH, STAR_IMAGE_WIDTH);
-			var pos2 = polarToCartesian(max_radius, center_x, center_y, distance, 120);
-			context.drawImage(star_type_images.get(system.star2Type), pos2.x - STAR_IMAGE_WIDTH / 2, pos2.y - STAR_IMAGE_WIDTH / 2, STAR_IMAGE_WIDTH, STAR_IMAGE_WIDTH);	
-			var pos3 = polarToCartesian(max_radius, center_x, center_y, distance, 240);
-			context.drawImage(star_type_images.get(system.star3Type), pos3.x - STAR_IMAGE_WIDTH / 2, pos3.y - STAR_IMAGE_WIDTH / 2, STAR_IMAGE_WIDTH, STAR_IMAGE_WIDTH);
-			break;
+			{
+				const distance = 0.1;
+				var pos1 = polarToCartesian(max_radius, center_x, center_y, distance, 0);
+				context.drawImage(star_type_images.get(system.star1Type), pos1.x - STAR_IMAGE_WIDTH / 2, pos1.y - STAR_IMAGE_WIDTH / 2, STAR_IMAGE_WIDTH, STAR_IMAGE_WIDTH);
+				var pos2 = polarToCartesian(max_radius, center_x, center_y, distance, 120);
+				context.drawImage(star_type_images.get(system.star2Type), pos2.x - STAR_IMAGE_WIDTH / 2, pos2.y - STAR_IMAGE_WIDTH / 2, STAR_IMAGE_WIDTH, STAR_IMAGE_WIDTH);	
+				var pos3 = polarToCartesian(max_radius, center_x, center_y, distance, 240);
+				context.drawImage(star_type_images.get(system.star3Type), pos3.x - STAR_IMAGE_WIDTH / 2, pos3.y - STAR_IMAGE_WIDTH / 2, STAR_IMAGE_WIDTH, STAR_IMAGE_WIDTH);
+				break;
+			}
 		default:
+			{
 			console.error("Unrecognized system type: " + system_type);
+			}
 	}
 }
 

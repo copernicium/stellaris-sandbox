@@ -1,11 +1,60 @@
 <main>
 	<script>
+		var random_star_type_1 = null;
+		var random_star_type_2 = null;
+		var random_star_type_3 = null;
+
+		function setStarTypes(systemContext) {
+			if (random_star_type_1 == null) {
+				random_star_type_1 = randFrom(STAR_TYPES);
+			}
+			systemContext.star1Type = (systemContext.star1Type == null) ? random_star_type_1 : systemContext.star1Type;
+			if (systemContext.type == "unary") {
+				systemContext.star2Type = null;
+				systemContext.star3Type = null;
+			}
+			else {
+				if (random_star_type_2 == null) {
+					random_star_type_2 = randFrom(STAR_TYPES);
+				}
+				systemContext.star2Type = (systemContext.star2Type == null) ? random_star_type_2 : systemContext.star2Type;
+				if (systemContext.type == "binary") {
+					systemContext.star3Type = null;
+				}
+				else {
+					if (random_star_type_3 == null) {
+						random_star_type_3 = randFrom(STAR_TYPES);
+					}
+					systemContext.star3Type = (systemContext.star3Type == null) ? random_star_type_3 : systemContext.star3Type;
+				}
+			}
+			return systemContext;
+		}
+
 		function returnToListPage() {
 			window.location = document.referrer;
 		}
 
 		function editCancel() {
 			returnToListPage();
+		}
+
+		function createSystemContext(creationForm) {
+			var systemContext = {
+{{#unlessEquals type "create"}}
+				systemID: {{system.systemID}},
+{{/unlessEquals}}
+				name: creationForm["system-name"].value,
+				type: creationForm["system-type"].value,
+				orbitalRadius: creationForm["system-orbital-radius"].value,
+				theta: creationForm["system-theta"].value,
+				owningEmpireID: creationForm["owning-empire-name"].dataset.id
+			};
+
+			// Set star types
+			systemContext = setStarTypes(systemContext);
+
+			return systemContext;
 		}
 
 		function editAccept() {
@@ -22,34 +71,7 @@
 				return;
 			}
 
-			var systemContext = {
-{{#unlessEquals type "create"}}
-				systemID: {{system.systemID}},
-{{/unlessEquals}}
-				name: creationForm["system-name"].value,
-				type: creationForm["system-type"].value,
-				orbitalRadius: creationForm["system-orbital-radius"].value,
-				theta: creationForm["system-theta"].value,
-				owningEmpireID: creationForm["owning-empire-name"].dataset.id
-			};
-
-{{#unlessEquals type "view"}}
-			// Set star types
-			systemContext.star1Type = (systemContext.star1Type == null) ? randFrom(STAR_TYPES) : systemContext.star1Type;
-			if (systemContext.type == "unary") {
-				systemContext.star2Type = null;
-				systemContext.star3Type = null;
-			}
-			else {
-				systemContext.star2Type = (systemContext.star2Type == null) ? randFrom(STAR_TYPES) : systemContext.star2Type;
-				if (systemContext.type == "binary") {
-					systemContext.star3Type = null;
-				}
-				else {
-					systemContext.star3Type = (systemContext.star3Type == null) ? randFrom(STAR_TYPES) : systemContext.star3Type;
-				}
-			}
-{{/unlessEquals}}
+			var systemContext = createSystemContext(creationForm);
 
 {{#switch type}}
 	{{#case "create"}}
@@ -77,6 +99,20 @@
 			var system_bodies = JSON.parse(decodeURIComponent("{{{encoded_system_bodies}}}"));
 			drawSystemView(system, system_bodies);
 {{/unlessEquals}}
+
+{{#ifEquals type "edit"}}
+			// Regenerate system view when system center changes
+			var creationForm = document.forms["system-form"];
+			var typeRadioButtons = creationForm["system-type"];
+
+			for (var i = 0; i < typeRadioButtons.length; i++) {
+				typeRadioButtons[i].addEventListener("change", () => {
+					system.type = typeRadioButtons.value;
+					system = setStarTypes(system);
+					drawSystemView(system, system_bodies);
+				});
+			}
+{{/ifEquals}}
 		});
 	</script>
 	<div class="page-container has-right-col">

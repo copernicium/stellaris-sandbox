@@ -1,6 +1,16 @@
 <main>
 	<script src="/templates/body_resource_deposit_item.js" defer></script>
 	<script>
+		var random_planet_type = null;
+
+		function setPlanetType(bodyContext) {
+			if (random_planet_type == null) {
+				random_planet_type = randFrom(PLANET_TYPES);
+			}
+			bodyContext.planetType = (bodyContext.type == "planet") ? ((bodyContext.planetType == null) ? random_planet_type : bodyContext.planetType) : null;
+			return bodyContext;
+		}
+
 		function returnToListPage() {
 			window.location = document.referrer;
 		}
@@ -9,20 +19,7 @@
 			returnToListPage();
 		}
 
-		function editAccept() {
-			var creationForm = document.forms["body-form"];
-
-			var fields_errors = {
-				"body-name": "Body name cannot be blank.",
-				"body-type": "You must choose a body type.",
-				"body-orbital-radius": "Body orbital radius cannot be blank.",
-				"body-theta": "Body theta cannot be blank.",
-				"parent-system-name": "You must choose a parent system."
-			};
-			if (errorIfBlank(creationForm, fields_errors)) {
-				return;
-			}
-
+		function createBodyContext(creationForm) {
 			var bodyContext = {
 {{#unlessEquals type "create"}}
 				bodyID: {{body.bodyID}} + "",
@@ -50,10 +47,27 @@
 				});
 			}
 
-{{#unlessEquals type "view"}}
 			// Set planet type
-			bodyContext.planetType = (bodyContext.type == "planet") ? ((bodyContext.planetType == null) ? randFrom(PLANET_TYPES) : bodyContext.planetType) : null;
-{{/unlessEquals}}
+			bodyContext = setPlanetType(bodyContext);
+
+			return bodyContext;
+		}
+
+		function editAccept() {
+			var creationForm = document.forms["body-form"];
+
+			var fields_errors = {
+				"body-name": "Body name cannot be blank.",
+				"body-type": "You must choose a body type.",
+				"body-orbital-radius": "Body orbital radius cannot be blank.",
+				"body-theta": "Body theta cannot be blank.",
+				"parent-system-name": "You must choose a parent system."
+			};
+			if (errorIfBlank(creationForm, fields_errors)) {
+				return;
+			}
+
+			var bodyContext = createBodyContext(creationForm);
 
 {{#switch type}}
 	{{#case "create"}}
@@ -122,8 +136,6 @@
 			var accept_button = document.getElementById("accept-button");
 			if (accept_button) accept_button.addEventListener("click", editAccept);
 
-			// console.log("{{{body.planetType}}}");
-
 {{#unlessEquals type "view"}}
 			var systemSearchList = JSON.parse(decodeURIComponent("{{{encoded_system_search_list}}}"));
 			setupSearchList(systemSearchList, ["system-search-bar"], "system-search-list", "systemID", "name", false, null, null);
@@ -162,8 +174,23 @@
 {{/unlessEquals}}
 
 {{#unlessEquals type "create"}}
+			var body = JSON.parse(decodeURIComponent("{{{encoded_body}}}"));
 			drawBodyView("{{body.type}}", "{{body.planetType}}", {{body.orbitalRadius}}, {{body.theta}});
 {{/unlessEquals}}
+
+{{#ifEquals type "edit"}}
+			// Regenerate body view when body type changes
+			var creationForm = document.forms["body-form"];
+			var typeRadioButtons = creationForm["body-type"];
+
+			for (var i = 0; i < typeRadioButtons.length; i++) {
+				typeRadioButtons[i].addEventListener("change", () => {
+					body.type = typeRadioButtons.value;
+					body = setPlanetType(body);
+					drawBodyView(body.type, body.planetType, {{body.orbitalRadius}}, {{body.theta}});
+				});
+			}
+{{/ifEquals}}
 		});
 	</script>
 	<div class="page-container has-right-col">
