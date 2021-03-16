@@ -97,6 +97,9 @@
 {{#unlessEquals type "create"}}
 			var system = JSON.parse(decodeURIComponent("{{{encoded_system}}}"));
 			var system_bodies = JSON.parse(decodeURIComponent("{{{encoded_system_bodies}}}"));
+			random_star_type_1 = system.star1Type;
+			random_star_type_2 = system.star2Type;
+			random_star_type_3 = system.star3Type;
 			drawSystemView(system, system_bodies);
 {{/unlessEquals}}
 

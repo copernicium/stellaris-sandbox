@@ -175,6 +175,7 @@
 
 {{#unlessEquals type "create"}}
 			var body = JSON.parse(decodeURIComponent("{{{encoded_body}}}"));
+			random_planet_type = body.planetType;
 			drawBodyView("{{body.type}}", "{{body.planetType}}", {{body.orbitalRadius}}, {{body.theta}});
 {{/unlessEquals}}
 
