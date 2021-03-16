@@ -7,7 +7,6 @@
 	z-index: 1000;
 	/* background-color: rgba(0, 0, 0, 0.85); */
 }
-
 #confirmation-modal, #create-modal, #error-modal {
 	display: flex;
 	align-items: center;
@@ -66,6 +65,16 @@
 .modal-button-container button {
 	margin: 0px 5px;
 }
+
+.starfield-background {
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: -1000;
+}
+
 
 .search-list {
 	overflow: scroll;
